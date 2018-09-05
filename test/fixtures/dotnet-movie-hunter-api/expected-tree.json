@@ -1,0 +1,121 @@
+{
+  "dependencies": {
+    "Antlr": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Antlr",
+      "version": "3.4.1.9004"
+    },
+    "bootstrap": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "bootstrap",
+      "version": "3.0.0"
+    },
+    "jQuery": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "jQuery",
+      "version": "1.10.2"
+    },
+    "Microsoft.AspNet.Cors": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.Cors",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.Mvc": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.Mvc",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.Razor": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.Razor",
+      "version": "3.1.2"
+    },
+    "Microsoft.AspNet.Web.Optimization": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.Web.Optimization",
+      "version": "1.1.3"
+    },
+    "Microsoft.AspNet.WebApi": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebApi",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.WebApi.Client": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebApi.Client",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.WebApi.Core": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebApi.Core",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.WebApi.Cors": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebApi.Cors",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.WebApi.HelpPage": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebApi.HelpPage",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.WebApi.WebHost": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebApi.WebHost",
+      "version": "5.1.2"
+    },
+    "Microsoft.AspNet.WebPages": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNet.WebPages",
+      "version": "3.1.2"
+    },
+    "Microsoft.Web.Infrastructure": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.Web.Infrastructure",
+      "version": "1.0.0.0"
+    },
+    "Modernizr": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Modernizr",
+      "version": "2.6.2"
+    },
+    "Newtonsoft.Json": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Newtonsoft.Json",
+      "version": "5.0.6"
+    },
+    "Respond": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Respond",
+      "version": "1.2.0"
+    },
+    "WebGrease": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "WebGrease",
+      "version": "1.5.2"
+    }
+  },
+  "hasDevDependencies": false,
+  "name": "",
+  "version": ""
+}
