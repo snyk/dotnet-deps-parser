@@ -32,10 +32,10 @@ export async function getDependencyTree(manifestFile) {
     version: '',
   };
 
-  await Promise.all(packageList.map(async (dep) => {
+  packageList.map((dep) => {
     const depName = dep.$.id;
     depTree.dependencies[depName] = buildSubTree(dep);
-  }));
+  });
 
   return depTree;
 }

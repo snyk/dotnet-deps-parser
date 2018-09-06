@@ -31,3 +31,23 @@ test('.Net movie-hunter-api tree generated as expected', async (t) => {
   const expectedTree = load('dotnet-movie-hunter-api/expected-tree.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
+
+test('.Net dotnet-no-packages tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-no-packages`,
+    'packages.config',
+    includeDev);
+  const expectedTree = load('dotnet-no-packages/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net dotnet-empty-manifest throws', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-manifest`,
+    'packages.config',
+    includeDev);
+  const expectedTree = load('dotnet-empty-manifest/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});

@@ -15,16 +15,22 @@ export {
 async function buildDepTree(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  const manifestFile: any = parseManifestFile(manifestFileContents);
 
-  if (!(manifestFile.packages && manifestFile.packages.package)) {
-    throw new Error('packages.config has no packages property');
+  if (!manifestFile || !(manifestFile.packages && manifestFile.packages.package)) {
+    const depTree: PkgTree = {
+      dependencies: {},
+      hasDevDependencies: false,
+      name: '',
+      version: '',
+    };
+    return depTree;
   }
 
-  return await getDependencyTree(manifestFile);
+  return getDependencyTree(manifestFile);
 }
 
-async function buildDepTreeFromFiles(
+function buildDepTreeFromFiles(
   root: string, manifestFilePath: string, includeDev = false) {
   if (!root || !manifestFilePath) {
     throw new Error('Missing required parameters for buildDepTreeFromFiles()');
@@ -40,5 +46,5 @@ async function buildDepTreeFromFiles(
 
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
 
-  return await buildDepTree(manifestFileContents, includeDev);
+  return buildDepTree(manifestFileContents, includeDev);
 }
