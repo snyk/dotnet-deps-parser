@@ -15,19 +15,22 @@ export {
 async function buildDepTree(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = parseManifestFile(manifestFileContents);
+  try {
+    const manifestFile: any = await parseManifestFile(manifestFileContents);
 
-  if (!manifestFile || !(manifestFile.packages && manifestFile.packages.package)) {
-    const depTree: PkgTree = {
-      dependencies: {},
-      hasDevDependencies: false,
-      name: '',
-      version: '',
-    };
-    return depTree;
+    if (!manifestFile || !(manifestFile.packages && manifestFile.packages.package)) {
+      const depTree: PkgTree = {
+        dependencies: {},
+        hasDevDependencies: false,
+        name: '',
+        version: '',
+      };
+      return depTree;
+    }
+    return getDependencyTree(manifestFile);
+  } catch (err) {
+    throw err;
   }
-
-  return getDependencyTree(manifestFile);
 }
 
 function buildDepTreeFromFiles(

@@ -32,7 +32,7 @@ test('.Net movie-hunter-api tree generated as expected', async (t) => {
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
-test('.Net dotnet-no-packages tree generated as expected', async (t) => {
+test('.Net dotnet-no-packages empty tree generated as expected', async (t) => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-no-packages`,
@@ -42,7 +42,7 @@ test('.Net dotnet-no-packages tree generated as expected', async (t) => {
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
-test('.Net dotnet-empty-manifest throws', async (t) => {
+test('.Net dotnet-empty-manifest returns empty tree', async (t) => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-empty-manifest`,
@@ -50,4 +50,13 @@ test('.Net dotnet-empty-manifest throws', async (t) => {
     includeDev);
   const expectedTree = load('dotnet-empty-manifest/expected-tree.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net dotnet-invalid-manifest throws', async (t) => {
+  const includeDev = false;
+  t.rejects(buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-invalid-manifest`,
+    'packages.config',
+    includeDev),
+  );
 });

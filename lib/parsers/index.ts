@@ -55,18 +55,17 @@ function buildSubTree(dep): PkgTree {
   return depSubTree;
 }
 
-export function parseManifestFile(manifestFileContents: string) {
-  let parsedResult = '';
-  try {
+export async  function parseManifestFile(manifestFileContents: string) {
+  return new Promise((resolve, reject) => {
     parseXML
       .parseString(manifestFileContents, (err, result) => {
         if (err) {
-          throw err;
+          return reject(err);
         }
-        parsedResult = result;
+        return resolve(result);
       });
-  } catch (e) {
-    throw new Error(`Parsing failed with error ${e.message}`);
-  }
-  return parsedResult;
+  })
+  .catch((err) => {
+    throw new Error(`Parsing failed with error ${err.message}`);
+  });
 }
