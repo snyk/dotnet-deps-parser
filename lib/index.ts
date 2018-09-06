@@ -1,7 +1,9 @@
 import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
-import {PkgTree, DepType} from './parsers';
+import * as _ from 'lodash';
+
+import {PkgTree, DepType, parseManifestFile, getDependencyTree} from './parsers';
 
 export {
   buildDepTree,
@@ -10,23 +12,42 @@ export {
   DepType,
 };
 
-async function buildDepTree(): Promise<PkgTree> {
-  // TODO
-  const depTree: PkgTree = {
-    dependencies: {},
-    hasDevDependencies: false,
-    name: '',
-    version: '',
-  };
-  return depTree;
+async function buildDepTree(
+    manifestFileContents: string,
+    includeDev = false): Promise<PkgTree> {
+  try {
+    const manifestFile: any = await parseManifestFile(manifestFileContents);
+
+    if (!manifestFile || !(manifestFile.packages && manifestFile.packages.package)) {
+      const depTree: PkgTree = {
+        dependencies: {},
+        hasDevDependencies: false,
+        name: '',
+        version: '',
+      };
+      return depTree;
+    }
+    return getDependencyTree(manifestFile);
+  } catch (err) {
+    throw err;
+  }
 }
 
-async function buildDepTreeFromFiles(
-  root: string, manifestFilePaths: string [], includeDev = false): Promise<PkgTree> {
-  if (!root || !manifestFilePaths) {
+function buildDepTreeFromFiles(
+  root: string, manifestFilePath: string, includeDev = false) {
+  if (!root || !manifestFilePath) {
     throw new Error('Missing required parameters for buildDepTreeFromFiles()');
   }
-  // TODO
+  if (!manifestFilePath.endsWith('packages.config')) {
+    throw new Error(`Unsupported file ${manifestFilePath},
+    'Please provide a packages.config file.`);
+  }
+  const manifestFileFullPath = path.resolve(root, manifestFilePath);
+  if (!fs.existsSync(manifestFileFullPath)) {
+    throw new Error(`Target file packages.config not found at location: ${manifestFileFullPath}`);
+  }
 
-  return await buildDepTree();
+  const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
+
+  return buildDepTree(manifestFileContents, includeDev);
 }
