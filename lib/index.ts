@@ -20,11 +20,11 @@ async function buildDepTree(
     const manifestFile: any = await parseManifestFile(manifestFileContents);
 
     if (originalFileName === 'packages.config') {
-      return getDependencyTreeFromPackagesConfig(manifestFile);
+      return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
     }
 
     if (originalFileName.endsWith('.csproj')) {
-      return getDependencyTreeFromPackageReference(manifestFile);
+      return getDependencyTreeFromPackageReference(manifestFile, includeDev);
     }
 
     throw new Error(`Unsupported file ${originalFileName},

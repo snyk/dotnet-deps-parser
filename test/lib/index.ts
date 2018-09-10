@@ -61,6 +61,26 @@ test('.Net dotnet-invalid-manifest throws', async (t) => {
   );
 });
 
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
+    'packages.config',
+    includeDev);
+  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree-without-dev.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+  const includeDev = true;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
+    'packages.config',
+    includeDev);
+  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
 /*
 ****** csproj ******
 */
@@ -102,4 +122,24 @@ test('.Net .csproj core dotnet-invalid-manifest throws', async (t) => {
     'invalid.csproj',
     includeDev),
   );
+});
+
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
+    'simple-project-with-dev.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree-without-dev.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+  const includeDev = true;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
+    'simple-project-with-dev.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
 });

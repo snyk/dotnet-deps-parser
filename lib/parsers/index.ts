@@ -22,7 +22,7 @@ export enum DepType {
   dev = 'dev',
 }
 
-export async function getDependencyTreeFromPackagesConfig(manifestFile) {
+export async function getDependencyTreeFromPackagesConfig(manifestFile, includeDev: boolean = false) {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -32,21 +32,22 @@ export async function getDependencyTreeFromPackagesConfig(manifestFile) {
 
   const packageList = _.get(manifestFile, 'packages.package', []);
 
-  packageList.map((dep) => {
+  for (const dep of packageList) {
     const depName = dep.$.id;
-    depTree.dependencies[depName] = buildSubTreeFromPackagesConfig(dep);
-  });
+    const isDev = !!dep.$.developmentDependency;
+    depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
+    if (isDev && !includeDev) {
+      continue;
+    }
+    depTree.dependencies[depName] = buildSubTreeFromPackagesConfig(dep, isDev);
+  }
 
   return depTree;
 }
 
-function buildSubTreeFromPackagesConfig(dep): PkgTree {
-  const depType = (dep.$.developmentDependency && !!dep.$.developmentDependency)
-  ? DepType.dev
-  : DepType.prod;
-
+function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
   const depSubTree: PkgTree = {
-    depType,
+    depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.id,
     version: dep.$.version,
@@ -55,7 +56,7 @@ function buildSubTreeFromPackagesConfig(dep): PkgTree {
   return depSubTree;
 }
 
-export async function getDependencyTreeFromPackageReference(manifestFile) {
+export async function getDependencyTreeFromPackageReference(manifestFile, includeDev: boolean = false) {
   const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
     .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
 
@@ -72,16 +73,21 @@ export async function getDependencyTreeFromPackageReference(manifestFile) {
 
   for (const dep of packageList.PackageReference) {
     const depName = dep.$.Include;
-    depTree.dependencies[depName] = buildSubTreeFromPackageReference(dep);
+    const isDev = !!dep.$.developmentDependency;
+    depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
+    if (isDev && !includeDev) {
+      continue;
+    }
+    depTree.dependencies[depName] = buildSubTreeFromPackageReference(dep, isDev);
   }
 
   return depTree;
 }
 
-function buildSubTreeFromPackageReference(dep): PkgTree {
+function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
 
   const depSubTree: PkgTree = {
-    depType: DepType.prod,
+    depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.Include,
     version: dep.$.Version,
