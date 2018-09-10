@@ -105,8 +105,5 @@ export async function parseManifestFile(manifestFileContents: string) {
         }
         return resolve(result);
       });
-  })
-  .catch((err) => {
-    throw new Error(`Parsing failed with error ${err.message}`);
   });
 }

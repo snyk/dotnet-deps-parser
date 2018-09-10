@@ -7,30 +7,32 @@ import {PkgTree, DepType, parseManifestFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromPackageReference} from './parsers';
 
 export {
-  buildDepTree,
+  buildDepTreeFromPackagesConfig,
+  buildDepTreeFromCsproj,
   buildDepTreeFromFiles,
   PkgTree,
   DepType,
 };
 
-async function buildDepTree(
+async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
-    includeDev = false, originalFileName = 'packages.config'): Promise<PkgTree> {
+    includeDev = false): Promise<PkgTree> {
   try {
     const manifestFile: any = await parseManifestFile(manifestFileContents);
-
-    if (originalFileName === 'packages.config') {
-      return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
-    }
-
-    if (originalFileName.endsWith('.csproj')) {
-      return getDependencyTreeFromPackageReference(manifestFile, includeDev);
-    }
-
-    throw new Error(`Unsupported file ${originalFileName},
-      'Please provide either packages.config or .csproj file.`);
+    return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
   } catch (err) {
-    throw err;
+    throw new Error(`Building dependency tree failed with error: ${err.message}`);
+  }
+}
+
+async function buildDepTreeFromCsproj(
+    manifestFileContents: string,
+    includeDev = false): Promise<PkgTree> {
+  try {
+    const manifestFile: any = await parseManifestFile(manifestFileContents);
+    return getDependencyTreeFromPackageReference(manifestFile, includeDev);
+  } catch (err) {
+    throw new Error(`Building dependency tree failed with error ${err.message}`);
   }
 }
 
@@ -39,11 +41,7 @@ function buildDepTreeFromFiles(
   if (!root || !manifestFilePath) {
     throw new Error('Missing required parameters for buildDepTreeFromFiles()');
   }
-  const supportedFiles = /(.*packages\.config)|(.*\.csproj)/;
-  if (!supportedFiles.test(manifestFilePath)) {
-    throw new Error(`Unsupported file ${manifestFilePath},
-    'Please provide either packages.config or .csproj file.`);
-  }
+
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
   if (!fs.existsSync(manifestFileFullPath)) {
     throw new Error(`Neither packages.config nor .csproj file found at location: ${manifestFileFullPath}`);
@@ -51,5 +49,12 @@ function buildDepTreeFromFiles(
 
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
 
-  return buildDepTree(manifestFileContents, includeDev, manifestFilePath);
+  if (manifestFilePath.endsWith('.csproj')) {
+    return buildDepTreeFromCsproj(manifestFileContents, includeDev);
+  } else if (manifestFilePath.endsWith('packages.config')) {
+    return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
+  } else {
+    throw new Error(`Unsupported file ${manifestFilePath},
+    'Please provide either packages.config or .csproj file.`);
+  }
 }
