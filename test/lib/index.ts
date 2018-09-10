@@ -61,7 +61,11 @@ test('.Net dotnet-invalid-manifest throws', async (t) => {
   );
 });
 
-test('.Net core simple project tree generated as expected', async (t) => {
+/*
+****** csproj ******
+*/
+
+test('.Net .csproj simple project tree generated as expected', async (t) => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-core-simple-project`,
@@ -69,4 +73,33 @@ test('.Net core simple project tree generated as expected', async (t) => {
     includeDev);
   const expectedTree = load('dotnet-core-simple-project/expected-tree.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net .csproj dotnet-no-packages empty tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-no-packages`,
+    'no-packages.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-no-packages/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net .csproj dotnet-empty-manifest returns empty tree', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-manifest`,
+    'empty-manifest.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-empty-manifest/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net .csproj core dotnet-invalid-manifest throws', async (t) => {
+  const includeDev = false;
+  t.rejects(buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-invalid-manifest`,
+    'invalid.csproj',
+    includeDev),
+  );
 });
