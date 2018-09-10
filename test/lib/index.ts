@@ -60,3 +60,13 @@ test('.Net dotnet-invalid-manifest throws', async (t) => {
     includeDev),
   );
 });
+
+test('.Net core simple project tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-core-simple-project`,
+    'simple-project.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-core-simple-project/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});

@@ -22,9 +22,7 @@ export enum DepType {
   dev = 'dev',
 }
 
-export async function getDependencyTree(manifestFile) {
-  const packageList = manifestFile.packages.package;
-
+export async function getDependencyTreeFromPackagesConfig(manifestFile) {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -32,15 +30,17 @@ export async function getDependencyTree(manifestFile) {
     version: '',
   };
 
+  const packageList = _.get(manifestFile, 'packages.package', []);
+
   packageList.map((dep) => {
     const depName = dep.$.id;
-    depTree.dependencies[depName] = buildSubTree(dep);
+    depTree.dependencies[depName] = buildSubTreeFromPackagesConfig(dep);
   });
 
   return depTree;
 }
 
-function buildSubTree(dep): PkgTree {
+function buildSubTreeFromPackagesConfig(dep): PkgTree {
   const depType = (dep.$.developmentDependency && !!dep.$.developmentDependency)
   ? DepType.dev
   : DepType.prod;
@@ -55,7 +55,42 @@ function buildSubTree(dep): PkgTree {
   return depSubTree;
 }
 
-export async  function parseManifestFile(manifestFileContents: string) {
+export async function getDependencyTreeFromPackageReference(manifestFile) {
+  const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
+    .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
+
+  const depTree: PkgTree = {
+    dependencies: {},
+    hasDevDependencies: false,
+    name: '',
+    version: '',
+  };
+
+  if (!packageList) {
+    return depTree;
+  }
+
+  for (const dep of packageList.PackageReference) {
+    const depName = dep.$.Include;
+    depTree.dependencies[depName] = buildSubTreeFromPackageReference(dep);
+  }
+
+  return depTree;
+}
+
+function buildSubTreeFromPackageReference(dep): PkgTree {
+
+  const depSubTree: PkgTree = {
+    depType: DepType.prod,
+    dependencies: {},
+    name: dep.$.Include,
+    version: dep.$.Version,
+  };
+
+  return depSubTree;
+}
+
+export async function parseManifestFile(manifestFileContents: string) {
   return new Promise((resolve, reject) => {
     parseXML
       .parseString(manifestFileContents, (err, result) => {
