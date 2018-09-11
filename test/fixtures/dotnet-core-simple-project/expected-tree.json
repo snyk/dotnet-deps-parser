@@ -1,0 +1,91 @@
+{
+  "name": "",
+  "version": "",
+  "hasDevDependencies": false,
+  "dependencies": {
+    "Microsoft.AspNetCore": {
+      "name": "Microsoft.AspNetCore",
+      "version": "1.1.7",
+      "depType": "prod",
+      "dependencies": {}
+    },
+    "Microsoft.AspNetCore.Authentication.Cookies": {
+      "name": "Microsoft.AspNetCore.Authentication.Cookies",
+      "version": "1.1.3",
+      "depType": "prod",
+      "dependencies": {}
+    },
+    "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
+      "name": "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore",
+      "version":"1.1.6",
+      "depType": "prod",
+      "dependencies": {}
+    },
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+      "name": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
+      "version":"1.1.6",
+      "depType": "prod",
+      "dependencies": {}
+    },
+    "Microsoft.AspNetCore.Mvc": {
+      "name": "Microsoft.AspNetCore.Mvc",
+      "version":"1.1.8",
+      "depType": "prod",
+      "dependencies": {}
+    },
+    "Microsoft.AspNetCore.StaticFiles": {
+      "name": "Microsoft.AspNetCore.StaticFiles",
+      "version":"1.1.3",
+      "depType": "prod",
+      "dependencies": {}
+    },
+    "Microsoft.EntityFrameworkCore.Design": {
+      "name": "Microsoft.EntityFrameworkCore.Design",
+      "version":"1.1.6",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "Microsoft.EntityFrameworkCore.Sqlite": {
+      "name": "Microsoft.EntityFrameworkCore.Sqlite",
+      "version":"1.1.6",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "Microsoft.EntityFrameworkCore.Sqlite.Design": {
+      "name": "Microsoft.EntityFrameworkCore.Sqlite.Design",
+      "version":"1.1.6",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "name": "Microsoft.EntityFrameworkCore.Tools",
+      "version":"1.1.6",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "Microsoft.Extensions.Configuration.UserSecrets": {
+      "name": "Microsoft.Extensions.Configuration.UserSecrets",
+      "version":"1.1.2",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "Microsoft.Extensions.Logging.Debug": {
+      "name": "Microsoft.Extensions.Logging.Debug",
+      "version":"1.1.2",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+      "name": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
+      "version":"1.1.5",
+      "depType": "prod",
+      "dependencies": {}
+      },
+    "newtonsoft.json": {
+      "name": "newtonsoft.json",
+      "version":"11.0.2",
+      "depType": "prod",
+      "dependencies": {}
+    }
+  }
+}
