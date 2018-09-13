@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <PackageId>simple-project-with-dev</PackageId>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="jQuery" Version="3.1.1" developmentDependency="true" />
     <PackageReference Include="NLog" Version="4.3.10" />

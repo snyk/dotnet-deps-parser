@@ -60,10 +60,20 @@ export async function getDependencyTreeFromPackageReference(manifestFile, includ
   const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
     .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
 
+  const nameProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
+    .find((propertyGroup) => {
+      return _.has(propertyGroup, 'PackageId')
+      || _.has(propertyGroup, 'AssemblyName');
+    }) || {};
+
+  const name = (nameProperty.PackageId && nameProperty.PackageId[0])
+    || (nameProperty.AssemblyName && nameProperty.AssemblyName[0])
+    || '';
+
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
-    name: '',
+    name,
     version: '',
   };
 
