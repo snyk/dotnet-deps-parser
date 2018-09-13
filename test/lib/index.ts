@@ -130,7 +130,7 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
     'simple-project-with-dev.csproj',
     includeDev);
-  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree-without-dev.json');
+  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree-from-csproj-without-dev.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
@@ -140,6 +140,6 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
     'simple-project-with-dev.csproj',
     includeDev);
-  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree.json');
+  const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree-from-csproj.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
