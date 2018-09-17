@@ -6,4 +6,14 @@
     <PackageReference Include="jQuery" Version="3.1.1" developmentDependency="true" />
     <PackageReference Include="NLog" Version="4.3.10" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="nunit.framework, Version=3.8.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.8.1\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Orleans, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Orleans.Core.1.4.0\lib\net451\Orleans.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

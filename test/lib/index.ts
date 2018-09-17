@@ -124,7 +124,7 @@ test('.Net .csproj core dotnet-invalid-manifest throws', async (t) => {
   );
 });
 
-test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+test('.Net dotnet-simple-project-with-devDeps with includeDev=false tree generated as expected', async (t) => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,

@@ -1,19 +1,43 @@
 {
-  "name": "simple-project-with-dev",
-  "version": "",
-  "hasDevDependencies": true,
   "dependencies": {
     "jQuery": {
-      "name": "jQuery",
-      "version": "3.1.1",
       "depType": "dev",
-      "dependencies": {}
+      "dependencies": {},
+      "name": "jQuery",
+      "version": "3.1.1"
     },
     "NLog": {
-      "name": "NLog",
-      "version": "4.3.10",
       "depType": "prod",
-      "dependencies": {}
+      "dependencies": {},
+      "name": "NLog",
+      "version": "4.3.10"
+    },
+    "System.Web.Entity": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.Entity",
+      "version": ""
+    },
+    "System.Web.ApplicationServices": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.ApplicationServices",
+      "version": ""
+    },
+    "nunit.framework": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "nunit.framework",
+      "version": "3.8.1.0"
+    },
+    "Orleans": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Orleans",
+      "version": "1.4.0.0"
     }
-  }
+  },
+  "hasDevDependencies": true,
+  "name": "simple-project-with-dev",
+  "version": ""
 }

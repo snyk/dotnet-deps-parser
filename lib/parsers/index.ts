@@ -1,10 +1,5 @@
 import * as parseXML from 'xml2js';
 import * as _ from 'lodash';
-export interface Dep {
-  name: string;
-  version: string;
-  dev?: boolean;
-}
 
 export interface PkgTree {
   name: string;
@@ -20,6 +15,13 @@ export interface PkgTree {
 export enum DepType {
   prod = 'prod',
   dev = 'dev',
+}
+
+export interface ReferenceInclude {
+  Version?: string;
+  Culture?: string;
+  processorArchitecture?: string;
+  PublicKeyToken?: string;
 }
 
 export async function getDependencyTreeFromPackagesConfig(manifestFile, includeDev: boolean = false) {
@@ -56,10 +58,7 @@ function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
   return depSubTree;
 }
 
-export async function getDependencyTreeFromPackageReference(manifestFile, includeDev: boolean = false) {
-  const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
-    .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
-
+export async function getDependencyTreeFromCsproj(manifestFile, includeDev: boolean = false) {
   const nameProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
     .find((propertyGroup) => {
       return _.has(propertyGroup, 'PackageId')
@@ -77,6 +76,24 @@ export async function getDependencyTreeFromPackageReference(manifestFile, includ
     version: '',
   };
 
+  const packageReferenceDepTree = await getDependencyTreeFromPackageReference(manifestFile, includeDev, depTree);
+  const combinedDepTree: PkgTree = {
+    // TODO: also combine the TargetFrameworks dep tree into here
+    ...packageReferenceDepTree,
+  };
+
+  combinedDepTree.dependencies = {
+    ...combinedDepTree.dependencies,
+    ...(await getDependenciesListFromReferenceInclude(manifestFile)),
+  };
+
+  return combinedDepTree;
+}
+
+export async function getDependencyTreeFromPackageReference(manifestFile, includeDev: boolean = false, depTree) {
+  const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
+    .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
+
   if (!packageList) {
     return depTree;
   }
@@ -92,6 +109,39 @@ export async function getDependencyTreeFromPackageReference(manifestFile, includ
   }
 
   return depTree;
+}
+
+export async function getDependenciesListFromReferenceInclude(manifestFile) {
+  const referenceIncludeDependencies = {};
+  const referenceIncludeList = _.get(manifestFile, 'Project.ItemGroup', [])
+  .find((itemGroup) => _.has(itemGroup, 'Reference'));
+
+  if (!referenceIncludeList) {
+    return referenceIncludeDependencies;
+  }
+
+  for (const item of referenceIncludeList.Reference) {
+    const propertiesList = item.$.Include.split(',').map((i) => i.trim());
+    const [depName, ...depInfoArray] = propertiesList;
+    const depInfoRaw =
+      _.keyBy(depInfoArray, (prop) => prop.split('=')[0]);
+
+    const depInfo: ReferenceInclude = {};
+    for (const property of Object.keys(depInfoRaw)) {
+      depInfo[property] = depInfoRaw[property].split('=')[1];
+    }
+
+    const dependency: PkgTree = {
+      // TODO: correctly identify what makes the dep be dev only
+      depType: DepType.prod,
+      dependencies: {},
+      name: depName,
+      version: depInfo.Version || '',
+    };
+
+    referenceIncludeDependencies[depName] = dependency;
+  }
+  return referenceIncludeDependencies;
 }
 
 function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
