@@ -24,6 +24,11 @@ export interface ReferenceInclude {
   PublicKeyToken?: string;
 }
 
+export interface DependenciesDiscoveryResult {
+  dependencies: object;
+  hasDevDependencies: boolean;
+}
+
 export async function getDependencyTreeFromPackagesConfig(manifestFile, includeDev: boolean = false) {
   const depTree: PkgTree = {
     dependencies: {},
@@ -69,66 +74,74 @@ export async function getDependencyTreeFromCsproj(manifestFile, includeDev: bool
     || (nameProperty.AssemblyName && nameProperty.AssemblyName[0])
     || '';
 
+  const packageReferenceDeps =
+    await getDependenciesFromPackageReference(manifestFile, includeDev);
+  const referenceIncludeDeps =
+    await getDependenciesFromReferenceInclude(manifestFile, includeDev);
+
   const depTree: PkgTree = {
-    dependencies: {},
-    hasDevDependencies: false,
+    dependencies: {
+      ...packageReferenceDeps.dependencies,
+      ...referenceIncludeDeps.dependencies,
+    },
+    hasDevDependencies: packageReferenceDeps.hasDevDependencies || referenceIncludeDeps.hasDevDependencies,
     name,
     version: '',
   };
 
-  const packageReferenceDepTree = await getDependencyTreeFromPackageReference(manifestFile, includeDev, depTree);
-  const combinedDepTree: PkgTree = {
-    // TODO: also combine the TargetFrameworks dep tree into here
-    ...packageReferenceDepTree,
-  };
-
-  combinedDepTree.dependencies = {
-    ...combinedDepTree.dependencies,
-    ...(await getDependenciesListFromReferenceInclude(manifestFile)),
-  };
-
-  return combinedDepTree;
+  return depTree;
 }
 
-export async function getDependencyTreeFromPackageReference(manifestFile, includeDev: boolean = false, depTree) {
+async function getDependenciesFromPackageReference(manifestFile, includeDev: boolean = false):
+  Promise <DependenciesDiscoveryResult> {
+  const dependenciesResult: DependenciesDiscoveryResult = {
+    dependencies: {},
+    hasDevDependencies: false,
+  };
   const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
     .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
 
   if (!packageList) {
-    return depTree;
+    return dependenciesResult;
   }
 
   for (const dep of packageList.PackageReference) {
     const depName = dep.$.Include;
     const isDev = !!dep.$.developmentDependency;
-    depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
+    dependenciesResult.hasDevDependencies = dependenciesResult.hasDevDependencies || isDev;
     if (isDev && !includeDev) {
       continue;
     }
-    depTree.dependencies[depName] = buildSubTreeFromPackageReference(dep, isDev);
+    dependenciesResult.dependencies[depName] = buildSubTreeFromPackageReference(dep, isDev);
   }
 
-  return depTree;
+  return dependenciesResult;
 }
 
-export async function getDependenciesListFromReferenceInclude(manifestFile) {
-  const referenceIncludeDependencies = {};
-  const referenceIncludeList = _.get(manifestFile, 'Project.ItemGroup', [])
-  .find((itemGroup) => _.has(itemGroup, 'Reference'));
+async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boolean = false):
+  Promise <DependenciesDiscoveryResult> {
+
+  const referenceIncludeResult: DependenciesDiscoveryResult = {
+    dependencies: {},
+    hasDevDependencies: false,
+  };
+
+  const referenceIncludeList =
+    _.get(manifestFile, 'Project.ItemGroup', [])
+    .find((itemGroup) => _.has(itemGroup, 'Reference'));
 
   if (!referenceIncludeList) {
-    return referenceIncludeDependencies;
+    return referenceIncludeResult;
   }
 
   for (const item of referenceIncludeList.Reference) {
     const propertiesList = item.$.Include.split(',').map((i) => i.trim());
     const [depName, ...depInfoArray] = propertiesList;
-    const depInfoRaw =
-      _.keyBy(depInfoArray, (prop) => prop.split('=')[0]);
-
     const depInfo: ReferenceInclude = {};
-    for (const property of Object.keys(depInfoRaw)) {
-      depInfo[property] = depInfoRaw[property].split('=')[1];
+
+    for (const itemValue of depInfoArray) {
+      const propertyValuePair = itemValue.split('=');
+      depInfo[propertyValuePair[0]] = propertyValuePair[1];
     }
 
     const dependency: PkgTree = {
@@ -139,9 +152,9 @@ export async function getDependenciesListFromReferenceInclude(manifestFile) {
       version: depInfo.Version || '',
     };
 
-    referenceIncludeDependencies[depName] = dependency;
+    referenceIncludeResult.dependencies[depName] = dependency;
   }
-  return referenceIncludeDependencies;
+  return referenceIncludeResult;
 }
 
 function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
