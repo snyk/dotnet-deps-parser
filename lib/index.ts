@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 
 import {PkgTree, DepType, parseManifestFile,
-  getDependencyTreeFromPackagesConfig, getDependencyTreeFromPackageReference} from './parsers';
+  getDependencyTreeFromPackagesConfig, getDependencyTreeFromCsproj} from './parsers';
 
 export {
   buildDepTreeFromPackagesConfig,
@@ -30,7 +30,7 @@ async function buildDepTreeFromCsproj(
     includeDev = false): Promise<PkgTree> {
   try {
     const manifestFile: any = await parseManifestFile(manifestFileContents);
-    return getDependencyTreeFromPackageReference(manifestFile, includeDev);
+    return getDependencyTreeFromCsproj(manifestFile, includeDev);
   } catch (err) {
     throw new Error(`Building dependency tree failed with error ${err.message}`);
   }
