@@ -49,9 +49,9 @@ function buildDepTreeFromFiles(
 
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
 
-  if (manifestFilePath.endsWith('.csproj')) {
+  if (_.endsWith(manifestFilePath, '.csproj')) {
     return buildDepTreeFromCsproj(manifestFileContents, includeDev);
-  } else if (manifestFilePath.endsWith('packages.config')) {
+  } else if (_.endsWith(manifestFilePath, 'packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath},
