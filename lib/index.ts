@@ -6,6 +6,11 @@ import * as _ from 'lodash';
 import {PkgTree, DepType, parseManifestFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromCsproj} from './parsers';
 
+const PROJ_FILE_EXTENSION = [
+    '.csproj',
+    '.vbproj',
+];
+
 export {
   buildDepTreeFromPackagesConfig,
   buildDepTreeFromCsproj,
@@ -43,18 +48,21 @@ function buildDepTreeFromFiles(
   }
 
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
+
   if (!fs.existsSync(manifestFileFullPath)) {
-    throw new Error(`Neither packages.config nor .csproj file found at location: ${manifestFileFullPath}`);
+    throw new Error('Neither packages.config nor project file found at ' +
+      `location: ${manifestFileFullPath}`);
   }
 
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
+  const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.endsWith(manifestFilePath, '.csproj')) {
+  if (_.includes(PROJ_FILE_EXTENSION, manifestFileExtension)) {
     return buildDepTreeFromCsproj(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
   } else {
-    throw new Error(`Unsupported file ${manifestFilePath},
-    'Please provide either packages.config or .csproj file.`);
+    throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
+      'either packages.config or project file.');
   }
 }
