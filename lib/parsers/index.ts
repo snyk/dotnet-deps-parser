@@ -163,7 +163,8 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.Include,
-    version: dep.$.Version,
+    // Version could be in attributes or as child node.
+    version: dep.$.Version || _.get(dep, 'Version.0'),
   };
 
   return depSubTree;
