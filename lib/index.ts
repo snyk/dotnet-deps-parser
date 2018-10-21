@@ -7,8 +7,9 @@ import {PkgTree, DepType, parseManifestFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectFile} from './parsers';
 
 const PROJ_FILE_EXTENSION = [
-    '.csproj',
-    '.vbproj',
+  '.csproj',
+  '.vbproj',
+  '.fsproj',
 ];
 
 export {

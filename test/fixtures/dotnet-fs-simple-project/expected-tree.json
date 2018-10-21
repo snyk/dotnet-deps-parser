@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "log4net": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "log4net",
+      "version": "2.0.8"
+    },
+    "Microsoft.AspNetCore.App": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.AspNetCore.App",
+      "version": null
+    },
+    "MySql.Data": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "MySql.Data",
+      "version": "8.0.12"
+    }
+  },
+  "hasDevDependencies": false,
+  "name": "",
+  "version": ""
+}

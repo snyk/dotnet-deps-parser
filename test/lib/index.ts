@@ -20,6 +20,15 @@ test('.Net Visual Basic project tree generated as expected', async (t) => {
     t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
+test('.Net F# project tree generated as expected', async (t) => {
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-fs-simple-project`,
+    'manifest.fsproj',
+    false);
+  const expectedTree = load('dotnet-fs-simple-project/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
 test('.Net simple project tree generated as expected', async (t) => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
