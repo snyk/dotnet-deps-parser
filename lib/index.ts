@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as _ from 'lodash';
 
 import {PkgTree, DepType, parseManifestFile,
-  getDependencyTreeFromPackagesConfig, getDependencyTreeFromCsproj} from './parsers';
+  getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectFile} from './parsers';
 
 const PROJ_FILE_EXTENSION = [
     '.csproj',
@@ -13,7 +13,7 @@ const PROJ_FILE_EXTENSION = [
 
 export {
   buildDepTreeFromPackagesConfig,
-  buildDepTreeFromCsproj,
+  buildDepTreeFromProjectFile,
   buildDepTreeFromFiles,
   PkgTree,
   DepType,
@@ -30,12 +30,12 @@ async function buildDepTreeFromPackagesConfig(
   }
 }
 
-async function buildDepTreeFromCsproj(
+async function buildDepTreeFromProjectFile(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
   try {
     const manifestFile: any = await parseManifestFile(manifestFileContents);
-    return getDependencyTreeFromCsproj(manifestFile, includeDev);
+    return getDependencyTreeFromProjectFile(manifestFile, includeDev);
   } catch (err) {
     throw new Error(`Building dependency tree failed with error ${err.message}`);
   }
@@ -58,7 +58,7 @@ function buildDepTreeFromFiles(
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
   if (_.includes(PROJ_FILE_EXTENSION, manifestFileExtension)) {
-    return buildDepTreeFromCsproj(manifestFileContents, includeDev);
+    return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
   } else {
