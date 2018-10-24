@@ -1,0 +1,115 @@
+{
+  "dependencies": {
+    "MySql.Data": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "MySql.Data",
+      "version": "8.0.12"
+    },
+    "Newtonsoft.Json": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Newtonsoft.Json",
+      "version": "11.0.2"
+    },
+    "System": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System",
+      "version": ""
+    },
+    "System.Data": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Data",
+      "version": ""
+    },
+    "System.Drawing": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Drawing",
+      "version": ""
+    },
+    "System.Core": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Core",
+      "version": ""
+    },
+    "System.Data.DataSetExtensions": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Data.DataSetExtensions",
+      "version": ""
+    },
+    "System.Web.Extensions": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.Extensions",
+      "version": ""
+    },
+    "System.Xml.Linq": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Xml.Linq",
+      "version": ""
+    },
+    "System.Web.DynamicData": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.DynamicData",
+      "version": ""
+    },
+    "System.Web.Entity": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.Entity",
+      "version": ""
+    },
+    "System.Web.ApplicationServices": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.ApplicationServices",
+      "version": ""
+    },
+    "System.ComponentModel.DataAnnotations": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.ComponentModel.DataAnnotations",
+      "version": ""
+    },
+    "System.Web": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web",
+      "version": ""
+    },
+    "System.Xml": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Xml",
+      "version": ""
+    },
+    "System.Configuration": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Configuration",
+      "version": ""
+    },
+    "System.Web.Services": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.Web.Services",
+      "version": ""
+    },
+    "System.EnterpriseServices": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.EnterpriseServices",
+      "version": ""
+    }
+  },
+  "hasDevDependencies": false,
+  "name": "SnykTestVB",
+  "version": ""
+}

@@ -63,7 +63,7 @@ function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
   return depSubTree;
 }
 
-export async function getDependencyTreeFromCsproj(manifestFile, includeDev: boolean = false) {
+export async function getDependencyTreeFromProjectFile(manifestFile, includeDev: boolean = false) {
   const nameProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
     .find((propertyGroup) => {
       return _.has(propertyGroup, 'PackageId')
@@ -163,7 +163,8 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.Include,
-    version: dep.$.Version,
+    // Version could be in attributes or as child node.
+    version: dep.$.Version || _.get(dep, 'Version.0'),
   };
 
   return depSubTree;

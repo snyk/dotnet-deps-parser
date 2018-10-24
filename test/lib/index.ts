@@ -5,12 +5,20 @@
 // tslint:disable:object-literal-key-quotes
 import {test} from 'tap';
 import * as fs from 'fs';
-import * as _ from 'lodash';
 import {buildDepTreeFromFiles} from '../../lib';
 
 const load = (filename) => JSON.parse(
   fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'),
 );
+
+test('.Net Visual Basic project tree generated as expected', async (t) => {
+    const tree = await buildDepTreeFromFiles(
+        `${__dirname}/../fixtures/dotnet-vb-simple-project`,
+        'manifest.vbproj',
+        false);
+    const expectedTree = load('dotnet-vb-simple-project/expected-tree.json');
+    t.deepEqual(tree, expectedTree, 'trees are equal');
+});
 
 test('.Net simple project tree generated as expected', async (t) => {
   const includeDev = false;
