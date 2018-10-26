@@ -4,7 +4,8 @@ import * as path from 'path';
 import * as _ from 'lodash';
 
 import {PkgTree, DepType, parseManifestFile,
-  getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectFile} from './parsers';
+  getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
+  getDependencyTreeFromProjectFile, ProjectJsonManifest} from './parsers';
 
 const PROJ_FILE_EXTENSION = [
   '.csproj',
@@ -15,10 +16,20 @@ const PROJ_FILE_EXTENSION = [
 export {
   buildDepTreeFromPackagesConfig,
   buildDepTreeFromProjectFile,
+  buildDepTreeFromProjectJson,
   buildDepTreeFromFiles,
   PkgTree,
   DepType,
 };
+
+function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = false): PkgTree {
+  try {
+    const manifestFile: ProjectJsonManifest = JSON.parse(manifestFileContents);
+    return getDependencyTreeFromProjectJson(manifestFile, includeDev);
+  } catch (err) {
+    throw new Error(`Building dependency tree failed with error: ${err.message}`);
+  }
+}
 
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
@@ -62,6 +73,8 @@ function buildDepTreeFromFiles(
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
+  } else if (_.endsWith(manifestFilePath, 'project.json')) {
+    return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
       'either packages.config or project file.');

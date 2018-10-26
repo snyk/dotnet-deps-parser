@@ -160,3 +160,27 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
   const expectedTree = load('dotnet-simple-project-with-devDeps/expected-tree-from-csproj.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
+
+/*
+****** project.json ******
+*/
+
+test('.Net project.json simple project tree generated as expected', async (t) => {
+  const includeDev = true;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-older-simple-project`,
+    'simple-project.json',
+    includeDev);
+  const expectedTree = load('dotnet-older-simple-project/simple-expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net project.json with no packages empty tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-no-packages`,
+    'no-packages-project.json',
+    includeDev);
+  const expectedTree = load('dotnet-no-packages/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});

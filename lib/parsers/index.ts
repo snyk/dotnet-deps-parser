@@ -29,6 +29,58 @@ export interface DependenciesDiscoveryResult {
   hasDevDependencies: boolean;
 }
 
+export enum ProjectJsonDepType {
+  build = 'build',
+  project = 'project',
+  platform = 'platform',
+  default = 'default',
+}
+
+export interface ProjectJsonManifestDependency {
+  version: string;
+  type?: ProjectJsonDepType;
+}
+export interface ProjectJsonManifest {
+  dependencies: {
+    [name: string]: ProjectJsonManifestDependency | string;
+  };
+}
+
+export function getDependencyTreeFromProjectJson(manifestFile: ProjectJsonManifest, includeDev: boolean = false) {
+  const depTree: PkgTree = {
+    dependencies: {},
+    hasDevDependencies: false,
+    name: '',
+    version: '',
+  };
+
+  for (const depName in manifestFile.dependencies) {
+    if (!manifestFile.dependencies.hasOwnProperty(depName)) {
+      continue;
+    }
+    const depValue = manifestFile.dependencies[depName];
+    const version = (depValue as ProjectJsonManifestDependency).version || depValue;
+    const isDev = (depValue as ProjectJsonManifestDependency).type === 'build';
+    depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
+    if (isDev && !includeDev) {
+      continue;
+    }
+    depTree.dependencies[depName] = buildSubTreeFromProjectJson(depName, version, isDev);
+  }
+  return depTree;
+}
+
+function buildSubTreeFromProjectJson(name, version, isDev: boolean): PkgTree {
+  const depSubTree: PkgTree = {
+    depType: isDev ? DepType.dev : DepType.prod,
+    dependencies: {},
+    name,
+    version,
+  };
+
+  return depSubTree;
+}
+
 export async function getDependencyTreeFromPackagesConfig(manifestFile, includeDev: boolean = false) {
   const depTree: PkgTree = {
     dependencies: {},
