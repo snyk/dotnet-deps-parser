@@ -24,7 +24,8 @@ export {
 
 function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = false): PkgTree {
   try {
-    const manifestFile: ProjectJsonManifest = JSON.parse(manifestFileContents);
+    // trimming required to address files with UTF-8 with BOM encoding
+    const manifestFile: ProjectJsonManifest = JSON.parse(manifestFileContents.trim());
     return getDependencyTreeFromProjectJson(manifestFile, includeDev);
   } catch (err) {
     throw new Error(`Building dependency tree failed with error: ${err.message}`);

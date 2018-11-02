@@ -1,0 +1,18 @@
+﻿{
+  "dependencies": {
+      "Microsoft.CodeDom.Providers.DotNetCompilerPlatform": "1.0.0",
+      "Microsoft.Net.Compilers": "1.0.0",
+      "Microsoft.Web.Infrastructure": "1.0.0.0",
+      "Microsoft.Web.Xdt": "2.1.1",
+      "Newtonsoft.Json": {
+        "version": "8.0.3",
+        "type": "build"
+      },
+      "NuGet.Core": "2.11.1",
+      "NuGet.Server": {
+        "version": "2.11.2"
+      },
+      "RouteMagic": "1.3",
+      "WebActivatorEx": "2.1.0"
+  }
+}
