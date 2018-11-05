@@ -165,13 +165,23 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
 ****** project.json ******
 */
 
-test('.Net project.json simple project tree generated as expected', async (t) => {
+test('.Net project.json standard project tree generated as expected', async (t) => {
   const includeDev = true;
   const tree = await buildDepTreeFromFiles(
-    `${__dirname}/../fixtures/dotnet-older-simple-project`,
-    'simple-project.json',
+    `${__dirname}/../fixtures/dotnet-project-json`,
+    'standard-project.json',
     includeDev);
-  const expectedTree = load('dotnet-older-simple-project/simple-expected-tree.json');
+  const expectedTree = load('dotnet-project-json/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net project.json utf-8 with BOM project tree generated as expected', async (t) => {
+  const includeDev = true;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-project-json`,
+    'utf-8-with-bom-project.json',
+    includeDev);
+  const expectedTree = load('dotnet-project-json/expected-tree.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
