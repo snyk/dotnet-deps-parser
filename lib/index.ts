@@ -5,7 +5,8 @@ import * as _ from 'lodash';
 
 import {PkgTree, DepType, parseManifestFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
-  getDependencyTreeFromProjectFile, ProjectJsonManifest} from './parsers';
+  getDependencyTreeFromProjectFile, ProjectJsonManifest,
+  getTargetFrameworksFromProjectFile} from './parsers';
 
 const PROJ_FILE_EXTENSION = [
   '.csproj',
@@ -18,6 +19,7 @@ export {
   buildDepTreeFromProjectFile,
   buildDepTreeFromProjectJson,
   buildDepTreeFromFiles,
+  extractTargetFrameworksFromFiles,
   PkgTree,
   DepType,
 };
@@ -63,7 +65,7 @@ function buildDepTreeFromFiles(
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
 
   if (!fs.existsSync(manifestFileFullPath)) {
-    throw new Error('Neither packages.config nor project file found at ' +
+    throw new Error('No packages.config, project.json or project file found at ' +
       `location: ${manifestFileFullPath}`);
   }
 
@@ -79,5 +81,29 @@ function buildDepTreeFromFiles(
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
       'either packages.config or project file.');
+  }
+}
+
+function extractTargetFrameworksFromFiles(
+  root: string, manifestFilePath: string, includeDev = false) {
+  if (!root || !manifestFilePath) {
+    throw new Error('Missing required parameters for extractTargetFrameworksFromFiles()');
+  }
+
+  const manifestFileFullPath = path.resolve(root, manifestFilePath);
+
+  if (!fs.existsSync(manifestFileFullPath)) {
+    throw new Error('No project file found at ' +
+      `location: ${manifestFileFullPath}`);
+  }
+
+  const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
+  const manifestFileExtension = path.extname(manifestFileFullPath);
+
+  if (_.includes(PROJ_FILE_EXTENSION, manifestFileExtension)) {
+    return getTargetFrameworksFromProjectFile(manifestFileContents);
+  } else {
+    throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
+      'either packages.config, project file or project.json.');
   }
 }

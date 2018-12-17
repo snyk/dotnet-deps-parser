@@ -233,3 +233,7 @@ export async function parseManifestFile(manifestFileContents: string) {
       });
   });
 }
+
+export function getTargetFrameworksFromProjectFile(manifestFile) {
+  return [];
+}
