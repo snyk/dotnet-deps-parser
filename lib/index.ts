@@ -20,6 +20,7 @@ export {
   buildDepTreeFromProjectJson,
   buildDepTreeFromFiles,
   extractTargetFrameworksFromFiles,
+  extractTargetFrameworksFromProjectFile,
   PkgTree,
   DepType,
 };
@@ -101,9 +102,19 @@ function extractTargetFrameworksFromFiles(
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
   if (_.includes(PROJ_FILE_EXTENSION, manifestFileExtension)) {
-    return getTargetFrameworksFromProjectFile(manifestFileContents);
+    return extractTargetFrameworksFromProjectFile(manifestFileContents);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
-      'either packages.config, project file or project.json.');
+      'a project *.csproj, *.vbproj or *.fsproj file.');
+  }
+}
+
+async function extractTargetFrameworksFromProjectFile(
+  manifestFileContents: string): Promise<string[]> {
+  try {
+    const manifestFile: any = await parseManifestFile(manifestFileContents);
+    return getTargetFrameworksFromProjectFile(manifestFile);
+  } catch (err) {
+    throw new Error(`Extracting target framework failed with error ${err.message}`);
   }
 }
