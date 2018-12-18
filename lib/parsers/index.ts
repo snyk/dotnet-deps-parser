@@ -1,5 +1,6 @@
 import * as parseXML from 'xml2js';
 import * as _ from 'lodash';
+import {InvalidUserInputError} from '../errors';
 
 export interface PkgTree {
   name: string;
@@ -225,12 +226,13 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
 export async function parseManifestFile(manifestFileContents: string) {
   return new Promise((resolve, reject) => {
     parseXML
-      .parseString(manifestFileContents, (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(result);
-      });
+    .parseString(manifestFileContents, (err, result) => {
+      if (err) {
+        const e = new InvalidUserInputError('manifest parsing failed');
+        return reject(e);
+      }
+      return resolve(result);
+    });
   });
 }
 
