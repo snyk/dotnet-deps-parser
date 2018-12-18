@@ -233,3 +233,23 @@ export async function parseManifestFile(manifestFileContents: string) {
       });
   });
 }
+
+export function getTargetFrameworksFromProjectFile(manifestFile) {
+  let targetFrameworksResult: string[] = [];
+  const projectPropertyGroup = _.get(manifestFile, 'Project.PropertyGroup', []);
+
+  if (!projectPropertyGroup ) {
+    return targetFrameworksResult;
+  }
+  const propertyList = projectPropertyGroup
+    .find((propertyGroup) => _.has(propertyGroup, 'TargetFramework'));
+
+  if (!propertyList) {
+    return targetFrameworksResult;
+  }
+  for (const targetFramework of propertyList.TargetFramework) {
+    targetFrameworksResult = [...targetFrameworksResult, ...targetFramework.split(';')];
+  }
+
+  return targetFrameworksResult;
+}
