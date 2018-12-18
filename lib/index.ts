@@ -26,35 +26,23 @@ export {
 };
 
 function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = false): PkgTree {
-  try {
-    // trimming required to address files with UTF-8 with BOM encoding
-    const manifestFile: ProjectJsonManifest = JSON.parse(manifestFileContents.trim());
-    return getDependencyTreeFromProjectJson(manifestFile, includeDev);
-  } catch (err) {
-    throw new Error(`Building dependency tree failed with error: ${err.message}`);
-  }
+  // trimming required to address files with UTF-8 with BOM encoding
+  const manifestFile: ProjectJsonManifest = JSON.parse(manifestFileContents.trim());
+  return getDependencyTreeFromProjectJson(manifestFile, includeDev);
 }
 
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  try {
-    const manifestFile: any = await parseManifestFile(manifestFileContents);
-    return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
-  } catch (err) {
-    throw new Error(`Building dependency tree failed with error: ${err.message}`);
-  }
+  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
 }
 
 async function buildDepTreeFromProjectFile(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  try {
-    const manifestFile: any = await parseManifestFile(manifestFileContents);
-    return getDependencyTreeFromProjectFile(manifestFile, includeDev);
-  } catch (err) {
-    throw new Error(`Building dependency tree failed with error ${err.message}`);
-  }
+  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  return getDependencyTreeFromProjectFile(manifestFile, includeDev);
 }
 
 function buildDepTreeFromFiles(

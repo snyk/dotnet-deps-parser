@@ -6,6 +6,7 @@
 import {test} from 'tap';
 import * as fs from 'fs';
 import {buildDepTreeFromFiles} from '../../lib';
+import {InvalidUserInputError} from '../../lib/errors/invalid-user-input-error';
 
 const load = (filename) => JSON.parse(
   fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'),
@@ -70,11 +71,15 @@ test('.Net dotnet-empty-manifest returns empty tree', async (t) => {
 });
 
 test('.Net dotnet-invalid-manifest throws', async (t) => {
+  const invalidUserInputError = new InvalidUserInputError('manifest parsing failed');
+
   const includeDev = false;
   t.rejects(buildDepTreeFromFiles(
-    `${__dirname}/../fixtures/dotnet-invalid-manifest`,
-    'packages.config',
-    includeDev),
+      `${__dirname}/../fixtures/dotnet-invalid-manifest`,
+      'packages.config',
+      includeDev),
+    invalidUserInputError,
+    'Wrong error obtained',
   );
 });
 
@@ -133,11 +138,15 @@ test('.Net .csproj dotnet-empty-manifest returns empty tree', async (t) => {
 });
 
 test('.Net .csproj core dotnet-invalid-manifest throws', async (t) => {
+  const invalidUserInputError = new InvalidUserInputError('manifest parsing failed');
+
   const includeDev = false;
   t.rejects(buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-invalid-manifest`,
     'invalid.csproj',
     includeDev),
+    invalidUserInputError,
+    'Wrong error obtained',
   );
 });
 
