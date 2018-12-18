@@ -244,13 +244,25 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
     return targetFrameworksResult;
   }
   const propertyList = projectPropertyGroup
-    .find((propertyGroup) => _.has(propertyGroup, 'TargetFramework'));
-
-  if (!propertyList) {
+    .find((propertyGroup) => {
+        return _.has(propertyGroup, 'TargetFramework')
+        || _.has(propertyGroup, 'TargetFrameworkVersion');
+      }) || {};
+  // tslint:disable
+  if (_.isEmpty(propertyList)) {
     return targetFrameworksResult;
   }
-  for (const targetFramework of propertyList.TargetFramework) {
-    targetFrameworksResult = [...targetFrameworksResult, ...targetFramework.split(';')];
+
+  if (propertyList.TargetFramework) {
+    for (const item of propertyList.TargetFramework) {
+      targetFrameworksResult = [...targetFrameworksResult, ...item.split(';')];
+    }
+  }
+
+  if (propertyList.TargetFrameworkVersion) {
+    for (const item of propertyList.TargetFrameworkVersion) {
+      targetFrameworksResult = [...targetFrameworksResult, ...item.split(';')];
+    }
   }
 
   return targetFrameworksResult;
