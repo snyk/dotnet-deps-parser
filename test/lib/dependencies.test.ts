@@ -6,7 +6,7 @@
 import {test} from 'tap';
 import * as fs from 'fs';
 import {buildDepTreeFromFiles} from '../../lib';
-import {InvalidUserInputError} from '../../lib/errors/invalid-user-input-error';
+import {InvalidUserInputError} from '../../lib/errors';
 
 const load = (filename) => JSON.parse(
   fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'),

@@ -244,14 +244,29 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
     return targetFrameworksResult;
   }
   const propertyList = projectPropertyGroup
-    .find((propertyGroup) => _.has(propertyGroup, 'TargetFramework'));
+    .find((propertyGroup) => {
+        return _.has(propertyGroup, 'TargetFramework')
+        || _.has(propertyGroup, 'TargetFrameworks')
+        || _.has(propertyGroup, 'TargetFrameworkVersion');
+      }) || {};
 
-  if (!propertyList) {
+  if (_.isEmpty(propertyList)) {
     return targetFrameworksResult;
   }
-  for (const targetFramework of propertyList.TargetFramework) {
-    targetFrameworksResult = [...targetFrameworksResult, ...targetFramework.split(';')];
+  // TargetFrameworks is expected to be a list ; separated
+  if (propertyList.TargetFrameworks) {
+    for (const item of propertyList.TargetFrameworks) {
+      targetFrameworksResult = [...targetFrameworksResult, ...item.split(';')];
+    }
+  }
+  // TargetFrameworks is expected to be a string
+  if (propertyList.TargetFrameworkVersion) {
+    targetFrameworksResult = [...targetFrameworksResult, ...propertyList.TargetFrameworkVersion];
+  }
+  // TargetFrameworks is expected to be a string
+  if (propertyList.TargetFramework) {
+    targetFrameworksResult = [...targetFrameworksResult, ...propertyList.TargetFramework];
   }
 
-  return targetFrameworksResult;
+  return _.uniq(targetFrameworksResult);
 }
