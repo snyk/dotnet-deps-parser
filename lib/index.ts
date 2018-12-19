@@ -6,9 +6,10 @@ import * as _ from 'lodash';
 import {PkgTree, DepType, parseManifestFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
   getDependencyTreeFromProjectFile, ProjectJsonManifest,
-  getTargetFrameworksFromProjectFile} from './parsers';
+  getTargetFrameworksFromProjectFile,
+  getTargetFrameworksFromProjectConfig} from './parsers';
 
-const PROJ_FILE_EXTENSION = [
+const PROJ_FILE_EXTENSIONS = [
   '.csproj',
   '.vbproj',
   '.fsproj',
@@ -61,7 +62,7 @@ function buildDepTreeFromFiles(
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.includes(PROJ_FILE_EXTENSION, manifestFileExtension)) {
+  if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
@@ -89,11 +90,13 @@ function extractTargetFrameworksFromFiles(
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.includes(PROJ_FILE_EXTENSION, manifestFileExtension)) {
+  if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
     return extractTargetFrameworksFromProjectFile(manifestFileContents);
+  } else if (_.endsWith(manifestFilePath, 'packages.config')) {
+    return extractTargetFrameworksFromProjectConfig(manifestFileContents);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
-      'a project *.csproj, *.vbproj or *.fsproj file.');
+      'a project *.csproj, *.vbproj, *.fsproj or packages.config file.');
   }
 }
 
@@ -102,6 +105,16 @@ async function extractTargetFrameworksFromProjectFile(
   try {
     const manifestFile: any = await parseManifestFile(manifestFileContents);
     return getTargetFrameworksFromProjectFile(manifestFile);
+  } catch (err) {
+    throw new Error(`Extracting target framework failed with error ${err.message}`);
+  }
+}
+
+async function extractTargetFrameworksFromProjectConfig(
+  manifestFileContents: string): Promise<string[]> {
+  try {
+    const manifestFile: any = await parseManifestFile(manifestFileContents);
+    return getTargetFrameworksFromProjectConfig(manifestFile);
   } catch (err) {
     throw new Error(`Extracting target framework failed with error ${err.message}`);
   }

@@ -270,3 +270,19 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
 
   return _.uniq(targetFrameworksResult);
 }
+
+export function getTargetFrameworksFromProjectConfig(manifestFile) {
+  let targetFrameworksResult: string[] = [];
+
+  const packages = _.get(manifestFile, 'packages.package', []);
+
+  packages.forEach((item) => {
+    const targetFramework = item.$.targetFramework;
+
+    if (!_.includes(targetFrameworksResult, targetFramework)) {
+      targetFrameworksResult = [...targetFrameworksResult, targetFramework];
+    }
+  });
+
+  return targetFrameworksResult;
+}
