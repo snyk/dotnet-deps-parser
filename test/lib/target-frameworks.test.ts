@@ -43,22 +43,12 @@ test('.Net .csproj dotnet-empty-manifest target framework extracted', async (t) 
   t.deepEqual(targetFrameworks, [], 'targetFramework array is as expected');
 });
 
-/*
-****** vbproj ******
-*/
-
-test('.Net .csproj simple project target framework extracted as expected', async (t) => {
-  const targetFrameworks = await extractTargetFrameworksFromFiles(
-    `${__dirname}/../fixtures/dotnet-vb-simple-project`,
-    'manifest.vbproj');
-  t.deepEqual(targetFrameworks, ['v4.6.1'], 'targetFramework array is as expected');
-});
 
 /*
 ****** fsproj ******
 */
 
-test('.Net .csproj simple project target framework extracted as expected', async (t) => {
+test('.Net .fsproj simple project target framework extracted as expected', async (t) => {
   const targetFrameworks = await extractTargetFrameworksFromFiles(
     `${__dirname}/../fixtures/dotnet-fs-simple-project`,
     'manifest.fsproj');

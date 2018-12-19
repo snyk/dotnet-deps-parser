@@ -253,20 +253,20 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   if (_.isEmpty(propertyList)) {
     return targetFrameworksResult;
   }
-  // tslint:disable
+  // TargetFrameworks is expected to be a list ; separated
   if (propertyList.TargetFrameworks) {
     for (const item of propertyList.TargetFrameworks) {
       targetFrameworksResult = [...targetFrameworksResult, ...item.split(';')];
     }
   }
-
+  // TargetFrameworks is expected to be a string
   if (propertyList.TargetFrameworkVersion) {
     targetFrameworksResult = [...targetFrameworksResult, ...propertyList.TargetFrameworkVersion];
   }
-
+  // TargetFrameworks is expected to be a string
   if (propertyList.TargetFramework) {
     targetFrameworksResult = [...targetFrameworksResult, ...propertyList.TargetFramework];
   }
 
-  return targetFrameworksResult;
+  return _.uniq(targetFrameworksResult);
 }
