@@ -43,7 +43,6 @@ test('.Net .csproj dotnet-empty-manifest target framework extracted', async (t) 
   t.deepEqual(targetFrameworks, [], 'targetFramework array is as expected');
 });
 
-
 /*
 ****** fsproj ******
 */
@@ -53,4 +52,29 @@ test('.Net .fsproj simple project target framework extracted as expected', async
     `${__dirname}/../fixtures/dotnet-fs-simple-project`,
     'manifest.fsproj');
   t.deepEqual(targetFrameworks, ['netcoreapp2.1'], 'targetFramework array is as expected');
+});
+
+/*
+****** packages.config ******
+*/
+
+test('.Net packages.config single target framework extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-simple-project`,
+    'packages.config');
+  t.deepEqual(targetFrameworks, ['net46'], 'targetFramework array is as expected');
+});
+
+test('.Net packages.config multiple target frameworks extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-multiple-target-frameworks`,
+    'packages.config');
+  t.deepEqual(targetFrameworks, ['net46', 'net451'], 'targetFramework array is as expected');
+});
+
+test('.Net packages.config dotnet-empty-manifest target framework extracted', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-manifest`,
+    'packages.config');
+  t.deepEqual(targetFrameworks, [], 'targetFramework array is as expected');
 });
