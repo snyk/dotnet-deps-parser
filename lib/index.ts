@@ -22,6 +22,7 @@ export {
   buildDepTreeFromFiles,
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
+  extractTargetFrameworksFromProjectConfig,
   PkgTree,
   DepType,
 };
