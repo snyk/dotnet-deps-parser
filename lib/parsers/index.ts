@@ -165,7 +165,7 @@ async function getDependenciesFromPackageReference(manifestFile, includeDev: boo
     if (isDev && !includeDev) {
       continue;
     }
-    dependenciesResult.dependencies[depName] = buildSubTreeFromPackageReference(dep, isDev);
+    dependenciesResult.dependencies[depName] = buildSubTreeFromPackageReference(dep, isDev, manifestFile);
   }
 
   return dependenciesResult;
@@ -210,17 +210,34 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
   return referenceIncludeResult;
 }
 
-function buildSubTreeFromPackageReference(dep, isDev: boolean): PkgTree {
+function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile): PkgTree {
 
   const depSubTree: PkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.Include,
     // Version could be in attributes or as child node.
-    version: dep.$.Version || _.get(dep, 'Version.0'),
+    version: extractDependencyVersion(dep, manifestFile),
   };
 
   return depSubTree;
+}
+
+function extractDependencyVersion(dep, manifestFile) {
+  const VARS_MATCHER = /^\$\((.*?)\)/;
+  const version = dep.$.Version || _.get(dep, 'Version.0');
+  const variableVersion = version && version.match(VARS_MATCHER);
+
+  if (!variableVersion) {
+    return version;
+  }
+  // version is a variable, extract it from manifest
+  const propertyName = variableVersion[1];
+  const versionProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
+  .find((propertyGroup) => _.has(propertyGroup, propertyName));
+
+  return versionProperty[propertyName][0];
+
 }
 
 export async function parseManifestFile(manifestFileContents: string) {

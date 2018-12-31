@@ -1,0 +1,25 @@
+{
+  "name": "Project-Name",
+  "version": "",
+  "hasDevDependencies": false,
+  "dependencies": {
+    "Newtonsoft.Json": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Newtonsoft.Json",
+      "version": "11.0.2"
+    },
+    "Newtonsoft.Json.Schema": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Newtonsoft.Json.Schema",
+      "version": "3.0.10"
+    },
+    "System.CommandLine": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "System.CommandLine",
+      "version": "0.1.0-e160909-1"
+    }
+  }
+}

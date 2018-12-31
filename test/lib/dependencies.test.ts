@@ -117,6 +117,16 @@ test('.Net .csproj simple project tree generated as expected', async (t) => {
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
+test('.Net .csproj simple project tree generated as expected for variable package versions', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-core-variable-version`,
+    'manifest.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-core-variable-version/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
 test('.Net .csproj dotnet-no-packages empty tree generated as expected', async (t) => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
