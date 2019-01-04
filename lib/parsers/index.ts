@@ -296,6 +296,9 @@ export function getTargetFrameworksFromProjectConfig(manifestFile) {
   const packages = _.get(manifestFile, 'packages.package', []);
 
   packages.forEach((item) => {
+    if (!item.$.targetFramework) {
+      return;
+    }
     const targetFramework = item.$.targetFramework;
 
     if (!_.includes(targetFrameworksResult, targetFramework)) {
