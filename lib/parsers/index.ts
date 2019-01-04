@@ -82,7 +82,8 @@ function buildSubTreeFromProjectJson(name, version, isDev: boolean): PkgTree {
   return depSubTree;
 }
 
-export async function getDependencyTreeFromPackagesConfig(manifestFile, includeDev: boolean = false) {
+export async function getDependencyTreeFromPackagesConfig(
+  manifestFile, includeDev: boolean = false, targetFramework?: string) {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -96,7 +97,8 @@ export async function getDependencyTreeFromPackagesConfig(manifestFile, includeD
     const depName = dep.$.id;
     const isDev = !!dep.$.developmentDependency;
     depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
-    if (isDev && !includeDev) {
+    if ((isDev && !includeDev) ||
+      (targetFramework && dep.$.targetFramework && dep.$.targetFramework !== targetFramework)) {
       continue;
     }
     depTree.dependencies[depName] = buildSubTreeFromPackagesConfig(dep, isDev);

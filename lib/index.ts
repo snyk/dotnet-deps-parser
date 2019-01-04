@@ -35,9 +35,10 @@ function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = 
 
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
-    includeDev = false): Promise<PkgTree> {
+    includeDev = false,
+    targetFramework?: string): Promise<PkgTree> {
   const manifestFile: any = await parseManifestFile(manifestFileContents);
-  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
+  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev, targetFramework);
 }
 
 async function buildDepTreeFromProjectFile(
@@ -48,7 +49,7 @@ async function buildDepTreeFromProjectFile(
 }
 
 function buildDepTreeFromFiles(
-  root: string, manifestFilePath: string, includeDev = false) {
+  root: string, manifestFilePath: string, includeDev = false, targetFramework?: string) {
   if (!root || !manifestFilePath) {
     throw new Error('Missing required parameters for buildDepTreeFromFiles()');
   }
@@ -66,7 +67,7 @@ function buildDepTreeFromFiles(
   if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
-    return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
+    return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev, targetFramework);
   } else if (_.endsWith(manifestFilePath, 'project.json')) {
     return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
   } else {
