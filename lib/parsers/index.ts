@@ -13,6 +13,10 @@ export interface PkgTree {
   cyclic?: boolean;
 }
 
+export interface DotnetDepsPkgTree extends PkgTree {
+    targetFramework?: string;
+}
+
 export enum DepType {
   prod = 'prod',
   dev = 'dev',
@@ -83,7 +87,7 @@ function buildSubTreeFromProjectJson(name, version, isDev: boolean): PkgTree {
 }
 
 export async function getDependencyTreeFromPackagesConfig(
-  manifestFile, includeDev: boolean = false, targetFramework?: string) {
+  manifestFile, includeDev: boolean = false) {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -97,8 +101,7 @@ export async function getDependencyTreeFromPackagesConfig(
     const depName = dep.$.id;
     const isDev = !!dep.$.developmentDependency;
     depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
-    if ((isDev && !includeDev) ||
-      (targetFramework && dep.$.targetFramework && dep.$.targetFramework !== targetFramework)) {
+    if (isDev && !includeDev) {
       continue;
     }
     depTree.dependencies[depName] = buildSubTreeFromPackagesConfig(dep, isDev);
@@ -107,13 +110,17 @@ export async function getDependencyTreeFromPackagesConfig(
   return depTree;
 }
 
-function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
-  const depSubTree: PkgTree = {
+function buildSubTreeFromPackagesConfig(dep, isDev: boolean): DotnetDepsPkgTree {
+  const depSubTree: DotnetDepsPkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.id,
     version: dep.$.version,
   };
+
+  if (dep.$.targetFramework) {
+    depSubTree.targetFramework = dep.$.targetFramework;
+  }
 
   return depSubTree;
 }

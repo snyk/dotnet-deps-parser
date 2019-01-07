@@ -7,6 +7,7 @@
       "name": "NLog",
       "version": "4.3.10",
       "depType": "prod",
+      "targetFramework": "net46",
       "dependencies": {}
     }
   }

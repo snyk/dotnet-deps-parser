@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 
-import {PkgTree, DepType, parseManifestFile,
+import {PkgTree, DotnetDepsPkgTree, DepType, parseManifestFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
   getDependencyTreeFromProjectFile, ProjectJsonManifest,
   getTargetFrameworksFromProjectFile,
@@ -35,10 +35,9 @@ function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = 
 
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
-    includeDev = false,
-    targetFramework?: string): Promise<PkgTree> {
+    includeDev = false): Promise<DotnetDepsPkgTree> {
   const manifestFile: any = await parseManifestFile(manifestFileContents);
-  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev, targetFramework);
+  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
 }
 
 async function buildDepTreeFromProjectFile(
@@ -67,7 +66,7 @@ function buildDepTreeFromFiles(
   if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
-    return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev, targetFramework);
+    return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'project.json')) {
     return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
   } else {
