@@ -13,6 +13,10 @@ export interface PkgTree {
   cyclic?: boolean;
 }
 
+export interface DotnetDepsPkgTree extends PkgTree {
+    targetFramework?: string;
+}
+
 export enum DepType {
   prod = 'prod',
   dev = 'dev',
@@ -82,7 +86,8 @@ function buildSubTreeFromProjectJson(name, version, isDev: boolean): PkgTree {
   return depSubTree;
 }
 
-export async function getDependencyTreeFromPackagesConfig(manifestFile, includeDev: boolean = false) {
+export async function getDependencyTreeFromPackagesConfig(
+  manifestFile, includeDev: boolean = false): Promise<DotnetDepsPkgTree> {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -105,13 +110,17 @@ export async function getDependencyTreeFromPackagesConfig(manifestFile, includeD
   return depTree;
 }
 
-function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
-  const depSubTree: PkgTree = {
+function buildSubTreeFromPackagesConfig(dep, isDev: boolean): DotnetDepsPkgTree {
+  const depSubTree: DotnetDepsPkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.id,
     version: dep.$.version,
   };
+
+  if (dep.$.targetFramework) {
+    depSubTree.targetFramework = dep.$.targetFramework;
+  }
 
   return depSubTree;
 }
@@ -289,17 +298,19 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
 }
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
-  let targetFrameworksResult: string[] = [];
-
+  const targetFrameworksResult: string[] = [];
   const packages = _.get(manifestFile, 'packages.package', []);
 
-  packages.forEach((item) => {
+  for (const item of packages) {
     const targetFramework = item.$.targetFramework;
+    if (!targetFramework) {
+      continue;
+    }
 
     if (!_.includes(targetFrameworksResult, targetFramework)) {
-      targetFrameworksResult = [...targetFrameworksResult, targetFramework];
+      targetFrameworksResult.push(targetFramework);
     }
-  });
+  }
 
   return targetFrameworksResult;
 }

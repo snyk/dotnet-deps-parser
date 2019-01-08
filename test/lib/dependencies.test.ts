@@ -103,6 +103,16 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
+test('.Net packages.config with multiple target frameworks tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-multiple-target-frameworks`,
+    'packages.config',
+    includeDev);
+  const expectedTree = load('dotnet-multiple-target-frameworks/expected-tree-net46.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
 /*
 ****** csproj ******
 */

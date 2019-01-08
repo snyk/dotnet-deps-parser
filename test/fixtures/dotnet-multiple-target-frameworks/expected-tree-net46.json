@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "jQuery": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "jQuery",
+      "version": "3.1.1",
+      "targetFramework": "net46"
+    },
+    "NLog": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "NLog",
+      "version": "4.3.10"
+    },
+    "bootstrap": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "bootstrap",
+      "version": "3.0.0",
+      "targetFramework": "net451"
+    }
+  },
+  "hasDevDependencies": false,
+  "name": "",
+  "version": ""
+}
