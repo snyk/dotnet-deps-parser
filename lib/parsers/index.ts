@@ -87,7 +87,7 @@ function buildSubTreeFromProjectJson(name, version, isDev: boolean): PkgTree {
 }
 
 export async function getDependencyTreeFromPackagesConfig(
-  manifestFile, includeDev: boolean = false) {
+  manifestFile, includeDev: boolean = false): Promise<DotnetDepsPkgTree> {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -298,20 +298,19 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
 }
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
-  let targetFrameworksResult: string[] = [];
-
+  const targetFrameworksResult: string[] = [];
   const packages = _.get(manifestFile, 'packages.package', []);
 
-  packages.forEach((item) => {
-    if (!item.$.targetFramework) {
-      return;
-    }
+  for (const item of packages) {
     const targetFramework = item.$.targetFramework;
+    if (!targetFramework) {
+      continue;
+    }
 
     if (!_.includes(targetFrameworksResult, targetFramework)) {
-      targetFrameworksResult = [...targetFrameworksResult, targetFramework];
+      targetFrameworksResult.push(targetFramework);
     }
-  });
+  }
 
   return targetFrameworksResult;
 }

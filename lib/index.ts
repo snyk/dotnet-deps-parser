@@ -48,7 +48,7 @@ async function buildDepTreeFromProjectFile(
 }
 
 function buildDepTreeFromFiles(
-  root: string, manifestFilePath: string, includeDev = false, targetFramework?: string) {
+  root: string, manifestFilePath: string, includeDev = false) {
   if (!root || !manifestFilePath) {
     throw new Error('Missing required parameters for buildDepTreeFromFiles()');
   }
