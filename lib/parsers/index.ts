@@ -14,7 +14,7 @@ export interface PkgTree {
 }
 
 export interface DotnetDepsPkgTree extends PkgTree {
-    targetFramework?: string;
+    targetFrameworks?: string[];
 }
 
 export enum DepType {
@@ -119,7 +119,7 @@ function buildSubTreeFromPackagesConfig(dep, isDev: boolean): DotnetDepsPkgTree 
   };
 
   if (dep.$.targetFramework) {
-    depSubTree.targetFramework = dep.$.targetFramework;
+    depSubTree.targetFrameworks = [dep.$.targetFramework];
   }
 
   return depSubTree;
@@ -167,6 +167,9 @@ async function getDependenciesFromPackageReference(manifestFile, includeDev: boo
     return dependenciesResult;
   }
 
+  const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
+    getConditionalFrameworks(packageList.$.Condition) : [];
+
   for (const dep of packageList.PackageReference) {
     const depName = dep.$.Include;
     const isDev = !!dep.$.developmentDependency;
@@ -174,7 +177,8 @@ async function getDependenciesFromPackageReference(manifestFile, includeDev: boo
     if (isDev && !includeDev) {
       continue;
     }
-    dependenciesResult.dependencies[depName] = buildSubTreeFromPackageReference(dep, isDev, manifestFile);
+    dependenciesResult.dependencies[depName] = buildSubTreeFromPackageReference(
+      dep, isDev, manifestFile, targetFrameworks);
   }
 
   return dependenciesResult;
@@ -196,6 +200,9 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
     return referenceIncludeResult;
   }
 
+  const targetFrameworks: string[] = _.get(referenceIncludeList, '$.Condition', false) ?
+   getConditionalFrameworks(referenceIncludeList.$.Condition) : [];
+
   for (const item of referenceIncludeList.Reference) {
     const propertiesList = item.$.Include.split(',').map((i) => i.trim());
     const [depName, ...depInfoArray] = propertiesList;
@@ -206,7 +213,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
       depInfo[propertyValuePair[0]] = propertyValuePair[1];
     }
 
-    const dependency: PkgTree = {
+    const dependency: DotnetDepsPkgTree = {
       // TODO: correctly identify what makes the dep be dev only
       depType: DepType.prod,
       dependencies: {},
@@ -214,20 +221,29 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
       version: depInfo.Version || '',
     };
 
+    if (targetFrameworks.length) {
+      dependency.targetFrameworks = targetFrameworks;
+    }
+
     referenceIncludeResult.dependencies[depName] = dependency;
   }
   return referenceIncludeResult;
 }
 
-function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile): PkgTree {
+function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, targetFrameworks: string[]):
+  DotnetDepsPkgTree {
 
-  const depSubTree: PkgTree = {
+  const depSubTree: DotnetDepsPkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.Include,
     // Version could be in attributes or as child node.
     version: extractDependencyVersion(dep, manifestFile),
   };
+
+  if (targetFrameworks.length) {
+    depSubTree.targetFrameworks = targetFrameworks;
+  }
 
   return depSubTree;
 }
@@ -246,7 +262,19 @@ function extractDependencyVersion(dep, manifestFile) {
   .find((propertyGroup) => _.has(propertyGroup, propertyName));
 
   return versionProperty[propertyName][0];
+}
 
+function getConditionalFrameworks(condition: string) {
+  const regexp = /\(TargetFramework\)'\s?==\s? '((\w|\d|\.)*)'/g;
+  const frameworks: string[] = [];
+  let match = regexp.exec(condition);
+
+  while (match !== null) {
+    frameworks.push(match[1]);
+    match = regexp.exec(condition);
+  }
+
+  return frameworks;
 }
 
 export async function parseManifestFile(manifestFileContents: string) {

@@ -4,133 +4,171 @@
       "depType": "prod",
       "dependencies": {},
       "name": "Antlr",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "3.4.1.9004"
     },
     "bootstrap": {
       "depType": "prod",
       "dependencies": {},
       "name": "bootstrap",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "3.0.0"
     },
     "jQuery": {
       "depType": "prod",
       "dependencies": {},
       "name": "jQuery",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "1.10.2"
     },
     "Microsoft.AspNet.Cors": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.Cors",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.Mvc": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.Mvc",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.Razor": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.Razor",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "3.1.2"
     },
     "Microsoft.AspNet.Web.Optimization": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.Web.Optimization",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "1.1.3"
     },
     "Microsoft.AspNet.WebApi": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebApi",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.WebApi.Client": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebApi.Client",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.WebApi.Core": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebApi.Core",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.WebApi.Cors": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebApi.Cors",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.WebApi.HelpPage": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebApi.HelpPage",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.WebApi.WebHost": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebApi.WebHost",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.1.2"
     },
     "Microsoft.AspNet.WebPages": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.AspNet.WebPages",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "3.1.2"
     },
     "Microsoft.Web.Infrastructure": {
       "depType": "prod",
       "dependencies": {},
       "name": "Microsoft.Web.Infrastructure",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "1.0.0.0"
     },
     "Modernizr": {
       "depType": "prod",
       "dependencies": {},
       "name": "Modernizr",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "2.6.2"
     },
     "Newtonsoft.Json": {
       "depType": "prod",
       "dependencies": {},
       "name": "Newtonsoft.Json",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "5.0.6"
     },
     "Respond": {
       "depType": "prod",
       "dependencies": {},
       "name": "Respond",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "1.2.0"
     },
     "WebGrease": {
       "depType": "prod",
       "dependencies": {},
       "name": "WebGrease",
-      "targetFramework": "net451",
+      "targetFrameworks": [
+        "net451"
+      ],
       "version": "1.5.2"
     }
   },

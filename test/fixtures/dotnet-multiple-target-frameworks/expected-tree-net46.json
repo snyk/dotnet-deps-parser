@@ -5,7 +5,9 @@
       "dependencies": {},
       "name": "jQuery",
       "version": "3.1.1",
-      "targetFramework": "net46"
+      "targetFrameworks": [
+        "net46"
+      ]
     },
     "NLog": {
       "depType": "prod",
@@ -18,7 +20,9 @@
       "dependencies": {},
       "name": "bootstrap",
       "version": "3.0.0",
-      "targetFramework": "net451"
+      "targetFrameworks": [
+        "net451"
+      ]
     }
   },
   "hasDevDependencies": false,
