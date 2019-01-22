@@ -11,10 +11,7 @@ export interface PkgTree {
   depType?: DepType;
   hasDevDependencies?: boolean;
   cyclic?: boolean;
-}
-
-export interface DotnetDepsPkgTree extends PkgTree {
-    targetFrameworks?: string[];
+  targetFrameworks?: string[];
 }
 
 export enum DepType {
@@ -87,7 +84,7 @@ function buildSubTreeFromProjectJson(name, version, isDev: boolean): PkgTree {
 }
 
 export async function getDependencyTreeFromPackagesConfig(
-  manifestFile, includeDev: boolean = false): Promise<DotnetDepsPkgTree> {
+  manifestFile, includeDev: boolean = false): Promise<PkgTree> {
   const depTree: PkgTree = {
     dependencies: {},
     hasDevDependencies: false,
@@ -110,8 +107,8 @@ export async function getDependencyTreeFromPackagesConfig(
   return depTree;
 }
 
-function buildSubTreeFromPackagesConfig(dep, isDev: boolean): DotnetDepsPkgTree {
-  const depSubTree: DotnetDepsPkgTree = {
+function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
+  const depSubTree: PkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.id,
@@ -213,7 +210,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
       depInfo[propertyValuePair[0]] = propertyValuePair[1];
     }
 
-    const dependency: DotnetDepsPkgTree = {
+    const dependency: PkgTree = {
       // TODO: correctly identify what makes the dep be dev only
       depType: DepType.prod,
       dependencies: {},
@@ -231,9 +228,9 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
 }
 
 function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, targetFrameworks: string[]):
-  DotnetDepsPkgTree {
+  PkgTree {
 
-  const depSubTree: DotnetDepsPkgTree = {
+  const depSubTree: PkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
     name: dep.$.Include,
