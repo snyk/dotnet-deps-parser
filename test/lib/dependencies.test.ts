@@ -190,6 +190,16 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
+test('.Net .csproj with conditional framework dependencies project tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-conditional-frameworks`,
+    'conditional-frameworks.csproj',
+    includeDev);
+  const expectedTree = load('dotnet-conditional-frameworks/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
 /*
 ****** project.json ******
 */

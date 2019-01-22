@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>LiteDB</PackageId>
+    <Version>4.1.5</Version>
+    <AssemblyVersion>4.1.5.0</AssemblyVersion>
+    <FileVersion>4.1.5</FileVersion>
+    <VersionPrefix>4.1.5</VersionPrefix>
+    <Authors>Maurício David</Authors>
+    <Product>LiteDB</Product>
+    <Description>LiteDB - A lightweight embedded .NET NoSQL document store in a single datafile</Description>
+    <Copyright>MIT</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Title>LiteDB</Title>
+    <PackageId>LiteDB</PackageId>
+    <PackageTags>database nosql embedded</PackageTags>
+    <PackageIconUrl>http://www.litedb.org/img/logo_64x64.png</PackageIconUrl>
+    <PackageProjectUrl>https://www.litedb.org</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.github.com/mbdavid/LiteDB/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/mbdavid/LiteDB</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RootNamespace>LiteDB</RootNamespace>
+    <AssemblyName>LiteDB</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.1</NetStandardImplicitPackageVersion>
+    <NoWarn>1701;1702;1705;1591;0618</NoWarn>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\LiteDB.xml</DocumentationFile>
+    <SignAssembly Condition="'$(OS)'=='Windows_NT'">true</SignAssembly>
+    <AssemblyOriginatorKeyFile>LiteDB.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3' OR '$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard3.0'">
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+  </ItemGroup>
+
+</Project>
