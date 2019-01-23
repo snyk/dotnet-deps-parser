@@ -23,6 +23,7 @@ export {
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
   extractTargetFrameworksFromProjectConfig,
+  containsPackageReference,
   PkgTree,
   DepType,
 };
@@ -119,4 +120,14 @@ async function extractTargetFrameworksFromProjectConfig(
   } catch (err) {
     throw new Error(`Extracting target framework failed with error ${err.message}`);
   }
+}
+
+async function containsPackageReference(manifestFileContents: string) {
+
+  const manifestFile: any = await parseManifestFile(manifestFileContents);
+
+  const projectItems = _.get(manifestFile, 'Project.ItemGroup', []);
+  const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
+
+  return referenceIndex !== -1;
 }
