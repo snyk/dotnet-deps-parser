@@ -15,7 +15,7 @@ test('.Net Visual Basic project target framework extracted as expected', async (
     const targetFrameworks = await extractTargetFrameworksFromFiles(
         `${__dirname}/../fixtures/dotnet-vb-simple-project`,
         'manifest.vbproj');
-    t.deepEqual(targetFrameworks, ['v4.6.1'], 'targetFramework array is as expected');
+    t.deepEqual(targetFrameworks, ['.NETFramework,Version=v4.6.1'], 'targetFramework array is as expected');
 });
 
 test('.Net F# project target framework extracted as expected', async (t) => {

@@ -310,9 +310,11 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
       targetFrameworksResult = [...targetFrameworksResult, ...item.split(';')];
     }
   }
-  // TargetFrameworks is expected to be a string
+  // TargetFrameworkVersion is expected to be a string containing only one item
+  // TargetFrameworkVersion also implies .NETFramework, for convenience
+  // return longer version
   if (propertyList.TargetFrameworkVersion) {
-    targetFrameworksResult = [...targetFrameworksResult, ...propertyList.TargetFrameworkVersion];
+    targetFrameworksResult.push(`.NETFramework,Version=${propertyList.TargetFrameworkVersion[0]}`);
   }
   // TargetFrameworks is expected to be a string
   if (propertyList.TargetFramework) {
