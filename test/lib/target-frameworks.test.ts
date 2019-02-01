@@ -78,3 +78,21 @@ test('.Net packages.config dotnet-empty-manifest target framework extracted', as
     'packages.config');
   t.deepEqual(targetFrameworks, [], 'targetFramework array is as expected');
 });
+
+/*
+****** project.json ******
+*/
+
+test('.Net project.json single target framework extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-project-json`,
+    'standard-project.json');
+  t.deepEqual(targetFrameworks, ['netcoreapp1.0'], 'targetFramework array is as expected');
+});
+
+test('.Net project.json multiple target frameworks extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-project-json`,
+    'utf-8-with-bom-project.json');
+  t.deepEqual(targetFrameworks, ['netcoreapp1.0', 'net451'], 'targetFramework array is as expected');
+});

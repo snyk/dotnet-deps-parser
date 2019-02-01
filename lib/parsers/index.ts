@@ -341,3 +341,8 @@ export function getTargetFrameworksFromProjectConfig(manifestFile) {
 
   return targetFrameworksResult;
 }
+
+export function getTargetFrameworksFromProjectJson(manifestFile) {
+  const targetFrameworksResult: string[] = [];
+  return Object.keys(_.get(manifestFile, 'frameworks', {}));
+}
