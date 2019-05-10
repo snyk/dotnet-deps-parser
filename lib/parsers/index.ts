@@ -145,10 +145,12 @@ export async function getDependencyTreeFromProjectFile(manifestFile, includeDev:
   const referenceIncludeDeps =
     await getDependenciesFromReferenceInclude(manifestFile, includeDev);
 
+  // order matters, the order deps are parsed in needs to be preserved and first seen kept
+  // so applying the packageReferenceDeps last to override the second parsed
   const depTree: PkgTree = {
     dependencies: {
-      ...packageReferenceDeps.dependencies,
       ...referenceIncludeDeps.dependencies,
+      ...packageReferenceDeps.dependencies,
     },
     hasDevDependencies: packageReferenceDeps.hasDevDependencies || referenceIncludeDeps.hasDevDependencies,
     name,

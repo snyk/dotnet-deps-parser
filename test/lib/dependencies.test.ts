@@ -21,6 +21,14 @@ test('.Net Visual Basic project tree generated as expected', async (t) => {
     t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
+test('.Net Visual Basic project tree generated as expected', async (t) => {
+  const tree = await buildDepTreeFromFiles(
+      `${__dirname}/../fixtures/old-and-new-package-format-proj`,
+      'project.csproj',
+      false);
+  t.equal(tree.dependencies['Microsoft.Azure.WebJobs.ServiceBus'].version, '2.2.0', 'fist package picked');
+});
+
 test('.Net F# project tree generated as expected', async (t) => {
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-fs-simple-project`,

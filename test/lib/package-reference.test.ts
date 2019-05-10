@@ -16,6 +16,12 @@ test('.Net C# project contains PackageReference as expected', async (t) => {
   t.true(hasPackageReference);
 });
 
+test('Project contains PackageReference as expected even if Reference Include present', async (t) => {
+  const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/old-and-new-package-format-proj/project.csproj`, 'utf-8');
+  const hasPackageReference = await containsPackageReference(manifestFileContents);
+  t.true(hasPackageReference);
+});
+
 test('.Net C# project does not contain PackageReference as expected', async (t) => {
   const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-no-packagereference/project.csproj`, 'utf-8');
   const hasPackageReference = await containsPackageReference(manifestFileContents);
