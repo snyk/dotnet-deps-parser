@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run lint && npm run unit-test",
-    "unit-test": "tap test/lib -Rspec --timeout=300 --node-path ts-node --test-file-pattern '/\\.test\\.[tj]s$/'",
+    "unit-test": "npm run build && tap test/lib -Rspec --timeout=300 --node-path ts-node --test-file-pattern '/\\.test\\.[tj]s$/'",
     "lint": "tslint -p tsconfig.json",
     "build": "tsc",
     "build-watch": "tsc -w",
