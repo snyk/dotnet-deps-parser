@@ -96,3 +96,39 @@ test('.Net project.json multiple target frameworks extracted as expected', async
     'utf-8-with-bom-project.json');
   t.deepEqual(targetFrameworks, ['netcoreapp1.0', 'net451'], 'targetFramework array is as expected');
 });
+
+/*
+****** project.assets.json ******
+*/
+
+test('.Net project.assets.json single target framework extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-project-assets`,
+    'project.assets.json');
+  t.deepEqual(targetFrameworks, ['netcoreapp2.0'], 'targetFramework array is as expected');
+});
+
+test('.Net project.assets.json multiple target frameworks extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-project-assets-multiple-target-frameworks`,
+    'project.assets.json');
+  t.deepEqual(targetFrameworks, ['netcoreapp2.0', 'netcoreapp1.0'], 'targetFramework array is as expected');
+});
+
+test('.Net project.assets.json dotnet-empty-project-assets target framework extracted', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-project-assets`,
+    'project.assets.json');
+  t.deepEqual(targetFrameworks, [], 'targetFramework array is as expected');
+});
+
+test('.Net project.assest.json is not valid json', async (t) => {
+  try {
+    const targetFrameworks = await extractTargetFrameworksFromFiles(
+      `${__dirname}/../fixtures/dotnet-invalid-project-assets`,
+      'project.assets.json');
+    t.fail('Should throw an error for failing to extract the target framework');
+  } catch (err) {
+    t.match(err.message, 'Extracting target framework failed with error', 'Correct error message');
+  }
+});
