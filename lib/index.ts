@@ -8,7 +8,8 @@ import {PkgTree, DepType, parseManifestFile,
   getDependencyTreeFromProjectFile, ProjectJsonManifest,
   getTargetFrameworksFromProjectFile,
   getTargetFrameworksFromProjectConfig,
-  getTargetFrameworksFromProjectJson} from './parsers';
+  getTargetFrameworksFromProjectJson,
+  getTargetFrameworksFromProjectAssetsJson} from './parsers';
 
 const PROJ_FILE_EXTENSIONS = [
   '.csproj',
@@ -26,6 +27,7 @@ export {
   extractTargetFrameworksFromProjectConfig,
   containsPackageReference,
   extractTargetFrameworksFromProjectJson,
+  extractTargetFrameworksFromProjectAssetsJson,
   PkgTree,
   DepType,
 };
@@ -100,6 +102,8 @@ function extractTargetFrameworksFromFiles(
     return extractTargetFrameworksFromProjectConfig(manifestFileContents);
   } else if (_.endsWith(manifestFilePath, 'project.json')) {
     return extractTargetFrameworksFromProjectJson(manifestFileContents);
+  } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
+    return extractTargetFrameworksFromProjectAssetsJson(manifestFileContents);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
       'a project *.csproj, *.vbproj, *.fsproj or packages.config file.');
@@ -145,4 +149,15 @@ async function extractTargetFrameworksFromProjectJson(
   } catch (err) {
     throw new Error(`Extracting target framework failed with error ${err.message}`);
   }
+}
+
+async function extractTargetFrameworksFromProjectAssetsJson(
+  manifestFileContents: string): Promise<string[]> {
+    try {
+      // trimming required to address files with UTF-8 with BOM encoding
+      const manifestFile = JSON.parse(manifestFileContents.trim());
+      return getTargetFrameworksFromProjectAssetsJson(manifestFile);
+    } catch (err) {
+      throw new Error(`Extracting target framework failed with error ${err.message}`);
+    }
 }
