@@ -9,3 +9,12 @@ Snyk helps you find, fix and monitor for known vulnerabilities in your dependenc
 
 ## Snyk .Net Dependencies Parser
 Given a `.net` and `.net core` manifest and project files builds a dep tree
+
+## Supported Manifest Files
+
+* `packages.config`
+* `project.json`
+* `project.assets.json`
+* `.csproj`
+* `.vbproj`
+* `.fsproj`
