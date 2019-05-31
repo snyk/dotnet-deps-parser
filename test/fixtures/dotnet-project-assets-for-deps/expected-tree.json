@@ -1,0 +1,173 @@
+{
+  "dependencies": {
+    "log4net": {
+      "name": "log4net",
+      "version": "2.0.8",
+      "dependencies": {
+        "System.AppContext": {
+          "dependencies": {},
+          "name": "System.AppContext",
+          "version": "4.1.0"
+        },
+        "System.Collections.NonGeneric": {
+          "dependencies": {},
+          "name": "System.Collections.NonGeneric",
+          "version": "4.0.1"
+        },
+        "System.Console": {
+          "dependencies": {},
+          "name": "System.Console",
+          "version": "4.0.0"
+        },
+        "System.Diagnostics.Debug": {
+          "dependencies": {},
+          "name": "System.Diagnostics.Debug",
+          "version": "4.0.11"
+        },
+        "System.Diagnostics.Process": {
+          "dependencies": {},
+          "name": "System.Diagnostics.Process",
+          "version": "4.1.0"
+        },
+        "System.Diagnostics.StackTrace": {
+          "dependencies": {},
+          "name": "System.Diagnostics.StackTrace",
+          "version": "4.0.1"
+        },
+        "System.Diagnostics.TraceSource": {
+          "dependencies": {},
+          "name": "System.Diagnostics.TraceSource",
+          "version": "4.0.0"
+        },
+        "System.IO.FileSystem": {
+          "dependencies": {},
+          "name": "System.IO.FileSystem",
+          "version": "4.0.1"
+        },
+        "System.IO.FileSystem.Watcher": {
+          "dependencies": {},
+          "name": "System.IO.FileSystem.Watcher",
+          "version": "4.0.0"
+        },
+        "System.Linq": {
+          "dependencies": {},
+          "name": "System.Linq",
+          "version": "4.1.0"
+        },
+        "System.Net.NameResolution": {
+          "dependencies": {},
+          "name": "System.Net.NameResolution",
+          "version": "4.0.0"
+        },
+        "System.Net.Requests": {
+          "dependencies": {},
+          "name": "System.Net.Requests",
+          "version": "4.0.11"
+        },
+        "System.Net.Sockets": {
+          "dependencies": {},
+          "name": "System.Net.Sockets",
+          "version": "4.1.0"
+        },
+        "System.Reflection": {
+          "dependencies": {},
+          "name": "System.Reflection",
+          "version": "4.3.0"
+        },
+        "System.Reflection.Extensions": {
+          "dependencies": {},
+          "name": "System.Reflection.Extensions",
+          "version": "4.0.1"
+        },
+        "System.Reflection.TypeExtensions": {
+          "dependencies": {},
+          "name": "System.Reflection.TypeExtensions",
+          "version": "4.1.0"
+        },
+        "System.Runtime.Extensions": {
+          "dependencies": {},
+          "name": "System.Runtime.Extensions",
+          "version": "4.1.0"
+        },
+        "System.Runtime.InteropServices": {
+          "dependencies": {},
+          "name": "System.Runtime.InteropServices",
+          "version": "4.1.0"
+        },
+        "System.Runtime.InteropServices.RuntimeInformation": {
+          "dependencies": {},
+          "name": "System.Runtime.InteropServices.RuntimeInformation",
+          "version": "4.0.0"
+        },
+        "System.Runtime.Serialization.Formatters": {
+          "dependencies": {},
+          "name": "System.Runtime.Serialization.Formatters",
+          "version": "4.3.0"
+        },
+        "System.Text.RegularExpressions": {
+          "dependencies": {},
+          "name": "System.Text.RegularExpressions",
+          "version": "4.1.0"
+        },
+        "System.Threading": {
+          "dependencies": {},
+          "name": "System.Threading",
+          "version": "4.0.11"
+        },
+        "System.Threading.Thread": {
+          "dependencies": {},
+          "name": "System.Threading.Thread",
+          "version": "4.0.0"
+        },
+        "System.Threading.Timer": {
+          "dependencies": {},
+          "name": "System.Threading.Timer",
+          "version": "4.0.1"
+        },
+        "System.Xml.ReaderWriter": {
+          "dependencies": {},
+          "name": "System.Xml.ReaderWriter",
+          "version": "4.0.11"
+        },
+        "System.Xml.XmlDocument": {
+          "dependencies": {},
+          "name": "System.Xml.XmlDocument",
+          "version": "4.0.1"
+        }
+      }
+    },
+    "Microsoft.NETCore.App": {
+      "name": "Microsoft.NETCore.App",
+      "version": "2.2.0",
+      "dependencies": {
+        "Microsoft.NETCore.DotNetHostPolicy": {
+          "dependencies": {},
+          "name": "Microsoft.NETCore.DotNetHostPolicy",
+          "version": "2.2.0"
+        },
+        "Microsoft.NETCore.Platforms": {
+          "dependencies": {},
+          "name": "Microsoft.NETCore.Platforms",
+          "version": "2.2.0"
+        },
+        "Microsoft.NETCore.Targets": {
+          "dependencies": {},
+          "name": "Microsoft.NETCore.Targets",
+          "version": "2.0.0"
+        },
+        "NETStandard.Library": {
+          "dependencies": {},
+          "name": "NETStandard.Library",
+          "version": "2.0.3"
+        }
+      }
+    },
+    "Microsoft.NETCore.DotNetAppHost": {
+      "name": "Microsoft.NETCore.DotNetAppHost",
+      "version": "2.2.0",
+      "dependencies": {}
+    }
+  },
+  "name": "sample2",
+  "version": "1.0.0"
+}

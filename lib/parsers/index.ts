@@ -49,6 +49,7 @@ export interface ProjectJsonManifestDependency {
   version: string;
   type?: ProjectJsonDepType;
 }
+
 export interface ProjectJsonManifest {
   dependencies: {
     [name: string]: ProjectJsonManifestDependency | string;
@@ -367,11 +368,9 @@ export function getTargetFrameworksFromProjectConfig(manifestFile) {
 }
 
 export function getTargetFrameworksFromProjectJson(manifestFile) {
-  const targetFrameworksResult: string[] = [];
   return Object.keys(_.get(manifestFile, 'frameworks', {}));
 }
 
 export function getTargetFrameworksFromProjectAssetsJson(manifestFile) {
-  const targetFrameworksResult: string[] = [];
-  return Object.keys(_.get(manifestFile, 'project.frameworks', {}));
+  return Object.keys(_.get(manifestFile, 'targets', {}));
 }

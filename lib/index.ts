@@ -11,6 +11,11 @@ import {PkgTree, DepType, parseManifestFile,
   getTargetFrameworksFromProjectJson,
   getTargetFrameworksFromProjectAssetsJson} from './parsers';
 
+import {
+  getDependencyTreeFromProjectAssetsJson,
+  ProjectAssetsJsonManifest,
+} from './parsers/project-assets-json-parser';
+
 const PROJ_FILE_EXTENSIONS = [
   '.csproj',
   '.vbproj',
@@ -21,6 +26,7 @@ export {
   buildDepTreeFromPackagesConfig,
   buildDepTreeFromProjectFile,
   buildDepTreeFromProjectJson,
+  buildDepTreeFromProjectAssetsJson,
   buildDepTreeFromFiles,
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
@@ -38,6 +44,16 @@ function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = 
   return getDependencyTreeFromProjectJson(manifestFile, includeDev);
 }
 
+// TODO: Figure out what to do about devDeps
+function buildDepTreeFromProjectAssetsJson(manifestFileContents: string, targetFramework?: string): PkgTree {
+  if (!targetFramework) {
+    throw new Error('Missing targetFramework for project.assets.json');
+  }
+  // trimming required to address files with UTF-8 with BOM encoding
+  const manifestFile: ProjectAssetsJsonManifest = JSON.parse(manifestFileContents.trim());
+  return getDependencyTreeFromProjectAssetsJson(manifestFile, targetFramework);
+}
+
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
@@ -53,7 +69,7 @@ async function buildDepTreeFromProjectFile(
 }
 
 function buildDepTreeFromFiles(
-  root: string, manifestFilePath: string, includeDev = false) {
+  root: string, manifestFilePath: string, includeDev = false, targetFramework?: string) {
   if (!root || !manifestFilePath) {
     throw new Error('Missing required parameters for buildDepTreeFromFiles()');
   }
@@ -74,6 +90,8 @@ function buildDepTreeFromFiles(
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
   } else if (_.endsWith(manifestFilePath, 'project.json')) {
     return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
+  } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
+    return buildDepTreeFromProjectAssetsJson(manifestFileContents, targetFramework);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
       'either packages.config or project file.');
