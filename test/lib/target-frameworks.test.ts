@@ -105,14 +105,14 @@ test('.Net project.assets.json single target framework extracted as expected', a
   const targetFrameworks = await extractTargetFrameworksFromFiles(
     `${__dirname}/../fixtures/dotnet-project-assets`,
     'project.assets.json');
-  t.deepEqual(targetFrameworks, ['netcoreapp2.0'], 'targetFramework array is as expected');
+  t.deepEqual(targetFrameworks, ['.NETCoreApp,Version=v2.0'], 'targetFramework array is as expected');
 });
 
 test('.Net project.assets.json multiple target frameworks extracted as expected', async (t) => {
   const targetFrameworks = await extractTargetFrameworksFromFiles(
     `${__dirname}/../fixtures/dotnet-project-assets-multiple-target-frameworks`,
     'project.assets.json');
-  t.deepEqual(targetFrameworks, ['netcoreapp2.0', 'netcoreapp1.0'], 'targetFramework array is as expected');
+  t.deepEqual(targetFrameworks, ['.NETCoreApp,Version=v1.0', '.NETCoreApp,Version=v2.2'], 'targetFramework array is as expected');
 });
 
 test('.Net project.assets.json dotnet-empty-project-assets target framework extracted', async (t) => {
@@ -127,7 +127,7 @@ test('.Net project.assest.json is not valid json', async (t) => {
     const targetFrameworks = await extractTargetFrameworksFromFiles(
       `${__dirname}/../fixtures/dotnet-invalid-project-assets`,
       'project.assets.json');
-    t.fail('Should throw an error for failing to extract the target framework');
+    t.fail(targetFrameworks, 'Should throw an error for failing to extract the target framework');
   } catch (err) {
     t.match(err.message, 'Extracting target framework failed with error', 'Correct error message');
   }

@@ -6,6 +6,7 @@
 import {test} from 'tap';
 import * as fs from 'fs';
 import {buildDepTreeFromFiles} from '../../lib';
+import {getDependencyTreeFromProjectAssetsJson} from '../../lib/parsers/project-assets-json-parser';
 import {InvalidUserInputError} from '../../lib/errors';
 
 const load = (filename) => JSON.parse(
@@ -239,5 +240,140 @@ test('.Net project.json with no packages empty tree generated as expected', asyn
     'no-packages-project.json',
     includeDev);
   const expectedTree = load('dotnet-no-packages/expected-tree.json');
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+/*
+****** project.assets.json ******
+*/
+
+test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework with one dependency', async (t) => {
+  const projectAssetsJson = {
+    project: {
+      restore: {
+        projectName: 'sample2',
+      },
+      version: '1.0.0',
+    },
+    targets: {
+      '.NETsomeversion': {
+        'Microsoft.NETSomething.Dep/2.2.0': {
+          type: 'package',
+        },
+      },
+    },
+  };
+  const tree = getDependencyTreeFromProjectAssetsJson(projectAssetsJson, '.NETsomeversion');
+  const expectedTree = {
+    'dependencies': {
+      'Microsoft.NETSomething.Dep': {
+        'dependencies': {},
+        'name': 'Microsoft.NETSomething.Dep',
+        'version': '2.2.0',
+      },
+    },
+    'name': 'sample2',
+    'version': '1.0.0',
+  };
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework with multiple dependencies', async (t) => {
+  const projectAssetsJson = {
+    project: {
+      restore: {
+        projectName: 'sample2',
+      },
+      version: '1.0.0',
+    },
+    targets: {
+      '.NETsomeversion': {
+        'Microsoft.NETSomething.Dep/2.2.0': {
+          type: 'package',
+        },
+        'Microsoft.NETblah.Dep/2.2.0': {
+          type: 'package',
+        },
+      },
+    },
+  };
+  const tree = getDependencyTreeFromProjectAssetsJson(projectAssetsJson, '.NETsomeversion');
+  const expectedTree = {
+    'dependencies': {
+      'Microsoft.NETSomething.Dep': {
+        'dependencies': {},
+        'name': 'Microsoft.NETSomething.Dep',
+        'version': '2.2.0',
+      },
+      'Microsoft.NETblah.Dep': {
+        'dependencies': {},
+        'name': 'Microsoft.NETblah.Dep',
+        'version': '2.2.0',
+      },
+    },
+    'name': 'sample2',
+    'version': '1.0.0',
+  };
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework for one dependency with transitive dependencies', async (t) => {
+  const projectAssetsJson = {
+    project: {
+      restore: {
+        projectName: 'sample2',
+      },
+      version: '1.0.0',
+    },
+    targets: {
+      '.NETsomeversion': {
+        'Microsoft.NETSomething.Dep/2.2.0': {
+          dependencies: {
+            'System.Blah': '4.0.0',
+            'System.BlahOne': '4.1.0',
+            'System.BlahTwo': '4.2.0',
+          },
+          type: 'package',
+        },
+      },
+    },
+  };
+  const tree = getDependencyTreeFromProjectAssetsJson(projectAssetsJson, '.NETsomeversion');
+  const expectedTree = {
+    'dependencies': {
+      'Microsoft.NETSomething.Dep': {
+        'dependencies': {
+          'System.Blah': {
+            'dependencies': {},
+            'name': 'System.Blah',
+            'version': '4.0.0',
+          },
+          'System.BlahOne': {
+            'dependencies': {},
+            'name': 'System.BlahOne',
+            'version': '4.1.0',
+          },
+          'System.BlahTwo': {
+            'dependencies': {},
+            'name': 'System.BlahTwo',
+            'version': '4.2.0',
+          },
+        },
+        'name': 'Microsoft.NETSomething.Dep',
+        'version': '2.2.0',
+        },
+      },
+      'name': 'sample2',
+      'version': '1.0.0',
+    };
+  t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net project.assets.json single target framework tree generated as expected', async (t) => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-project-assets-for-deps`,
+    'project.assets.json', includeDev, '.NETCoreApp,Version=v2.2');
+  const expectedTree = load('dotnet-project-assets-for-deps/expected-tree.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
