@@ -181,8 +181,7 @@ async function getDependenciesFromPackageReference(manifestFile, includeDev: boo
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const dep of packageList.PackageReference) {
-    // Some .*proj files use the Update attribute instead of Include
-    const depName = dep.$.Include || dep.$.Update;
+    const depName = dep.$.Include;
     const isDev = !!dep.$.developmentDependency;
     dependenciesResult.hasDevDependencies = dependenciesResult.hasDevDependencies || isDev;
     if (isDev && !includeDev) {
@@ -221,9 +220,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
    getConditionalFrameworks(referenceIncludeList.$.Condition) : [];
 
   for (const item of referenceIncludeList.Reference) {
-    // Some .*proj files use the Update attribute instead of Include
-    const property = item.$.Include || item.$.Update;
-    const propertiesList = property.split(',').map((i) => i.trim());
+    const propertiesList = item.$.Include.split(',').map((i) => i.trim());
     const [depName, ...depInfoArray] = propertiesList;
     const depInfo: ReferenceInclude = {};
 
@@ -254,14 +251,12 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, tar
 
   const version = extractDependencyVersion(dep, manifestFile);
 
-  // Some .*proj files use the Update attribute instead of Include
-  const dependencyName = dep.$.Include || dep.$.Update;
   if (version !== null) {
 
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
       dependencies: {},
-      name: dependencyName,
+      name: dep.$.Include,
       // Version could be in attributes or as child node.
       version,
     };
@@ -272,8 +267,7 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, tar
 
     return depSubTree;
   } else {
-    // Some .*proj files use the Update attribute instead of Include
-    return { name: dependencyName, withoutVersion: true };
+    return {name: dep.$.Include, withoutVersion: true};
   }
 }
 
