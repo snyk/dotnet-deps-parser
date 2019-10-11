@@ -166,22 +166,34 @@ export async function getDependencyTreeFromProjectFile(manifestFile, includeDev:
 
 async function getDependenciesFromPackageReference(manifestFile, includeDev: boolean = false):
   Promise <DependenciesDiscoveryResult> {
-  const dependenciesResult: DependenciesDiscoveryResult = {
+  let dependenciesResult: DependenciesDiscoveryResult = {
     dependencies: {},
     hasDevDependencies: false,
   };
-  const packageList = _.get(manifestFile, 'Project.ItemGroup', [])
-    .find((itemGroup) => _.has(itemGroup, 'PackageReference'));
+  const packageGroups = _.get(manifestFile, 'Project.ItemGroup', [])
+    .filter((itemGroup) => _.has(itemGroup, 'PackageReference'));
 
-  if (!packageList) {
+  if (!packageGroups.length) {
     return dependenciesResult;
   }
 
+  for (const packageList of packageGroups) {
+    dependenciesResult = processItemGroupForPackageReference(packageList, manifestFile, includeDev, dependenciesResult);
+  }
+
+  return dependenciesResult;
+}
+
+function processItemGroupForPackageReference(packageList, manifestFile,  includeDev, dependenciesResult) {
   const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const dep of packageList.PackageReference) {
     const depName = dep.$.Include;
+    if (!depName) {
+      // PackageReference Update is not yet supported
+      continue;
+    }
     const isDev = !!dep.$.developmentDependency;
     dependenciesResult.hasDevDependencies = dependenciesResult.hasDevDependencies || isDev;
     if (isDev && !includeDev) {
