@@ -1,0 +1,55 @@
+{
+  "dependencies": {
+    "BestEx.Framework": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "BestEx.Framework",
+      "version": "4.10.6"
+    },
+    "BestEx.InRule": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "BestEx.InRule",
+      "version": "5.0.1"
+    },
+    "FsCheck": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "FsCheck",
+      "version": "2.14.0"
+    },
+    "FsCheck.Xunit": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "FsCheck.Xunit",
+      "version": "2.14.0"
+    },
+    "Microsoft.NET.Test.Sdk": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Microsoft.NET.Test.Sdk",
+      "version": "16.0.1"
+    },
+    "Moq": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "Moq",
+      "version": "4.10.1"
+    },
+    "xunit": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "xunit",
+      "version": "2.4.1"
+    },
+    "xunit.runner.visualstudio": {
+      "depType": "prod",
+      "dependencies": {},
+      "name": "xunit.runner.visualstudio",
+      "version": "2.4.1"
+    }
+  },
+  "hasDevDependencies": false,
+  "name": "",
+  "version": ""
+}
