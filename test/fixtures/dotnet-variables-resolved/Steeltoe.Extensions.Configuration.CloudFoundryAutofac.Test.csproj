@@ -29,5 +29,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
-
+  <PropertyGroup>
+    <XunitVersion>1.2.3</XunitVersion>
+    <StyleCopVersion>3.4.5</StyleCopVersion>
+  </PropertyGroup>
 </Project>

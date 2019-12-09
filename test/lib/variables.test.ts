@@ -18,3 +18,24 @@ test('.Net C# project with variable is parsed', async (t) => {
   t.equal(depTree.dependenciesWithUnknownVersions!.length, 4);
 });
 
+test('.Net C# project with variable is parsed and versions resolved', async (t) => {
+  const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-variables-resolved/Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj`, 'utf-8');
+  const depTree = await buildDepTreeFromProjectFile(manifestFileContents);
+  t.ok(depTree);
+  t.equal(depTree.dependenciesWithUnknownVersions!.length, 2);
+  t.equal(Object.keys(depTree.dependencies)!.length, 2, 'two deps resolved');
+  t.deepEqual(depTree.dependencies, {
+    'StyleCop.Analyzers': {
+      'depType': 'prod',
+      'dependencies': {},
+      'name': 'StyleCop.Analyzers',
+      'version': '3.4.5',
+    },
+    'xunit': {
+      'depType': 'prod',
+      'dependencies': {},
+      'name': 'xunit',
+      'version': '1.2.3',
+    },
+  }, 'two deps resolved');
+});
