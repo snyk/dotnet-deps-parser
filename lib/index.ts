@@ -61,15 +61,29 @@ function buildDepTreeFromProjectAssetsJson(manifestFileContents: string, targetF
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseXmlFile(manifestFileContents);
-  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
+  try {
+    const manifestFile: any = await parseXmlFile(manifestFileContents);
+    return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
+  } catch (err) {
+    if (err.name === 'InvalidUserInputError') {
+      throw err;
+    }
+    throw new Error(`Extracting dependencies failed with error ${err.message}`);
+  }
 }
 
 async function buildDepTreeFromProjectFile(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseXmlFile(manifestFileContents);
-  return getDependencyTreeFromProjectFile(manifestFile, includeDev);
+  try {
+    const manifestFile: any = await parseXmlFile(manifestFileContents);
+    return getDependencyTreeFromProjectFile(manifestFile, includeDev);
+  } catch (err) {
+    if (err.name === 'InvalidUserInputError') {
+      throw err;
+    }
+    throw new Error(`Extracting dependencies failed with error ${err.message}`);
+  }
 }
 
 function buildDepTreeFromFiles(
@@ -138,6 +152,9 @@ async function extractTargetFrameworksFromProjectFile(
     const manifestFile: object = await parseXmlFile(manifestFileContents);
     return getTargetFrameworksFromProjectFile(manifestFile);
   } catch (err) {
+    if (err.name === 'InvalidUserInputError') {
+      throw err;
+    }
     throw new Error(`Extracting target framework failed with error ${err.message}`);
   }
 }
@@ -148,40 +165,51 @@ async function extractTargetFrameworksFromProjectConfig(
     const manifestFile: object = await parseXmlFile(manifestFileContents);
     return getTargetFrameworksFromProjectConfig(manifestFile);
   } catch (err) {
+    if (err.name === 'InvalidUserInputError') {
+      throw err;
+    }
     throw new Error(`Extracting target framework failed with error ${err.message}`);
   }
 }
 
 async function containsPackageReference(manifestFileContents: string) {
+  try {
+    const manifestFile: object = await parseXmlFile(manifestFileContents);
 
-  const manifestFile: object = await parseXmlFile(manifestFileContents);
+    const projectItems = _.get(manifestFile, 'Project.ItemGroup', []);
+    const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
 
-  const projectItems = _.get(manifestFile, 'Project.ItemGroup', []);
-  const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
-
-  return referenceIndex !== -1;
+    return referenceIndex !== -1;
+  } catch (err) {
+    if (err.name === 'InvalidUserInputError') {
+      throw err;
+    }
+    throw new Error(`Extracting package reference failed with error ${err.message}`);
+  }
 }
 
 async function extractTargetFrameworksFromProjectJson(
   manifestFileContents: string): Promise<string[]> {
+  let manifestFile;
   try {
     // trimming required to address files with UTF-8 with BOM encoding
-    const manifestFile = JSON.parse(manifestFileContents.trim());
-    return getTargetFrameworksFromProjectJson(manifestFile);
+    manifestFile = JSON.parse(manifestFileContents.trim());
   } catch (err) {
-    throw new Error(`Extracting target framework failed with error ${err.message}`);
+    throw new InvalidUserInputError(`Failed to parse manifest as valid json: ${err}`);
   }
+  return getTargetFrameworksFromProjectJson(manifestFile);
 }
 
 async function extractTargetFrameworksFromProjectAssetsJson(
   manifestFileContents: string): Promise<string[]> {
-    try {
-      // trimming required to address files with UTF-8 with BOM encoding
-      const manifestFile = JSON.parse(manifestFileContents.trim());
-      return getTargetFrameworksFromProjectAssetsJson(manifestFile);
-    } catch (err) {
-      throw new Error(`Extracting target framework failed with error ${err.message}`);
-    }
+  let manifestFile;
+  try {
+    // trimming required to address files with UTF-8 with BOM encoding
+    manifestFile = JSON.parse(manifestFileContents.trim());
+  } catch (err) {
+    throw new InvalidUserInputError(`Failed to parse manifest as valid json: ${err}`);
+  }
+  return getTargetFrameworksFromProjectAssetsJson(manifestFile);
 }
 
 async function extractProps(

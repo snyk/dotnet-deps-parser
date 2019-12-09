@@ -6,6 +6,7 @@
 import {test} from 'tap';
 import * as fs from 'fs';
 import {extractTargetFrameworksFromFiles} from '../../lib';
+import { InvalidUserInputError } from '../../lib/errors';
 
 const load = (filename) => JSON.parse(
   fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'),
@@ -124,11 +125,12 @@ test('.Net project.assets.json dotnet-empty-project-assets target framework extr
 
 test('.Net project.assest.json is not valid json', async (t) => {
   try {
-    const targetFrameworks = await extractTargetFrameworksFromFiles(
-      `${__dirname}/../fixtures/dotnet-invalid-project-assets`,
-      'project.assets.json');
-    t.fail(targetFrameworks, 'Should throw an error for failing to extract the target framework');
-  } catch (err) {
-    t.match(err.message, 'Extracting target framework failed with error', 'Correct error message');
-  }
+    await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-invalid-project-assets`,
+    'project.assets.json');
+    } catch (err) {
+      t.match(err.message, 'Failed to parse manifest as valid json', 'correct error message');
+      t.is(err.code, 422, 'correct error code');
+      t.is(err.name, 'InvalidUserInputError', 'correct error name');
+    }
 });
