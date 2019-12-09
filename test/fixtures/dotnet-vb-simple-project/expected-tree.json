@@ -4,13 +4,27 @@
       "depType": "prod",
       "dependencies": {},
       "name": "MySql.Data",
-      "version": "8.0.12"
+      "version": "8.0.12",
+      "versionProvenance": {
+        "location": "/Users/orsagie/snyk/dotnet-deps-parser/test/fixtures/dotnet-vb-simple-project/manifest.vbproj",
+        "property": {
+          "name": "/Project/ItemGroup/PackageReference[@Include = \"MySql.Data\"][@Version = \"8.0.12\"]'"
+        },
+        "type": "property"
+      }
     },
     "Newtonsoft.Json": {
       "depType": "prod",
       "dependencies": {},
       "name": "Newtonsoft.Json",
-      "version": "11.0.2"
+      "version": "11.0.2",
+      "versionProvenance": {
+        "location": "/Users/orsagie/snyk/dotnet-deps-parser/test/fixtures/dotnet-vb-simple-project/manifest.vbproj",
+        "property": {
+          "name": "/Project/ItemGroup/PackageReference[@Include = \"Newtonsoft.Json\"][@Version = \"11.0.2\"]'"
+        },
+        "type": "property"
+      }
     },
     "System": {
       "depType": "prod",

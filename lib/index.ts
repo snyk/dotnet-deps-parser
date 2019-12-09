@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 
-import {PkgTree, DepType, ProjectJsonManifest, ProjectAssetsJsonManifest} from './parsers/types';
+import {PkgTree, DepType, ProjectJsonManifest, ProjectAssetsJsonManifest, ManifestFile} from './parsers/types';
 import {parseManifestFile} from './parsers';
 
 import {
@@ -44,33 +44,33 @@ export {
   DepType,
 };
 
-function buildDepTreeFromProjectJson(manifestFileContents: string, includeDev = false): PkgTree {
+function buildDepTreeFromProjectJson(manifestFile: ManifestFile, includeDev = false): PkgTree {
   // trimming required to address files with UTF-8 with BOM encoding
-  const manifestFile: ProjectJsonManifest = JSON.parse(manifestFileContents.trim());
-  return getDependencyTreeFromProjectJson(manifestFile, includeDev);
+  const manifestFileContents: ProjectJsonManifest = JSON.parse(manifestFile.content.trim());
+  return getDependencyTreeFromProjectJson(manifestFileContents, includeDev);
 }
 
 // TODO: Figure out what to do about devDeps
-function buildDepTreeFromProjectAssetsJson(manifestFileContents: string, targetFramework?: string): PkgTree {
+function buildDepTreeFromProjectAssetsJson(manifestFile: ManifestFile, targetFramework?: string): PkgTree {
   if (!targetFramework) {
     throw new Error('Missing targetFramework for project.assets.json');
   }
   // trimming required to address files with UTF-8 with BOM encoding
-  const manifestFile: ProjectAssetsJsonManifest = JSON.parse(manifestFileContents.trim());
-  return getDependencyTreeFromProjectAssetsJson(manifestFile, targetFramework);
+  const manifestFileContents: ProjectAssetsJsonManifest = JSON.parse(manifestFile.content.trim());
+  return getDependencyTreeFromProjectAssetsJson(manifestFileContents, targetFramework);
 }
 
 async function buildDepTreeFromPackagesConfig(
-    manifestFileContents: string,
+    manifestFile: ManifestFile,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseManifestFile(manifestFileContents);
-  return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
+  const manifestFileContents: any = await parseManifestFile(manifestFile.content);
+  return getDependencyTreeFromPackagesConfig(manifestFileContents, includeDev);
 }
 
 async function buildDepTreeFromProjectFile(
-    manifestFileContents: string,
+    manifestFile: ManifestFile,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  manifestFile.content = await parseManifestFile(manifestFile.content);
   return getDependencyTreeFromProjectFile(manifestFile, includeDev);
 }
 
@@ -88,16 +88,20 @@ function buildDepTreeFromFiles(
   }
 
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
+  const manifestFile: ManifestFile = {
+    content: manifestFileContents,
+    path: manifestFileFullPath,
+  };
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
   if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
-    return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
+    return buildDepTreeFromProjectFile(manifestFile, includeDev);
   } else if (_.endsWith(manifestFilePath, 'packages.config')) {
-    return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
+    return buildDepTreeFromPackagesConfig(manifestFile, includeDev);
   } else if (_.endsWith(manifestFilePath, 'project.json')) {
-    return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
+    return buildDepTreeFromProjectJson(manifestFile, includeDev);
   } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
-    return buildDepTreeFromProjectAssetsJson(manifestFileContents, targetFramework);
+    return buildDepTreeFromProjectAssetsJson(manifestFile, targetFramework);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
       'either packages.config or project file.');

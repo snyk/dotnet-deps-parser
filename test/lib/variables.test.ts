@@ -11,8 +11,11 @@ import { buildDepTreeFromProjectFile } from '../../lib';
 ****** csproj ******
 */
 test('.Net C# project with variable is parsed', async (t) => {
-  const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-variables/Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj`, 'utf-8');
-  const depTree = await buildDepTreeFromProjectFile(manifestFileContents);
+  const manifestFile = {
+    content: fs.readFileSync(`${__dirname}/../fixtures/dotnet-variables/Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj`, 'utf-8'),
+    path: 'path',
+  };
+  const depTree = await buildDepTreeFromProjectFile(manifestFile);
   t.ok(depTree);
   t.ok(depTree.dependenciesWithUnknownVersions);
   t.equal(depTree.dependenciesWithUnknownVersions!.length, 4);

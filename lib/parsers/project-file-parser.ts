@@ -1,8 +1,18 @@
 import * as _ from 'lodash';
-import {DependenciesDiscoveryResult, DependencyWithoutVersion, DepType, PkgTree, ReferenceInclude} from './types';
+import {
+  DependenciesDiscoveryResult,
+  DependencyWithoutVersion,
+  DepType,
+  ManifestFile,
+  PkgTree,
+  ReferenceInclude,
+} from './types';
+import {VersionProvenance} from '@snyk/dep-graph';
 
-export async function getDependencyTreeFromProjectFile(manifestFile, includeDev: boolean = false): Promise<PkgTree> {
-  const nameProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
+export async function getDependencyTreeFromProjectFile(
+  manifestFile: ManifestFile,
+  includeDev: boolean = false): Promise<PkgTree> {
+  const nameProperty = _.get(manifestFile.content, 'Project.PropertyGroup', [])
     .find((propertyGroup) => {
       return _.has(propertyGroup, 'PackageId')
         || _.has(propertyGroup, 'AssemblyName');
@@ -14,6 +24,7 @@ export async function getDependencyTreeFromProjectFile(manifestFile, includeDev:
 
   const packageReferenceDeps =
     await getDependenciesFromPackageReference(manifestFile, includeDev);
+
   const referenceIncludeDeps =
     await getDependenciesFromReferenceInclude(manifestFile, includeDev);
 
@@ -35,13 +46,13 @@ export async function getDependencyTreeFromProjectFile(manifestFile, includeDev:
   return depTree;
 }
 
-async function getDependenciesFromPackageReference(manifestFile, includeDev: boolean = false):
+async function getDependenciesFromPackageReference(manifestFile: ManifestFile, includeDev: boolean = false):
 Promise <DependenciesDiscoveryResult> {
   let dependenciesResult: DependenciesDiscoveryResult = {
     dependencies: {},
     hasDevDependencies: false,
   };
-  const packageGroups = _.get(manifestFile, 'Project.ItemGroup', [])
+  const packageGroups = _.get(manifestFile.content, 'Project.ItemGroup', [])
     .filter((itemGroup) => _.has(itemGroup, 'PackageReference'));
 
   if (!packageGroups.length) {
@@ -55,8 +66,9 @@ Promise <DependenciesDiscoveryResult> {
   return dependenciesResult;
 }
 
-function processItemGroupForPackageReference(packageList, manifestFile,  includeDev, dependenciesResult) {
-  const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
+function processItemGroupForPackageReference(packageList, manifestFile: ManifestFile, includeDev, dependenciesResult) {
+  const condition = _.get(packageList, '$.Condition', false);
+  const targetFrameworks: string[] = condition ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const dep of packageList.PackageReference) {
@@ -71,7 +83,7 @@ function processItemGroupForPackageReference(packageList, manifestFile,  include
       continue;
     }
     const subDep = buildSubTreeFromPackageReference(
-      dep, isDev, manifestFile, targetFrameworks);
+      condition, dep, isDev, manifestFile, targetFrameworks);
     if ((subDep as DependencyWithoutVersion).withoutVersion)  {
       dependenciesResult.dependenciesWithUnknownVersions = dependenciesResult.dependenciesWithUnknownVersions || [];
       dependenciesResult.dependenciesWithUnknownVersions.push(subDep.name);
@@ -83,7 +95,7 @@ function processItemGroupForPackageReference(packageList, manifestFile,  include
   return dependenciesResult;
 }
 
-async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boolean = false):
+async function getDependenciesFromReferenceInclude(manifestFile: ManifestFile, includeDev: boolean = false):
 Promise <DependenciesDiscoveryResult> {
 
   const referenceIncludeResult: DependenciesDiscoveryResult = {
@@ -92,15 +104,15 @@ Promise <DependenciesDiscoveryResult> {
   };
 
   const referenceIncludeList =
-    _.get(manifestFile, 'Project.ItemGroup', [])
+    _.get(manifestFile.content, 'Project.ItemGroup', [])
       .find((itemGroup) => _.has(itemGroup, 'Reference'));
 
   if (!referenceIncludeList) {
     return referenceIncludeResult;
   }
 
-  const targetFrameworks: string[] = _.get(referenceIncludeList, '$.Condition', false) ?
-    getConditionalFrameworks(referenceIncludeList.$.Condition) : [];
+  const condition = _.get(referenceIncludeList, '$.Condition', false);
+  const targetFrameworks: string[] = condition ? getConditionalFrameworks(referenceIncludeList.$.Condition) : [];
 
   for (const item of referenceIncludeList.Reference) {
     const propertiesList = item.$.Include.split(',').map((i) => i.trim());
@@ -129,12 +141,16 @@ Promise <DependenciesDiscoveryResult> {
   return referenceIncludeResult;
 }
 
-function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, targetFrameworks: string[]):
-  PkgTree | DependencyWithoutVersion {
+function buildSubTreeFromPackageReference(
+  condition,
+  dep,
+  isDev: boolean,
+  manifestFile: ManifestFile,
+  targetFrameworks: string[]): PkgTree | DependencyWithoutVersion {
 
-  const version = extractDependencyVersion(dep, manifestFile);
+  const {version, versionProvenance} = extractDependencyVersion(condition, dep, manifestFile);
 
-  if (version !== null) {
+  if (version !== null && versionProvenance !== null) {
 
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
@@ -142,6 +158,7 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, tar
       name: dep.$.Include,
       // Version could be in attributes or as child node.
       version,
+      versionProvenance,
     };
 
     if (targetFrameworks.length) {
@@ -154,19 +171,44 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, tar
   }
 }
 
-function extractDependencyVersion(dep, manifestFile): string | null {
+function generateVersionProvenance(identifier, dep, manifestFile: ManifestFile, isVariable: boolean) {
+  const name = isVariable ?
+    `/Project/PropertyGroup/${identifier}` :
+    `/Project/ItemGroup${identifier ? `[@Condition = "${identifier}"]` : ''}` +
+    `/PackageReference[@Include = "${dep.$.Include}"][@Version = "${dep.$.Version || _.get(dep, 'Version.0')}"]'`;
+
+  return {
+    location: manifestFile.path,
+    property: {
+      name,
+    },
+    type: 'property',
+  };
+}
+
+function extractDependencyVersion(condition, dep, manifestFile: ManifestFile)
+: {version: string | null, versionProvenance: VersionProvenance | null} {
   const VARS_MATCHER = /^\$\((.*?)\)/;
-  const version = dep.$.Version || _.get(dep, 'Version.0');
+  let version = dep.$.Version || _.get(dep, 'Version.0');
+  let versionProvenance: VersionProvenance | null = generateVersionProvenance(condition, dep, manifestFile, false);
   const variableVersion = version && version.match(VARS_MATCHER);
 
-  if (!variableVersion) {
-    return version;
+  if (variableVersion) {
+    // version is a variable, extract it from manifest
+    const propertyName = variableVersion[1];
+    // todo: are there other places the variable can be defined?
+    // todo: add test with variable defined in PropertyGroup
+    const versionProperty = _.get(manifestFile.content, 'Project.PropertyGroup', [])
+      .find((propertyGroup) => _.has(propertyGroup, propertyName));
+    version = _.get(versionProperty, `${propertyName}.0`, null);
+    if (version) {
+      versionProvenance = generateVersionProvenance(propertyName, dep, manifestFile, true);
+    } else {
+      versionProvenance = null;
+    }
   }
-  // version is a variable, extract it from manifest
-  const propertyName = variableVersion[1];
-  const versionProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
-    .find((propertyGroup) => _.has(propertyGroup, propertyName));
-  return _.get(versionProperty, `${propertyName}.0`, null);
+
+  return {version, versionProvenance};
 }
 
 function getConditionalFrameworks(condition: string) {
