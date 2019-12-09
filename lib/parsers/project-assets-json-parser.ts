@@ -1,32 +1,5 @@
 import * as _ from 'lodash';
-
-export interface PkgTree {
-  name: string;
-  version: string;
-  dependencies: {
-    [dep: string]: PkgTree;
-  };
-  targetFrameworks?: string[];
-}
-
-export interface ProjectAssetsJsonManifest {
-  targets: {
-    [target: string]: {
-      [name: string]: {
-        type: string,
-        dependencies?: {
-          [deps: string]: string;
-        };
-      };
-    },
-  };
-  project: {
-    restore: {
-      projectName: string,
-    },
-    version: string,
-  };
-}
+import {PkgTree, ProjectAssetsJsonManifest} from './types';
 
 function getProjectNameForProjectAssetsJson(manifestFile) {
   return _.get(manifestFile, ['project', 'restore', 'projectName'], {});
@@ -71,4 +44,8 @@ export function getDependencyTreeFromProjectAssetsJson(
     depTree.dependencies[topLevelDepName] = topLevelDepTree;
   }
   return depTree;
+}
+
+export function getTargetFrameworksFromProjectAssetsJson(manifestFile) {
+  return Object.keys(_.get(manifestFile, 'targets', {}));
 }

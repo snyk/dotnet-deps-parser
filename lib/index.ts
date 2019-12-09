@@ -3,17 +3,23 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 
-import {PkgTree, DepType, parseManifestFile,
-  getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
-  getDependencyTreeFromProjectFile, ProjectJsonManifest,
-  getTargetFrameworksFromProjectFile,
-  getTargetFrameworksFromProjectConfig,
-  getTargetFrameworksFromProjectJson,
-  getTargetFrameworksFromProjectAssetsJson} from './parsers';
+import {PkgTree, DepType, ProjectJsonManifest, ProjectAssetsJsonManifest} from './parsers/types';
+import {parseManifestFile} from './parsers';
 
 import {
+  getDependencyTreeFromProjectJson,
+  getTargetFrameworksFromProjectJson,
+} from './parsers/project-json-parser';
+import {
+  getDependencyTreeFromPackagesConfig,
+  getTargetFrameworksFromProjectConfig,
+} from './parsers/packages-config-parser';
+import {getDependencyTreeFromProjectFile,
+  getTargetFrameworksFromProjectFile,
+} from './parsers/project-file-parser';
+import {
   getDependencyTreeFromProjectAssetsJson,
-  ProjectAssetsJsonManifest,
+  getTargetFrameworksFromProjectAssetsJson,
 } from './parsers/project-assets-json-parser';
 
 const PROJ_FILE_EXTENSIONS = [
