@@ -293,9 +293,8 @@ function extractDependencyVersion(dep, manifestFile): string | null {
   }
   // version is a variable, extract it from manifest
   const propertyName = variableVersion[1];
-  const versionProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
-  .find((propertyGroup) => _.has(propertyGroup, propertyName));
-  return _.get(versionProperty, `${propertyName}.0`, null);
+  const propertyMap = getPropertiesMap(manifestFile);
+  return _.get(propertyMap, propertyName, null);
 }
 
 function getConditionalFrameworks(condition: string) {
