@@ -131,7 +131,10 @@ function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
   return depSubTree;
 }
 
-export async function getDependencyTreeFromProjectFile(manifestFile, includeDev: boolean = false): Promise<PkgTree> {
+export async function getDependencyTreeFromProjectFile(
+  manifestFile,
+  includeDev: boolean = false,
+  propsMap: PropsLookup = {}): Promise<PkgTree> {
   const nameProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
     .find((propertyGroup) => {
       return _.has(propertyGroup, 'PackageId')
@@ -143,9 +146,9 @@ export async function getDependencyTreeFromProjectFile(manifestFile, includeDev:
     || '';
 
   const packageReferenceDeps =
-    await getDependenciesFromPackageReference(manifestFile, includeDev);
+    await getDependenciesFromPackageReference(manifestFile, includeDev, propsMap);
   const referenceIncludeDeps =
-    await getDependenciesFromReferenceInclude(manifestFile, includeDev);
+    await getDependenciesFromReferenceInclude(manifestFile, includeDev, propsMap);
 
   // order matters, the order deps are parsed in needs to be preserved and first seen kept
   // so applying the packageReferenceDeps last to override the second parsed
@@ -168,7 +171,10 @@ export async function getDependencyTreeFromProjectFile(manifestFile, includeDev:
   return depTree;
 }
 
-async function getDependenciesFromPackageReference(manifestFile, includeDev: boolean = false):
+async function getDependenciesFromPackageReference(
+  manifestFile,
+  includeDev: boolean = false,
+  propsMap: PropsLookup):
   Promise <DependenciesDiscoveryResult> {
   let dependenciesResult: DependenciesDiscoveryResult = {
     dependencies: {},
@@ -182,13 +188,19 @@ async function getDependenciesFromPackageReference(manifestFile, includeDev: boo
   }
 
   for (const packageList of packageGroups) {
-    dependenciesResult = processItemGroupForPackageReference(packageList, manifestFile, includeDev, dependenciesResult);
+    dependenciesResult = processItemGroupForPackageReference(
+      packageList, manifestFile, includeDev, dependenciesResult, propsMap);
   }
 
   return dependenciesResult;
 }
 
-function processItemGroupForPackageReference(packageList, manifestFile,  includeDev, dependenciesResult) {
+function processItemGroupForPackageReference(
+  packageList,
+  manifestFile,
+  includeDev: boolean,
+  dependenciesResult,
+  propsMap: PropsLookup) {
   const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
@@ -204,7 +216,7 @@ function processItemGroupForPackageReference(packageList, manifestFile,  include
       continue;
     }
     const subDep = buildSubTreeFromPackageReference(
-      dep, isDev, manifestFile, targetFrameworks);
+      dep, isDev, manifestFile, targetFrameworks, propsMap);
     if ((subDep as DependencyWithoutVersion).withoutVersion)  {
       dependenciesResult.dependenciesWithUnknownVersions = dependenciesResult.dependenciesWithUnknownVersions || [];
       dependenciesResult.dependenciesWithUnknownVersions.push(subDep.name);
@@ -217,7 +229,7 @@ function processItemGroupForPackageReference(packageList, manifestFile,  include
 }
 
 // TODO: almost same as getDependenciesFromPackageReference
-async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boolean = false):
+async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boolean = false, propsMap: PropsLookup):
   Promise <DependenciesDiscoveryResult> {
 
   let referenceIncludeResult: DependenciesDiscoveryResult = {
@@ -235,13 +247,13 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
 
   referenceIncludeResult =
       processItemGroupForReferenceInclude(
-        referenceIncludeList, manifestFile, includeDev, referenceIncludeResult);
+        referenceIncludeList, manifestFile, includeDev, referenceIncludeResult, propsMap);
 
   return referenceIncludeResult;
 }
 
 function processItemGroupForReferenceInclude(
-  packageList, manifestFile,  includeDev, dependenciesResult) {
+  packageList, manifestFile,  includeDev, dependenciesResult, propsMap) {
   const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
@@ -268,7 +280,7 @@ function processItemGroupForReferenceInclude(
     }
     depInfo.name = depName;
     const subDep = buildSubTreeFromReferenceInclude(
-      depInfo, isDev, manifestFile, targetFrameworks);
+      depInfo, isDev, manifestFile, targetFrameworks, propsMap);
     if ((subDep as DependencyWithoutVersion).withoutVersion)  {
       dependenciesResult.dependenciesWithUnknownVersions = dependenciesResult.dependenciesWithUnknownVersions || [];
       dependenciesResult.dependenciesWithUnknownVersions.push(subDep.name);
@@ -281,9 +293,10 @@ function processItemGroupForReferenceInclude(
 
 }
 
-function buildSubTreeFromReferenceInclude(dep, isDev: boolean, manifestFile, targetFrameworks: string[]):
+function buildSubTreeFromReferenceInclude(
+  dep, isDev: boolean, manifestFile, targetFrameworks: string[], propsMap: PropsLookup):
   PkgTree | DependencyWithoutVersion {
-  const version = extractDependencyVersion(dep, manifestFile) || '';
+  const version = extractDependencyVersion(dep, manifestFile, propsMap) || '';
   if (!_.isEmpty(version)) {
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
@@ -302,10 +315,15 @@ function buildSubTreeFromReferenceInclude(dep, isDev: boolean, manifestFile, tar
   }
 }
 
-function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, targetFrameworks: string[]):
+function buildSubTreeFromPackageReference(
+  dep,
+  isDev: boolean,
+  manifestFile,
+  targetFrameworks: string[],
+  propsMap: PropsLookup):
   PkgTree | DependencyWithoutVersion {
 
-  const version = extractDependencyVersion(dep, manifestFile) || '';
+  const version = extractDependencyVersion(dep, manifestFile, propsMap) || '';
   if (!_.isEmpty(version)) {
 
     const depSubTree: PkgTree = {
@@ -326,20 +344,19 @@ function buildSubTreeFromPackageReference(dep, isDev: boolean, manifestFile, tar
   }
 }
 
-function extractDependencyVersion(dep, manifestFile): string | null {
+function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   const VARS_MATCHER = /^\$\((.*?)\)/;
   let version  = _.get(dep, '$.Version') || _.get(dep, 'Version');
   if (Array.isArray(version)) {
     version = version[0];
   }
   const variableVersion = version && version.match(VARS_MATCHER);
-
   if (!variableVersion) {
     return version;
   }
-  // version is a variable, extract it from manifest
+  // version is a variable, extract it from manifest or props lookup
   const propertyName = variableVersion[1];
-  const propertyMap = getPropertiesMap(manifestFile);
+  const propertyMap = {...propsMap, ...getPropertiesMap(manifestFile)};
   return _.get(propertyMap, propertyName, null);
 }
 
@@ -373,7 +390,7 @@ export interface PropsLookup {
   [name: string]: string;
 }
 
-export function getPropertiesMap(propsContents): PropsLookup {
+export function getPropertiesMap(propsContents: object): PropsLookup {
   const projectPropertyGroup = _.get(propsContents, 'Project.PropertyGroup', []);
   const props: PropsLookup = {};
   if (!projectPropertyGroup.length) {
