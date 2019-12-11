@@ -311,17 +311,36 @@ function getConditionalFrameworks(condition: string) {
   return frameworks;
 }
 
-export async function parseManifestFile(manifestFileContents: string) {
+export async function parseXmlFile(manifestFileContents: string): Promise<object> {
   return new Promise((resolve, reject) => {
     parseXML
     .parseString(manifestFileContents, (err, result) => {
       if (err) {
-        const e = new InvalidUserInputError('manifest parsing failed');
+        const e = new InvalidUserInputError('xml file parsing failed');
         return reject(e);
       }
       return resolve(result);
     });
   });
+}
+
+export interface PropsLookup {
+  [name: string]: string;
+}
+
+export function getPropertiesMap(propsContents): PropsLookup {
+  const projectPropertyGroup = _.get(propsContents, 'Project.PropertyGroup', []);
+  const props: PropsLookup = {};
+  if (!projectPropertyGroup.length) {
+    return props;
+  }
+
+  for (const group of projectPropertyGroup) {
+    for (const key of Object.keys(group)) {
+      _.set(props, key, group[key][0]);
+    }
+  }
+  return props;
 }
 
 export function getTargetFrameworksFromProjectFile(manifestFile) {

@@ -6,6 +6,7 @@
         },
         "trailing-comma": [true, {"multiline": "always"}],
         "triple-equals": true,
+        "object-literal-sort-keys": [false],
         "curly": true,
         "indent": [true, "spaces", 2],
         "interface-name": false,

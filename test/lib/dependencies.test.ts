@@ -86,7 +86,7 @@ test('.Net dotnet-empty-manifest returns empty tree', async (t) => {
 });
 
 test('.Net dotnet-invalid-manifest throws', async (t) => {
-  const invalidUserInputError = new InvalidUserInputError('manifest parsing failed');
+  const invalidUserInputError = new InvalidUserInputError('xml file parsing failed');
 
   const includeDev = false;
   t.rejects(buildDepTreeFromFiles(
@@ -173,7 +173,7 @@ test('.Net .csproj dotnet-empty-manifest returns empty tree', async (t) => {
 });
 
 test('.Net .csproj core dotnet-invalid-manifest throws', async (t) => {
-  const invalidUserInputError = new InvalidUserInputError('manifest parsing failed');
+  const invalidUserInputError = new InvalidUserInputError('xml file parsing failed');
 
   const includeDev = false;
   t.rejects(buildDepTreeFromFiles(

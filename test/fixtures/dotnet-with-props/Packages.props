@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <XunitVersion>1.2.3</XunitVersion>
+    <StyleCopVersion>1.1.0</StyleCopVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TestSdkVersion>3.3.*</TestSdkVersion>
+    <XunitStudioVersion>1.1.1-beta*</XunitStudioVersion>
+  </PropertyGroup>
+</Project>

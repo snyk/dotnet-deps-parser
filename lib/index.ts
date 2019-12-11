@@ -3,18 +3,21 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as _ from 'lodash';
 
-import {PkgTree, DepType, parseManifestFile,
+import {PkgTree, DepType, parseXmlFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
   getDependencyTreeFromProjectFile, ProjectJsonManifest,
   getTargetFrameworksFromProjectFile,
   getTargetFrameworksFromProjectConfig,
   getTargetFrameworksFromProjectJson,
-  getTargetFrameworksFromProjectAssetsJson} from './parsers';
+  getTargetFrameworksFromProjectAssetsJson,
+  getPropertiesMap,
+  PropsLookup} from './parsers';
 
 import {
   getDependencyTreeFromProjectAssetsJson,
   ProjectAssetsJsonManifest,
 } from './parsers/project-assets-json-parser';
+import { InvalidUserInputError } from './errors';
 
 const PROJ_FILE_EXTENSIONS = [
   '.csproj',
@@ -34,6 +37,7 @@ export {
   containsPackageReference,
   extractTargetFrameworksFromProjectJson,
   extractTargetFrameworksFromProjectAssetsJson,
+  extractProps,
   PkgTree,
   DepType,
 };
@@ -57,14 +61,14 @@ function buildDepTreeFromProjectAssetsJson(manifestFileContents: string, targetF
 async function buildDepTreeFromPackagesConfig(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  const manifestFile: any = await parseXmlFile(manifestFileContents);
   return getDependencyTreeFromPackagesConfig(manifestFile, includeDev);
 }
 
 async function buildDepTreeFromProjectFile(
     manifestFileContents: string,
     includeDev = false): Promise<PkgTree> {
-  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  const manifestFile: any = await parseXmlFile(manifestFileContents);
   return getDependencyTreeFromProjectFile(manifestFile, includeDev);
 }
 
@@ -131,7 +135,7 @@ function extractTargetFrameworksFromFiles(
 async function extractTargetFrameworksFromProjectFile(
   manifestFileContents: string): Promise<string[]> {
   try {
-    const manifestFile: any = await parseManifestFile(manifestFileContents);
+    const manifestFile: object = await parseXmlFile(manifestFileContents);
     return getTargetFrameworksFromProjectFile(manifestFile);
   } catch (err) {
     throw new Error(`Extracting target framework failed with error ${err.message}`);
@@ -141,7 +145,7 @@ async function extractTargetFrameworksFromProjectFile(
 async function extractTargetFrameworksFromProjectConfig(
   manifestFileContents: string): Promise<string[]> {
   try {
-    const manifestFile: any = await parseManifestFile(manifestFileContents);
+    const manifestFile: object = await parseXmlFile(manifestFileContents);
     return getTargetFrameworksFromProjectConfig(manifestFile);
   } catch (err) {
     throw new Error(`Extracting target framework failed with error ${err.message}`);
@@ -150,7 +154,7 @@ async function extractTargetFrameworksFromProjectConfig(
 
 async function containsPackageReference(manifestFileContents: string) {
 
-  const manifestFile: any = await parseManifestFile(manifestFileContents);
+  const manifestFile: object = await parseXmlFile(manifestFileContents);
 
   const projectItems = _.get(manifestFile, 'Project.ItemGroup', []);
   const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
@@ -177,5 +181,22 @@ async function extractTargetFrameworksFromProjectAssetsJson(
       return getTargetFrameworksFromProjectAssetsJson(manifestFile);
     } catch (err) {
       throw new Error(`Extracting target framework failed with error ${err.message}`);
+    }
+}
+
+async function extractProps(
+  propsFileContents: string): Promise<PropsLookup> {
+    try {
+      const propsFile: object = await parseXmlFile(propsFileContents);
+
+      if (!propsFile) {
+        throw new InvalidUserInputError('xml file parsing failed');
+      }
+      return getPropertiesMap(propsFile);
+    } catch (err) {
+      if (err.name === 'InvalidUserInputError') {
+        throw err;
+      }
+      throw new Error(`Extracting props failed with error ${err.message}`);
     }
 }
