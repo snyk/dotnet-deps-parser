@@ -84,53 +84,11 @@
       "name": "newtonsoft.json",
       "version": "11.0.2"
     },
-    "Microsoft.CSharp": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "Microsoft.CSharp",
-      "version": ""
-    },
-    "System.Web.DynamicData": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.Web.DynamicData",
-      "version": ""
-    },
-    "System.Web.Entity": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.Web.Entity",
-      "version": ""
-    },
-    "System.Web.ApplicationServices": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.Web.ApplicationServices",
-      "version": ""
-    },
-    "System.ComponentModel.DataAnnotations": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.ComponentModel.DataAnnotations",
-      "version": ""
-    },
-    "System": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System",
-      "version": ""
-    },
     "System.Console": {
       "depType": "prod",
       "dependencies": {},
       "name": "System.Console",
       "version": "4.0.0.0"
-    },
-    "Microsoft.Web.Infrastructure": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "Microsoft.Web.Infrastructure",
-      "version": ""
     },
     "Newtonsoft.Json": {
       "depType": "prod",
@@ -151,6 +109,15 @@
       "version": "1.4.0.0"
     }
   },
+  "dependenciesWithUnknownVersions": [
+    "Microsoft.CSharp",
+    "System.Web.DynamicData",
+    "System.Web.Entity",
+    "System.Web.ApplicationServices",
+    "System.ComponentModel.DataAnnotations",
+    "System",
+    "Microsoft.Web.Infrastructure"
+  ],
   "hasDevDependencies": false,
   "name": "Simple-Project-Name",
   "version": ""
