@@ -5,7 +5,7 @@
 // tslint:disable:object-literal-key-quotes
 import {test} from 'tap';
 import * as fs from 'fs';
-import {buildDepTreeFromFiles} from '../../lib';
+import {buildDepTreeFromFiles, buildDepTreeFromProjectFile} from '../../lib';
 import {getDependencyTreeFromProjectAssetsJson} from '../../lib/parsers/project-assets-json-parser';
 import {InvalidUserInputError} from '../../lib/errors';
 
@@ -19,6 +19,7 @@ test('.Net Visual Basic project tree generated as expected', async (t) => {
         'manifest.vbproj',
         false);
     const expectedTree = load('dotnet-vb-simple-project/expected-tree.json');
+    t.deepEqual(tree.dependenciesWithUnknownVersions!.length, 16, 'skipped empty versions');
     t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
@@ -382,4 +383,38 @@ test('.Net project.assets.json single target framework tree generated as expecte
     'project.assets.json', includeDev, '.NETCoreApp,Version=v2.2');
   const expectedTree = load('dotnet-project-assets-for-deps/expected-tree.json');
   t.deepEqual(tree, expectedTree, 'trees are equal');
+});
+
+test('.Net oldstyle project with variable is parsed and unknown skipped', async (t) => {
+  const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-no-packagereference/project.csproj`, 'utf-8');
+  const depTree = await buildDepTreeFromProjectFile(manifestFileContents);
+
+  t.ok(depTree);
+  t.equal(depTree.dependenciesWithUnknownVersions!.length, 7, '7 deps with no versions specified');
+  t.deepEqual(depTree.dependencies, {
+    'Newtonsoft.Json': {
+      'depType': 'prod',
+      'dependencies': {},
+      'name': 'Newtonsoft.Json',
+      'version': '10.0.0.0',
+    },
+    'Orleans': {
+      'depType': 'prod',
+      'dependencies': {},
+      'name': 'Orleans',
+      'version': '1.4.0.0',
+    },
+    'System.Console': {
+      'depType': 'prod',
+      'dependencies': {},
+      'name': 'System.Console',
+      'version': '4.0.0.0',
+    },
+    'nunit.framework': {
+      'depType': 'prod',
+      'dependencies': {},
+      'name': 'nunit.framework',
+      'version': '3.8.1.0',
+    },
+  }, 'deps resolved');
 });

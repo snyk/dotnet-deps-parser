@@ -1,64 +1,32 @@
 {
-    "dependencies":{
-       "System.Reflection":{
-          "depType":"prod",
-          "dependencies":{
- 
-          },
-          "name":"System.Reflection",
-          "version":"4.3.0",
-          "targetFrameworks":[
-             "netstandard1.3",
-             "netstandard2.0"
-          ]
-       },
-       "System.Reflection.TypeExtensions":{
-          "depType":"prod",
-          "dependencies":{
- 
-          },
-          "name":"System.Reflection.TypeExtensions",
-          "version":"4.3.0",
-          "targetFrameworks":[
-             "netstandard1.3",
-             "netstandard2.0"
-          ]
-       },
-       "Microsoft.CSharp":{
-          "depType":"prod",
-          "dependencies":{
- 
-          },
-          "name":"Microsoft.CSharp",
-          "version":"",
-          "targetFrameworks":[
-             "netstandard3.0"
-          ]
-       },
-       "System.Web.DynamicData":{
-          "depType":"prod",
-          "dependencies":{
- 
-          },
-          "name":"System.Web.DynamicData",
-          "version":"",
-          "targetFrameworks":[
-             "netstandard3.0"
-          ]
-       },
-       "System.Web.Entity":{
-          "depType":"prod",
-          "dependencies":{
- 
-          },
-          "name":"System.Web.Entity",
-          "version":"",
-          "targetFrameworks":[
-             "netstandard3.0"
-          ]
-       }
-    },
-    "hasDevDependencies":false,
-    "name":"LiteDB",
-    "version":""
- }
+   "dependencies": {
+      "System.Reflection": {
+         "depType": "prod",
+         "dependencies": {},
+         "name": "System.Reflection",
+         "version": "4.3.0",
+         "targetFrameworks": [
+            "netstandard1.3",
+            "netstandard2.0"
+         ]
+      },
+      "System.Reflection.TypeExtensions": {
+         "depType": "prod",
+         "dependencies": {},
+         "name": "System.Reflection.TypeExtensions",
+         "version": "4.3.0",
+         "targetFrameworks": [
+            "netstandard1.3",
+            "netstandard2.0"
+         ]
+      }
+   },
+   "dependenciesWithUnknownVersions": [
+      "Microsoft.CSharp",
+      "System.Web.DynamicData",
+      "System.Web.Entity"
+   ],
+   "hasDevDependencies": false,
+   "name": "LiteDB",
+   "version": ""
+}

@@ -12,18 +12,6 @@
       "name": "NLog",
       "version": "4.3.10"
     },
-    "System.Web.Entity": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.Web.Entity",
-      "version": ""
-    },
-    "System.Web.ApplicationServices": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.Web.ApplicationServices",
-      "version": ""
-    },
     "nunit.framework": {
       "depType": "prod",
       "dependencies": {},
@@ -37,6 +25,10 @@
       "version": "1.4.0.0"
     }
   },
+  "dependenciesWithUnknownVersions": [
+    "System.Web.Entity",
+    "System.Web.ApplicationServices"
+  ],
   "hasDevDependencies": true,
   "name": "simple-project-with-dev",
   "version": ""
