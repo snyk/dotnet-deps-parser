@@ -67,9 +67,10 @@ async function buildDepTreeFromPackagesConfig(
 
 async function buildDepTreeFromProjectFile(
     manifestFileContents: string,
-    includeDev = false): Promise<PkgTree> {
+    includeDev = false,
+    propsMap: PropsLookup = {}): Promise<PkgTree> {
   const manifestFile: any = await parseXmlFile(manifestFileContents);
-  return getDependencyTreeFromProjectFile(manifestFile, includeDev);
+  return getDependencyTreeFromProjectFile(manifestFile, includeDev, propsMap);
 }
 
 function buildDepTreeFromFiles(
