@@ -26,7 +26,7 @@
   ],
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
-    "@types/xml2js": "0.4.3",
+    "@types/xml2js": "0.4.5",
     "lodash": "^4.17.11",
     "source-map-support": "^0.5.7",
     "tslib": "^1.10.0",
