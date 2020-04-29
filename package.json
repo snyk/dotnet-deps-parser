@@ -27,13 +27,12 @@
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
     "@types/xml2js": "0.4.5",
-    "lodash": "^4.17.11",
+    "@snyk/lodash": "4.17.15-patch",
     "source-map-support": "^0.5.7",
     "tslib": "^1.10.0",
     "xml2js": "0.4.23"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.116",
     "@types/node": "^4.0.47",
     "tap": "github:snyk/node-tap#alternative-runtimes",
     "ts-node": "7.0.0",
