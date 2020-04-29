@@ -1,5 +1,5 @@
 import * as parseXML from 'xml2js';
-import * as _ from 'lodash';
+import * as _ from '@snyk/lodash';
 import {InvalidUserInputError} from '../errors';
 
 export interface PkgTree {
