@@ -137,8 +137,8 @@ export async function getDependencyTreeFromProjectFile(
   propsMap: PropsLookup = {}): Promise<PkgTree> {
   const nameProperty = (manifestFile?.Project?.PropertyGroup ?? [])
     .find((propertyGroup) => {
-      return _.has(propertyGroup, 'PackageId')
-      || _.has(propertyGroup, 'AssemblyName');
+      return 'PackageId' in propertyGroup
+      || 'AssemblyName' in propertyGroup;
     }) || {};
 
   const name = (nameProperty.PackageId?.[0])
@@ -181,7 +181,7 @@ async function getDependenciesFromPackageReference(
     hasDevDependencies: false,
   };
   const packageGroups = (manifestFile?.Project?.ItemGroup ?? [])
-    .filter((itemGroup) => _.has(itemGroup, 'PackageReference'));
+    .filter((itemGroup) => 'PackageReference' in itemGroup);
 
   if (!packageGroups.length) {
     return dependenciesResult;
@@ -239,7 +239,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
 
   const referenceIncludeList =
   (manifestFile?.Project?.ItemGroup ?? [])
-  .find((itemGroup) => _.has(itemGroup, 'Reference'));
+  .find((itemGroup) => 'Reference' in itemGroup);
 
   if (!referenceIncludeList) {
     return referenceIncludeResult;
@@ -414,9 +414,9 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   }
   const propertyList = projectPropertyGroup
     .find((propertyGroup) => {
-        return _.has(propertyGroup, 'TargetFramework')
-        || _.has(propertyGroup, 'TargetFrameworks')
-        || _.has(propertyGroup, 'TargetFrameworkVersion');
+        return 'TargetFramework' in propertyGroup
+        || 'TargetFrameworks' in propertyGroup
+        || 'TargetFrameworkVersion' in propertyGroup;
       }) || {};
 
   if (_.isEmpty(propertyList)) {
@@ -452,7 +452,7 @@ export function getTargetFrameworksFromProjectConfig(manifestFile) {
       continue;
     }
 
-    if (!_.includes(targetFrameworksResult, targetFramework)) {
+    if (!targetFrameworksResult.includes(targetFramework)) {
       targetFrameworksResult.push(targetFramework);
     }
   }

@@ -1,7 +1,6 @@
 import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as _ from '@snyk/lodash';
 
 import {PkgTree, DepType, parseXmlFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
@@ -89,7 +88,7 @@ function buildDepTreeFromFiles(
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
+  if (PROJ_FILE_EXTENSIONS.includes(manifestFileExtension)) {
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
   } else if (manifestFilePath.endsWith('packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
@@ -157,8 +156,8 @@ async function containsPackageReference(manifestFileContents: string) {
 
   const manifestFile: any = await parseXmlFile(manifestFileContents);
 
-  const projectItems = manifestFile?.Project?.ItemGroup ?? [];
-  const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
+  const projectItems: any[] = manifestFile?.Project?.ItemGroup ?? [];
+  const referenceIndex = projectItems.findIndex((itemGroup) => 'PackageReference' in itemGroup);
 
   return referenceIndex !== -1;
 }
