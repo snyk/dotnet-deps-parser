@@ -91,11 +91,11 @@ function buildDepTreeFromFiles(
 
   if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
-  } else if (_.endsWith(manifestFilePath, 'packages.config')) {
+  } else if (manifestFilePath.endsWith('packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
-  } else if (_.endsWith(manifestFilePath, 'project.json')) {
+  } else if (manifestFilePath.endsWith('project.json')) {
     return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
-  } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
+  } else if (manifestFilePath.endsWith('project.assets.json')) {
     return buildDepTreeFromProjectAssetsJson(manifestFileContents, targetFramework);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
@@ -119,13 +119,13 @@ function extractTargetFrameworksFromFiles(
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
+  if (PROJ_FILE_EXTENSIONS.includes(manifestFileExtension)) {
     return extractTargetFrameworksFromProjectFile(manifestFileContents);
-  } else if (_.endsWith(manifestFilePath, 'packages.config')) {
+  } else if (manifestFilePath.endsWith('packages.config')) {
     return extractTargetFrameworksFromProjectConfig(manifestFileContents);
-  } else if (_.endsWith(manifestFilePath, 'project.json')) {
+  } else if (manifestFilePath.endsWith('project.json')) {
     return extractTargetFrameworksFromProjectJson(manifestFileContents);
-  } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
+  } else if (manifestFilePath.endsWith('project.assets.json')) {
     return extractTargetFrameworksFromProjectAssetsJson(manifestFileContents);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +

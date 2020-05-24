@@ -18,7 +18,7 @@
   "author": "snyk.io",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "files": [
     "bin",
@@ -32,7 +32,7 @@
     "xml2js": "0.4.23"
   },
   "devDependencies": {
-    "@types/node": "^6.0.47",
+    "@types/node": "^8.10.61",
     "@types/xml2js": "0.4.5",
     "tap": "github:snyk/node-tap#alternative-runtimes",
     "ts-node": "7.0.0",
