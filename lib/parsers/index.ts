@@ -101,7 +101,7 @@ export async function getDependencyTreeFromPackagesConfig(
     version: '',
   };
 
-  const packageList = _.get(manifestFile, 'packages.package', []);
+  const packageList = manifestFile?.packages?.package ?? [];
 
   for (const dep of packageList) {
     const depName = dep.$.id;
@@ -135,14 +135,14 @@ export async function getDependencyTreeFromProjectFile(
   manifestFile,
   includeDev: boolean = false,
   propsMap: PropsLookup = {}): Promise<PkgTree> {
-  const nameProperty = _.get(manifestFile, 'Project.PropertyGroup', [])
+  const nameProperty = (manifestFile?.Project?.PropertyGroup ?? [])
     .find((propertyGroup) => {
       return _.has(propertyGroup, 'PackageId')
       || _.has(propertyGroup, 'AssemblyName');
     }) || {};
 
-  const name = (nameProperty.PackageId && nameProperty.PackageId[0])
-    || (nameProperty.AssemblyName && nameProperty.AssemblyName[0])
+  const name = (nameProperty.PackageId?.[0])
+    || (nameProperty.AssemblyName?.[0])
     || '';
 
   const packageReferenceDeps =
@@ -180,7 +180,7 @@ async function getDependenciesFromPackageReference(
     dependencies: {},
     hasDevDependencies: false,
   };
-  const packageGroups = _.get(manifestFile, 'Project.ItemGroup', [])
+  const packageGroups = (manifestFile?.Project?.ItemGroup ?? [])
     .filter((itemGroup) => _.has(itemGroup, 'PackageReference'));
 
   if (!packageGroups.length) {
@@ -201,7 +201,7 @@ function processItemGroupForPackageReference(
   includeDev: boolean,
   dependenciesResult,
   propsMap: PropsLookup) {
-  const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
+  const targetFrameworks: string[] = packageList?.["$"]?.Condition ?? false ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const dep of packageList.PackageReference) {
@@ -238,7 +238,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
   };
 
   const referenceIncludeList =
-  _.get(manifestFile, 'Project.ItemGroup', [])
+  (manifestFile?.Project?.ItemGroup ?? [])
   .find((itemGroup) => _.has(itemGroup, 'Reference'));
 
   if (!referenceIncludeList) {
@@ -254,7 +254,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
 
 function processItemGroupForReferenceInclude(
   packageList, manifestFile,  includeDev, dependenciesResult, propsMap) {
-  const targetFrameworks: string[] = _.get(packageList, '$.Condition', false) ?
+  const targetFrameworks: string[] = packageList?.["$"]?.Condition ?? false ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const item of packageList.Reference) {
@@ -346,7 +346,7 @@ function buildSubTreeFromPackageReference(
 
 function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   const VARS_MATCHER = /^\$\((.*?)\)/;
-  let version  = _.get(dep, '$.Version') || _.get(dep, 'Version');
+  let version  = dep?.["$"]?.Version || dep?.Version;
   if (Array.isArray(version)) {
     version = version[0];
   }
@@ -357,7 +357,7 @@ function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   // version is a variable, extract it from manifest or props lookup
   const propertyName = variableVersion[1];
   const propertyMap = {...propsMap, ...getPropertiesMap(manifestFile)};
-  return _.get(propertyMap, propertyName, null);
+  return propertyMap?.[propertyName] ?? null;
 }
 
 function getConditionalFrameworks(condition: string) {
@@ -390,8 +390,8 @@ export interface PropsLookup {
   [name: string]: string;
 }
 
-export function getPropertiesMap(propsContents: object): PropsLookup {
-  const projectPropertyGroup = _.get(propsContents, 'Project.PropertyGroup', []);
+export function getPropertiesMap(propsContents: any): PropsLookup {
+  const projectPropertyGroup = propsContents?.Project?.PropertyGroup ?? [];
   const props: PropsLookup = {};
   if (!projectPropertyGroup.length) {
     return props;
@@ -407,7 +407,7 @@ export function getPropertiesMap(propsContents: object): PropsLookup {
 
 export function getTargetFrameworksFromProjectFile(manifestFile) {
   let targetFrameworksResult: string[] = [];
-  const projectPropertyGroup = _.get(manifestFile, 'Project.PropertyGroup', []);
+  const projectPropertyGroup = manifestFile?.Project?.PropertyGroup ?? [];
 
   if (!projectPropertyGroup ) {
     return targetFrameworksResult;
@@ -444,7 +444,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
   const targetFrameworksResult: string[] = [];
-  const packages = _.get(manifestFile, 'packages.package', []);
+  const packages = manifestFile?.packages?.package ?? [];
 
   for (const item of packages) {
     const targetFramework = item.$.targetFramework;
@@ -461,9 +461,9 @@ export function getTargetFrameworksFromProjectConfig(manifestFile) {
 }
 
 export function getTargetFrameworksFromProjectJson(manifestFile) {
-  return Object.keys(_.get(manifestFile, 'frameworks', {}));
+  return Object.keys(manifestFile?.frameworks ?? {});
 }
 
 export function getTargetFrameworksFromProjectAssetsJson(manifestFile) {
-  return Object.keys(_.get(manifestFile, 'targets', {}));
+  return Object.keys(manifestFile?.targets ?? {});
 }

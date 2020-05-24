@@ -1,5 +1,3 @@
-import * as _ from '@snyk/lodash';
-
 export interface PkgTree {
   name: string;
   version: string;
@@ -29,11 +27,11 @@ export interface ProjectAssetsJsonManifest {
 }
 
 function getProjectNameForProjectAssetsJson(manifestFile) {
-  return _.get(manifestFile, ['project', 'restore', 'projectName'], {});
+  return manifestFile?.project?.restore?.projectName ?? {};
 }
 
 function getProjectVersionForProjectAssetsJson(manifestFile) {
-  return _.get(manifestFile, ['project', 'version'], {});
+  return manifestFile?.project?.version ?? {};
 }
 
 function buildPackageTree(name, version) {
@@ -57,12 +55,12 @@ export function getDependencyTreeFromProjectAssetsJson(
   const projectVersion = getProjectVersionForProjectAssetsJson(manifestFile);
   const depTree = buildPackageTree(projectName, projectVersion);
 
-  const topLevelDeps = Object.keys(_.get(manifestFile, ['targets', targetFrameWork], {}));
+  const topLevelDeps = Object.keys(manifestFile?.targets?.[targetFrameWork] ?? {});
   for (const topLevelDep of topLevelDeps) {
     const [topLevelDepName, topLevelDepVersion] = topLevelDep.split('/');
     const topLevelDepTree = buildPackageTree(topLevelDepName, topLevelDepVersion);
 
-    const transitiveDeps = _.get(manifestFile, ['targets', targetFrameWork, topLevelDep, 'dependencies'], {});
+    const transitiveDeps = manifestFile?.targets?.[targetFrameWork]?.[topLevelDep]?.dependencies ?? {};
     for (const transitiveDep of Object.keys(transitiveDeps)) {
       const transitiveDepVersion = transitiveDeps[transitiveDep];
       const transitiveDepTree = buildPackageTree(transitiveDep, transitiveDepVersion);

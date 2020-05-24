@@ -155,9 +155,9 @@ async function extractTargetFrameworksFromProjectConfig(
 
 async function containsPackageReference(manifestFileContents: string) {
 
-  const manifestFile: object = await parseXmlFile(manifestFileContents);
+  const manifestFile: any = await parseXmlFile(manifestFileContents);
 
-  const projectItems = _.get(manifestFile, 'Project.ItemGroup', []);
+  const projectItems = manifestFile?.Project?.ItemGroup ?? [];
   const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
 
   return referenceIndex !== -1;
