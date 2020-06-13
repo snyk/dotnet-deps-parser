@@ -203,7 +203,7 @@ function processItemGroupForPackageReference(
   includeDev: boolean,
   dependenciesResult,
   propsMap: PropsLookup) {
-  const targetFrameworks: string[] = packageList?.["$"]?.Condition ?? false ?
+  const targetFrameworks: string[] = packageList?.$?.Condition ?? false ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const dep of packageList.PackageReference) {
@@ -256,7 +256,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
 
 function processItemGroupForReferenceInclude(
   packageList, manifestFile,  includeDev, dependenciesResult, propsMap) {
-  const targetFrameworks: string[] = packageList?.["$"]?.Condition ?? false ?
+  const targetFrameworks: string[] = packageList?.$?.Condition ?? false ?
     getConditionalFrameworks(packageList.$.Condition) : [];
 
   for (const item of packageList.Reference) {
@@ -348,7 +348,7 @@ function buildSubTreeFromPackageReference(
 
 function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   const VARS_MATCHER = /^\$\((.*?)\)/;
-  let version  = dep?.["$"]?.Version || dep?.Version;
+  let version  = dep?.$?.Version || dep?.Version;
   if (Array.isArray(version)) {
     version = version[0];
   }
