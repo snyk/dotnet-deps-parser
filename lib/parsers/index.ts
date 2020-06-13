@@ -1,5 +1,7 @@
 import * as parseXML from 'xml2js';
-import * as _ from '@snyk/lodash';
+import * as _isEmpty from 'lodash.isempty';
+import * as _set from 'lodash.set';
+import * as _uniq from 'lodash.uniq';
 import {InvalidUserInputError} from '../errors';
 
 export interface PkgTree {
@@ -297,7 +299,7 @@ function buildSubTreeFromReferenceInclude(
   dep, isDev: boolean, manifestFile, targetFrameworks: string[], propsMap: PropsLookup):
   PkgTree | DependencyWithoutVersion {
   const version = extractDependencyVersion(dep, manifestFile, propsMap) || '';
-  if (!_.isEmpty(version)) {
+  if (!_isEmpty(version)) {
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
       dependencies: {},
@@ -324,7 +326,7 @@ function buildSubTreeFromPackageReference(
   PkgTree | DependencyWithoutVersion {
 
   const version = extractDependencyVersion(dep, manifestFile, propsMap) || '';
-  if (!_.isEmpty(version)) {
+  if (!_isEmpty(version)) {
 
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
@@ -399,7 +401,7 @@ export function getPropertiesMap(propsContents: any): PropsLookup {
 
   for (const group of projectPropertyGroup) {
     for (const key of Object.keys(group)) {
-      _.set(props, key, group[key][0]);
+      _set(props, key, group[key][0]);
     }
   }
   return props;
@@ -419,7 +421,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
         || 'TargetFrameworkVersion' in propertyGroup;
       }) || {};
 
-  if (_.isEmpty(propertyList)) {
+  if (_isEmpty(propertyList)) {
     return targetFrameworksResult;
   }
   // TargetFrameworks is expected to be a list ; separated
@@ -439,7 +441,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
     targetFrameworksResult = [...targetFrameworksResult, ...propertyList.TargetFramework];
   }
 
-  return _.uniq(targetFrameworksResult);
+  return _uniq(targetFrameworksResult);
 }
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
