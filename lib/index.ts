@@ -1,7 +1,6 @@
 import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as _ from '@snyk/lodash';
 
 import {PkgTree, DepType, parseXmlFile,
   getDependencyTreeFromPackagesConfig, getDependencyTreeFromProjectJson,
@@ -89,13 +88,13 @@ function buildDepTreeFromFiles(
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
+  if (PROJ_FILE_EXTENSIONS.includes(manifestFileExtension)) {
     return buildDepTreeFromProjectFile(manifestFileContents, includeDev);
-  } else if (_.endsWith(manifestFilePath, 'packages.config')) {
+  } else if (manifestFilePath.endsWith('packages.config')) {
     return buildDepTreeFromPackagesConfig(manifestFileContents, includeDev);
-  } else if (_.endsWith(manifestFilePath, 'project.json')) {
+  } else if (manifestFilePath.endsWith('project.json')) {
     return buildDepTreeFromProjectJson(manifestFileContents, includeDev);
-  } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
+  } else if (manifestFilePath.endsWith('project.assets.json')) {
     return buildDepTreeFromProjectAssetsJson(manifestFileContents, targetFramework);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
@@ -119,13 +118,13 @@ function extractTargetFrameworksFromFiles(
   const manifestFileContents = fs.readFileSync(manifestFileFullPath, 'utf-8');
   const manifestFileExtension = path.extname(manifestFileFullPath);
 
-  if (_.includes(PROJ_FILE_EXTENSIONS, manifestFileExtension)) {
+  if (PROJ_FILE_EXTENSIONS.includes(manifestFileExtension)) {
     return extractTargetFrameworksFromProjectFile(manifestFileContents);
-  } else if (_.endsWith(manifestFilePath, 'packages.config')) {
+  } else if (manifestFilePath.endsWith('packages.config')) {
     return extractTargetFrameworksFromProjectConfig(manifestFileContents);
-  } else if (_.endsWith(manifestFilePath, 'project.json')) {
+  } else if (manifestFilePath.endsWith('project.json')) {
     return extractTargetFrameworksFromProjectJson(manifestFileContents);
-  } else if (_.endsWith(manifestFilePath, 'project.assets.json')) {
+  } else if (manifestFilePath.endsWith('project.assets.json')) {
     return extractTargetFrameworksFromProjectAssetsJson(manifestFileContents);
   } else {
     throw new Error(`Unsupported file ${manifestFilePath}, Please provide ` +
@@ -155,10 +154,10 @@ async function extractTargetFrameworksFromProjectConfig(
 
 async function containsPackageReference(manifestFileContents: string) {
 
-  const manifestFile: object = await parseXmlFile(manifestFileContents);
+  const manifestFile: any = await parseXmlFile(manifestFileContents);
 
-  const projectItems = _.get(manifestFile, 'Project.ItemGroup', []);
-  const referenceIndex = _.findIndex(projectItems, (itemGroup) => _.has(itemGroup, 'PackageReference'));
+  const projectItems: any[] = manifestFile?.Project?.ItemGroup ?? [];
+  const referenceIndex = projectItems.findIndex((itemGroup) => 'PackageReference' in itemGroup);
 
   return referenceIndex !== -1;
 }

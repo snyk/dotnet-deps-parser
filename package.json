@@ -18,7 +18,7 @@
   "author": "snyk.io",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "files": [
     "bin",
@@ -26,13 +26,15 @@
   ],
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
-    "@snyk/lodash": "4.17.15-patch",
+    "lodash.isempty": "^4.4.0",
+    "lodash.set": "^4.3.2",
+    "lodash.uniq": "^4.5.0",
     "source-map-support": "^0.5.7",
     "tslib": "^1.10.0",
     "xml2js": "0.4.23"
   },
   "devDependencies": {
-    "@types/node": "^6.0.47",
+    "@types/node": "^8.10.61",
     "@types/xml2js": "0.4.5",
     "tap": "github:snyk/node-tap#alternative-runtimes",
     "ts-node": "7.0.0",
