@@ -1,9 +1,9 @@
 node_modules/
 npm-debug.log
 obj/
-.npmrc
 # output
 dist
 .DS_Store
 *.log
 package-lock.json
+.nyc_output/
