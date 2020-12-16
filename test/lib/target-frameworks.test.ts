@@ -40,6 +40,13 @@ test('.Net .csproj dotnet-empty-manifest target framework extracted', async (t) 
   t.deepEqual(targetFrameworks, [], 'targetFramework array is as expected');
 });
 
+test('.Net .csproj multiple target frameworks extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+      `${__dirname}/../fixtures/dotnet-multiple-target-frameworks`,
+      'multi-target.csproj');
+  t.deepEqual(targetFrameworks, ['netstandard2.0', 'net462'], 'targetFramework array is as expected');
+});
+
 /*
 ****** fsproj ******
 */

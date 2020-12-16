@@ -427,7 +427,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   // TargetFrameworks is expected to be a list ; separated
   if (propertyList.TargetFrameworks) {
     for (const item of propertyList.TargetFrameworks) {
-      targetFrameworksResult = [...targetFrameworksResult, ...item.split(';')];
+      targetFrameworksResult = [...targetFrameworksResult, ...item.split(';').filter( (x) => !_isEmpty(x))];
     }
   }
   // TargetFrameworkVersion is expected to be a string containing only one item
