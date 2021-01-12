@@ -157,7 +157,8 @@ async function containsPackageReference(manifestFileContents: string) {
   const manifestFile: any = await parseXmlFile(manifestFileContents);
 
   const projectItems: any[] = manifestFile?.Project?.ItemGroup ?? [];
-  const referenceIndex = projectItems.findIndex((itemGroup) => 'PackageReference' in itemGroup);
+  const referenceIndex = projectItems
+    .findIndex((itemGroup) => typeof itemGroup === 'object' && 'PackageReference' in itemGroup);
 
   return referenceIndex !== -1;
 }

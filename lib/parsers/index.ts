@@ -183,7 +183,7 @@ async function getDependenciesFromPackageReference(
     hasDevDependencies: false,
   };
   const packageGroups = (manifestFile?.Project?.ItemGroup ?? [])
-    .filter((itemGroup) => 'PackageReference' in itemGroup);
+    .filter((itemGroup) => typeof itemGroup === 'object' && 'PackageReference' in itemGroup);
 
   if (!packageGroups.length) {
     return dependenciesResult;
@@ -241,7 +241,7 @@ async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boo
 
   const referenceIncludeList =
   (manifestFile?.Project?.ItemGroup ?? [])
-  .find((itemGroup) => 'Reference' in itemGroup);
+  .find((itemGroup) => typeof itemGroup === 'object' && 'Reference' in itemGroup);
 
   if (!referenceIncludeList) {
     return referenceIncludeResult;
