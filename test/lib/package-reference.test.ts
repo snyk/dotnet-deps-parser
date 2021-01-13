@@ -19,6 +19,13 @@ test('Project contains PackageReference as expected even if Reference Include pr
   t.true(hasPackageReference);
 });
 
+test('.Net C# project contains PackageReference with empty item group works as expected', async (t) => {
+  const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-core-simple-project-empty-item-group/simple-project-empty-item-group.csproj`, 'utf-8');
+  const hasPackageReference = await containsPackageReference(manifestFileContents);
+  t.true(hasPackageReference);
+});
+
+
 test('.Net C# project does not contain PackageReference as expected', async (t) => {
   const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-no-packagereference/project.csproj`, 'utf-8');
   const hasPackageReference = await containsPackageReference(manifestFileContents);
