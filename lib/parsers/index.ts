@@ -427,7 +427,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   // TargetFrameworks is expected to be a list ; separated
   if (propertyList.TargetFrameworks) {
     for (const item of propertyList.TargetFrameworks) {
-      targetFrameworksResult = [...targetFrameworksResult, ...item.split(';').filter( (x) => !_isEmpty(x))];
+      targetFrameworksResult = [...targetFrameworksResult, ...getTargetFrameworks(item)];
     }
   }
   // TargetFrameworkVersion is expected to be a string containing only one item
@@ -442,6 +442,13 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   }
 
   return _uniq(targetFrameworksResult);
+}
+
+function getTargetFrameworks(item: string | any) {
+  if (typeof item === 'object' && item.hasOwnProperty('_')) {
+    item = item._;
+  }
+  return item.split(';').filter((x) => !_isEmpty(x));
 }
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
