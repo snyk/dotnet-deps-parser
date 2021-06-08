@@ -33,6 +33,13 @@ test('.Net .csproj simple project target framework extracted as expected', async
   t.deepEqual(targetFrameworks, ['netcoreapp1.1', 'netcoreapp1.2'], 'targetFramework array is as expected');
 });
 
+test('.Net .csproj simple project target framework with attributes extracted as expected', async (t) => {
+  const targetFrameworks = await extractTargetFrameworksFromFiles(
+    `${__dirname}/../fixtures/dotnet-core-simple-project-complex-target-frameworks`,
+    'simple-project.csproj');
+  t.deepEqual(targetFrameworks, ['netcoreapp1.1', 'netcoreapp1.2'], 'targetFramework array is as expected');
+});
+
 test('.Net .csproj dotnet-empty-manifest target framework extracted', async (t) => {
   const targetFrameworks = await extractTargetFrameworksFromFiles(
     `${__dirname}/../fixtures/dotnet-empty-manifest`,
