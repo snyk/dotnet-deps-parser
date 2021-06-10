@@ -25,6 +25,14 @@ test('.Net C# project contains PackageReference with empty item group works as e
   t.true(hasPackageReference);
 });
 
+//Test for Bug Fix:  https://snyk.zendesk.com/agent/tickets/10157
+test.skip('.Net C# project contains empty PropertyGroup but still works as expected', async (t) => {
+  const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-core-simple-project-empty-property-group/simple-project-empty-property-group.csproj`, 'utf-8');
+  const hasPackageReference = await containsPackageReference(manifestFileContents);
+  t.true(hasPackageReference);
+});
+
+
 
 test('.Net C# project does not contain PackageReference as expected', async (t) => {
   const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-no-packagereference/project.csproj`, 'utf-8');
