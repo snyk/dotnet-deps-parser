@@ -138,6 +138,7 @@ export async function getDependencyTreeFromProjectFile(
   includeDev: boolean = false,
   propsMap: PropsLookup = {}): Promise<PkgTree> {
   const nameProperty = (manifestFile?.Project?.PropertyGroup ?? [])
+  .filter((propertyGroup) => typeof propertyGroup !== 'string')
     .find((propertyGroup) => {
       return 'PackageId' in propertyGroup
       || 'AssemblyName' in propertyGroup;
@@ -173,7 +174,7 @@ export async function getDependencyTreeFromProjectFile(
   return depTree;
 }
 
-async function getDependenciesFromPackageReference(
+export async function getDependenciesFromPackageReference(
   manifestFile,
   includeDev: boolean = false,
   propsMap: PropsLookup):
@@ -231,7 +232,8 @@ function processItemGroupForPackageReference(
 }
 
 // TODO: almost same as getDependenciesFromPackageReference
-async function getDependenciesFromReferenceInclude(manifestFile, includeDev: boolean = false, propsMap: PropsLookup):
+export async function getDependenciesFromReferenceInclude(
+  manifestFile, includeDev: boolean = false, propsMap: PropsLookup):
   Promise <DependenciesDiscoveryResult> {
 
   let referenceIncludeResult: DependenciesDiscoveryResult = {
