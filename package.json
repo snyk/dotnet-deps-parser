@@ -6,7 +6,10 @@
     "test": "npm run lint && npm run test:tap && npm run test:jest",
     "test:tap": "npm run build && tap test/lib/**/*.test.ts -Rspec --timeout=300",
     "test:jest": "jest",
-    "lint": "tslint -p tsconfig.json",
+    "format:check": "prettier --check '{test,src}/**/*.{js,ts}' && tslint -p tsconfig.json",
+    "format": "prettier --write '{test,src}/**/*.{js,ts}' && tslint -p tsconfig.json --fix",
+    "pre-push": "npm run format:check",
+    "lint": "npm run format:check && eslint --cache '{test,src}/**/*.{js,ts}'",
     "build": "tsc",
     "build-watch": "tsc -w",
     "prepare": "npm run build"
@@ -19,7 +22,7 @@
   "author": "snyk.io",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "files": [
     "bin",
@@ -35,7 +38,7 @@
     "xml2js": "0.4.23"
   },
   "devDependencies": {
-    "@types/node": "^8.10.61",
+    "@types/node": "^10",
     "@types/xml2js": "0.4.5",
     "@types/jest": "^23.3.2",
     "jest": "23.6.0",
