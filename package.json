@@ -3,8 +3,9 @@
   "description": "Generate a dep tree given a collection of manifests",
   "main": "dist/index.js",
   "scripts": {
-    "test": "npm run lint && npm run unit-test",
-    "unit-test": "npm run build && tap test/lib -Rspec --timeout=300",
+    "test": "npm run lint && npm run test:tap && npm run test:jest",
+    "test:tap": "npm run build && tap test/lib/**/*.test.ts -Rspec --timeout=300",
+    "test:jest": "jest",
     "lint": "tslint -p tsconfig.json",
     "build": "tsc",
     "build-watch": "tsc -w",
@@ -36,6 +37,9 @@
   "devDependencies": {
     "@types/node": "^8.10.61",
     "@types/xml2js": "0.4.5",
+    "@types/jest": "^23.3.2",
+    "jest": "23.6.0",
+    "ts-jest": "^23.10.1",
     "tap": "^14.10.7",
     "tslint": "5.11.0",
     "typescript": "3.7.3"
