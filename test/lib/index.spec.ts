@@ -3,7 +3,7 @@ import * as parsers from '../../lib/parsers/index';
 describe('Tests for property group tag', () => {
   afterEach(() => jest.resetAllMocks());
 
-  it('should not fail when property group tag is empty', async () => {
+  it('should not fail when there is an property group tag', async () => {
     jest
       .spyOn(parsers, 'getDependenciesFromReferenceInclude')
       .mockImplementation(() =>
@@ -50,7 +50,7 @@ describe('Tests for property group tag', () => {
     ).toBeTruthy();
   });
 
-  it('should not fail when property group tag is not empty ', async () => {
+  it('should not fail when there is not an empty property group tag ', async () => {
     jest
       .spyOn(parsers, 'getDependenciesFromReferenceInclude')
       .mockImplementation(() =>
