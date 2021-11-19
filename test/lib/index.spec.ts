@@ -7,7 +7,7 @@ describe('Tests for property group tag', () => {
     jest
       .spyOn(parsers, 'getDependenciesFromReferenceInclude')
       .mockImplementation(() =>
-        Promise.resolve({ dependencies: {}, hasDevDependencies: false })
+        Promise.resolve({ dependencies: {}, hasDevDependencies: false }),
       );
     jest
       .spyOn(parsers, 'getDependenciesFromPackageReference')
@@ -21,7 +21,7 @@ describe('Tests for property group tag', () => {
             },
           },
           hasDevDependencies: false,
-        })
+        }),
       );
 
     const propertyGroup = [
@@ -46,7 +46,7 @@ describe('Tests for property group tag', () => {
     };
 
     expect(
-      parsers.getDependencyTreeFromProjectFile(mockManifestFile)
+      parsers.getDependencyTreeFromProjectFile(mockManifestFile),
     ).toBeTruthy();
   });
 
@@ -54,7 +54,7 @@ describe('Tests for property group tag', () => {
     jest
       .spyOn(parsers, 'getDependenciesFromReferenceInclude')
       .mockImplementation(() =>
-        Promise.resolve({ dependencies: {}, hasDevDependencies: false })
+        Promise.resolve({ dependencies: {}, hasDevDependencies: false }),
       );
     jest
       .spyOn(parsers, 'getDependenciesFromPackageReference')
@@ -68,25 +68,25 @@ describe('Tests for property group tag', () => {
             },
           },
           hasDevDependencies: false,
-        })
+        }),
       );
 
     const propertyGroup = [
       {
-        RuntimeIdentifiers: [ 'win-x64;linux-x64' ],
-        TargetFramework: [ 'netcoreapp3.1' ],
-        AzureFunctionsVersion: [ 'v3' ],
-        UserSecretsId: [ 'd7b31cfb-0edc-44d5-8646-ca9de9592e1e' ],
-        CodeAnalysisRuleSet: [ '../../Settings.StyleCop' ],
-        TreatWarningsAsErrors: [ 'false' ],
-        LangVersion: [ 'latest' ],
-        Nullable: [ 'enable' ],
-        ProjectGuid: [ '{37e13009-759c-4c94-8aa2-91a9a8da7a13}' ]
+        RuntimeIdentifiers: ['win-x64;linux-x64'],
+        TargetFramework: ['netcoreapp3.1'],
+        AzureFunctionsVersion: ['v3'],
+        UserSecretsId: ['d7b31cfb-0edc-44d5-8646-ca9de9592e1e'],
+        CodeAnalysisRuleSet: ['../../Settings.StyleCop'],
+        TreatWarningsAsErrors: ['false'],
+        LangVersion: ['latest'],
+        Nullable: ['enable'],
+        ProjectGuid: ['{37e13009-759c-4c94-8aa2-91a9a8da7a13}'],
       },
       {
-        RuntimeIdentifiers: [ 'win-x64;linux-x64' ],
-        TargetFramework: [ 'netcoreapp3.1' ]
-      }
+        RuntimeIdentifiers: ['win-x64;linux-x64'],
+        TargetFramework: ['netcoreapp3.1'],
+      },
     ];
 
     const mockManifestFile = {
@@ -96,7 +96,7 @@ describe('Tests for property group tag', () => {
     };
 
     expect(
-      parsers.getDependencyTreeFromProjectFile(mockManifestFile)
+      parsers.getDependencyTreeFromProjectFile(mockManifestFile),
     ).toBeTruthy();
   });
 });
