@@ -4,17 +4,17 @@ notifications:
   email: false
 language: node_js
 node_js:
-  - "12"
-  - "10"
-  - "8"
+  - '14'
+  - '12'
+  - '10'
 cache: npm
 script:
-  - "npm run lint"
-  - "npm test"
+  - 'npm run lint'
+  - 'npm test'
 jobs:
   include:
     - stage: npm release
-      node_js: "10"
+      node_js: '10'
       script: skip
       after_success:
         - npx semantic-release

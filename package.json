@@ -3,10 +3,10 @@
   "description": "Generate a dep tree given a collection of manifests",
   "main": "dist/index.js",
   "scripts": {
-    "test": "npm run format:check && npm run lint && npm run test:tap && npm run test:jest",
+    "test": "npm run lint && npm run test:tap && npm run test:jest",
     "test:tap": "npm run build && tap test/lib/**/*.test.ts -Rspec --timeout=300",
     "test:jest": "jest",
-    "lint": "tslint -p tsconfig.json",
+    "lint": "npm run format:check && tslint -p tsconfig.json",
     "build": "tsc",
     "build-watch": "tsc -w",
     "prepare": "npm run build",
