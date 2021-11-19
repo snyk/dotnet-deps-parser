@@ -11,8 +11,8 @@ test('.Net C# project with variable is parsed', async (t) => {
   const manifestFileContents = fs.readFileSync(`${__dirname}/../fixtures/dotnet-variables/Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test.csproj`, 'utf-8');
   const depTree = await buildDepTreeFromProjectFile(manifestFileContents);
   t.ok(depTree);
-  t.ok(depTree.dependenciesWithUnknownVersions);
-  t.equal(depTree.dependenciesWithUnknownVersions!.length, 4);
+  t.ok(depTree.dependenciesWithInjectedPropVersion);
+  t.equal(depTree.dependenciesWithInjectedPropVersion!.length, 4);
 });
 
 test('.Net C# project with variables is parsed fully when props are read too', async (t) => {
