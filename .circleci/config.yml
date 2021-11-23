@@ -1,0 +1,96 @@
+version: 2.1
+
+executors:
+  docker-node:
+    parameters:
+      version:
+        default: 'lts'
+        type: string
+    docker:
+      - image: cimg/node:<<parameters.version>>
+
+commands:
+  install:
+    steps:
+      - run:
+          name: Install
+          command: npm install
+  test:
+    steps:
+      - run:
+          name: Test
+          command: npm test
+  release:
+    steps:
+      - run:
+          name: Release
+          command: npx semantic-release
+  lint:
+    steps:
+      - run:
+          name: Lint
+          command: npm run lint
+
+jobs:
+  test:
+    resource_class: small
+    parameters:
+      version:
+        default: 'lts'
+        type: string
+    executor:
+      name: docker-node
+      version: <<parameters.version>>
+    steps:
+      - checkout
+      - install
+      - test
+
+  release:
+    resource_class: small
+    executor:
+      name: docker-node
+    steps:
+      - checkout
+      - install
+      - release
+
+  lint:
+    resource_class: small
+    executor:
+      name: docker-node
+    steps:
+      - checkout
+      - install
+      - lint
+
+workflows:
+  test:
+    jobs:
+      - lint:
+          filters:
+            branches:
+              ignore:
+                - master
+      - test:
+          requires:
+            - lint
+          matrix:
+            parameters:
+              version:
+                - 10.22.1
+                - 12.18.4
+                - 14.13.0
+                - 16.13.0
+          filters:
+            branches:
+              ignore:
+                - master
+  release:
+    jobs:
+      - release:
+          context: nodejs-lib-release
+          filters:
+            branches:
+              only:
+                - master
