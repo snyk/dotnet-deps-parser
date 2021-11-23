@@ -163,32 +163,20 @@ export async function getDependencyTreeFromProjectFile(
     includeDev,
     propsMap,
   );
-  const referenceIncludeDeps = await getDependenciesFromReferenceInclude(
-    manifestFile,
-    includeDev,
-    propsMap,
-  );
 
   // order matters, the order deps are parsed in needs to be preserved and first seen kept
   // so applying the packageReferenceDeps last to override the second parsed
   const depTree: PkgTree = {
     dependencies: {
-      ...referenceIncludeDeps.dependencies,
       ...packageReferenceDeps.dependencies,
     },
-    hasDevDependencies:
-      packageReferenceDeps.hasDevDependencies ||
-      referenceIncludeDeps.hasDevDependencies,
+    hasDevDependencies: packageReferenceDeps.hasDevDependencies,
     name,
     version: '',
   };
   if (packageReferenceDeps.dependenciesWithUnknownVersions) {
     depTree.dependenciesWithUnknownVersions =
       packageReferenceDeps.dependenciesWithUnknownVersions;
-  }
-  if (referenceIncludeDeps.dependenciesWithUnknownVersions) {
-    depTree.dependenciesWithUnknownVersions =
-      referenceIncludeDeps.dependenciesWithUnknownVersions;
   }
 
   return depTree;
@@ -266,116 +254,6 @@ function processItemGroupForPackageReference(
   }
 
   return dependenciesResult;
-}
-
-// TODO: almost same as getDependenciesFromPackageReference
-export async function getDependenciesFromReferenceInclude(
-  manifestFile,
-  includeDev: boolean = false,
-  propsMap: PropsLookup,
-): Promise<DependenciesDiscoveryResult> {
-  let referenceIncludeResult: DependenciesDiscoveryResult = {
-    dependencies: {},
-    hasDevDependencies: false,
-  };
-
-  const referenceIncludeList = (manifestFile?.Project?.ItemGroup ?? []).find(
-    (itemGroup) => typeof itemGroup === 'object' && 'Reference' in itemGroup,
-  );
-
-  if (!referenceIncludeList) {
-    return referenceIncludeResult;
-  }
-
-  referenceIncludeResult = processItemGroupForReferenceInclude(
-    referenceIncludeList,
-    manifestFile,
-    includeDev,
-    referenceIncludeResult,
-    propsMap,
-  );
-
-  return referenceIncludeResult;
-}
-
-function processItemGroupForReferenceInclude(
-  packageList,
-  manifestFile,
-  includeDev,
-  dependenciesResult,
-  propsMap,
-) {
-  const targetFrameworks: string[] =
-    packageList?.$?.Condition ?? false
-      ? getConditionalFrameworks(packageList.$.Condition)
-      : [];
-
-  for (const item of packageList.Reference) {
-    const propertiesList = item.$.Include.split(',').map((i) => i.trim());
-    const [depName, ...depInfoArray] = propertiesList;
-    const depInfo: ReferenceInclude = {};
-
-    if (!depName) {
-      continue;
-    }
-
-    // TODO: identify dev deps @lili
-    const isDev = false;
-
-    dependenciesResult.hasDevDependencies =
-      dependenciesResult.hasDevDependencies || isDev;
-    if (isDev && !includeDev) {
-      continue;
-    }
-
-    for (const itemValue of depInfoArray) {
-      const propertyValuePair = itemValue.split('=');
-      depInfo[propertyValuePair[0]] = propertyValuePair[1];
-    }
-    depInfo.name = depName;
-    const subDep = buildSubTreeFromReferenceInclude(
-      depInfo,
-      isDev,
-      manifestFile,
-      targetFrameworks,
-      propsMap,
-    );
-    if ((subDep as DependencyWithoutVersion).withoutVersion) {
-      dependenciesResult.dependenciesWithUnknownVersions =
-        dependenciesResult.dependenciesWithUnknownVersions || [];
-      dependenciesResult.dependenciesWithUnknownVersions.push(subDep.name);
-    } else {
-      dependenciesResult.dependencies[depName] = subDep as PkgTree;
-    }
-  }
-
-  return dependenciesResult;
-}
-
-function buildSubTreeFromReferenceInclude(
-  dep,
-  isDev: boolean,
-  manifestFile,
-  targetFrameworks: string[],
-  propsMap: PropsLookup,
-): PkgTree | DependencyWithoutVersion {
-  const version = extractDependencyVersion(dep, manifestFile, propsMap) || '';
-  if (!_isEmpty(version)) {
-    const depSubTree: PkgTree = {
-      depType: isDev ? DepType.dev : DepType.prod,
-      dependencies: {},
-      name: dep.name,
-      // Version could be in attributes or as child node.
-      version,
-    };
-    if (targetFrameworks.length) {
-      depSubTree.targetFrameworks = targetFrameworks;
-    }
-
-    return depSubTree;
-  } else {
-    return { name: dep.name, withoutVersion: true };
-  }
 }
 
 function buildSubTreeFromPackageReference(

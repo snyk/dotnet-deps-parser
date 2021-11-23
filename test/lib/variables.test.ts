@@ -85,39 +85,5 @@ test('.Net oldstyle project with variable is parsed and versions resolved', asyn
   );
 
   t.ok(depTree);
-  t.equal(
-    depTree.dependenciesWithUnknownVersions!.length,
-    7,
-    '7 deps with no versions specified',
-  );
-  t.deepEqual(
-    depTree.dependencies,
-    {
-      'Newtonsoft.Json': {
-        depType: 'prod',
-        dependencies: {},
-        name: 'Newtonsoft.Json',
-        version: '10.0.0.0',
-      },
-      Orleans: {
-        depType: 'prod',
-        dependencies: {},
-        name: 'Orleans',
-        version: '1.4.0.0',
-      },
-      'System.Console': {
-        depType: 'prod',
-        dependencies: {},
-        name: 'System.Console',
-        version: '4.0.0.0',
-      },
-      'nunit.framework': {
-        depType: 'prod',
-        dependencies: {},
-        name: 'nunit.framework',
-        version: '3.8.1.0',
-      },
-    },
-    'deps resolved',
-  );
+  t.deepEqual(depTree.dependencies, {}, 'deps resolved');
 });
