@@ -11,18 +11,18 @@ export interface ProjectAssetsJsonManifest {
   targets: {
     [target: string]: {
       [name: string]: {
-        type: string,
+        type: string;
         dependencies?: {
           [deps: string]: string;
         };
       };
-    },
+    };
   };
   project: {
     restore: {
-      projectName: string,
-    },
-    version: string,
+      projectName: string;
+    };
+    version: string;
   };
 }
 
@@ -50,20 +50,30 @@ function buildPackageTree(name, version) {
 export function getDependencyTreeFromProjectAssetsJson(
   manifestFile: ProjectAssetsJsonManifest,
   targetFrameWork,
-  ): PkgTree {
+): PkgTree {
   const projectName = getProjectNameForProjectAssetsJson(manifestFile);
   const projectVersion = getProjectVersionForProjectAssetsJson(manifestFile);
   const depTree = buildPackageTree(projectName, projectVersion);
 
-  const topLevelDeps = Object.keys(manifestFile?.targets?.[targetFrameWork] ?? {});
+  const topLevelDeps = Object.keys(
+    manifestFile?.targets?.[targetFrameWork] ?? {},
+  );
   for (const topLevelDep of topLevelDeps) {
     const [topLevelDepName, topLevelDepVersion] = topLevelDep.split('/');
-    const topLevelDepTree = buildPackageTree(topLevelDepName, topLevelDepVersion);
+    const topLevelDepTree = buildPackageTree(
+      topLevelDepName,
+      topLevelDepVersion,
+    );
 
-    const transitiveDeps = manifestFile?.targets?.[targetFrameWork]?.[topLevelDep]?.dependencies ?? {};
+    const transitiveDeps =
+      manifestFile?.targets?.[targetFrameWork]?.[topLevelDep]?.dependencies ??
+      {};
     for (const transitiveDep of Object.keys(transitiveDeps)) {
       const transitiveDepVersion = transitiveDeps[transitiveDep];
-      const transitiveDepTree = buildPackageTree(transitiveDep, transitiveDepVersion);
+      const transitiveDepTree = buildPackageTree(
+        transitiveDep,
+        transitiveDepVersion,
+      );
       topLevelDepTree.dependencies[transitiveDep] = transitiveDepTree;
     }
     depTree.dependencies[topLevelDepName] = topLevelDepTree;
