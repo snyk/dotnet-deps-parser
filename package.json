@@ -10,8 +10,8 @@
     "build": "tsc",
     "build-watch": "tsc -w",
     "prepare": "npm run build",
-    "format:check": "prettier --check '{test,src}/**/*.{js,ts}' && tslint -p tsconfig.json",
-    "format": "prettier --write '{test,src}/**/*.{js,ts}' && tslint -p tsconfig.json --fix"
+    "format:check": "prettier --check '{test,lib}/**/*.{js,ts}' && tslint -p tsconfig.json",
+    "format": "prettier --write '{test,lib}/**/*.{js,ts}' && tslint -p tsconfig.json --fix"
   },
   "types": "./dist/index.d.ts",
   "repository": {

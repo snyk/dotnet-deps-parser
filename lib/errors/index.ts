@@ -1,1 +1,1 @@
-export {InvalidUserInputError} from './invalid-user-input-error';
+export { InvalidUserInputError } from './invalid-user-input-error';
