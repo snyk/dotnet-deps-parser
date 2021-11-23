@@ -83,41 +83,8 @@
       "dependencies": {},
       "name": "newtonsoft.json",
       "version": "11.0.2"
-    },
-    "System.Console": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "System.Console",
-      "version": "4.0.0.0"
-    },
-    "Newtonsoft.Json": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "Newtonsoft.Json",
-      "version": "10.0.0.0"
-    },
-    "nunit.framework": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "nunit.framework",
-      "version": "3.8.1.0"
-    },
-    "Orleans": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "Orleans",
-      "version": "1.4.0.0"
     }
   },
-  "dependenciesWithUnknownVersions": [
-    "Microsoft.CSharp",
-    "System.Web.DynamicData",
-    "System.Web.Entity",
-    "System.Web.ApplicationServices",
-    "System.ComponentModel.DataAnnotations",
-    "System",
-    "Microsoft.Web.Infrastructure"
-  ],
   "hasDevDependencies": false,
   "name": "Simple-Project-Name",
   "version": ""

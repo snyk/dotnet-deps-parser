@@ -13,24 +13,6 @@
       "version": "11.0.2"
     }
   },
-  "dependenciesWithUnknownVersions": [
-    "System",
-    "System.Data",
-    "System.Drawing",
-    "System.Core",
-    "System.Data.DataSetExtensions",
-    "System.Web.Extensions",
-    "System.Xml.Linq",
-    "System.Web.DynamicData",
-    "System.Web.Entity",
-    "System.Web.ApplicationServices",
-    "System.ComponentModel.DataAnnotations",
-    "System.Web",
-    "System.Xml",
-    "System.Configuration",
-    "System.Web.Services",
-    "System.EnterpriseServices"
-  ],
   "hasDevDependencies": false,
   "name": "SnykTestVB",
   "version": ""

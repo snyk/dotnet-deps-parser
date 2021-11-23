@@ -5,11 +5,6 @@ describe('Tests for property group tag', () => {
 
   it('should not fail when there is an property group tag', async () => {
     jest
-      .spyOn(parsers, 'getDependenciesFromReferenceInclude')
-      .mockImplementation(() =>
-        Promise.resolve({ dependencies: {}, hasDevDependencies: false }),
-      );
-    jest
       .spyOn(parsers, 'getDependenciesFromPackageReference')
       .mockImplementation(() =>
         Promise.resolve({
@@ -51,11 +46,6 @@ describe('Tests for property group tag', () => {
   });
 
   it('should not fail when there is not an empty property group tag ', async () => {
-    jest
-      .spyOn(parsers, 'getDependenciesFromReferenceInclude')
-      .mockImplementation(() =>
-        Promise.resolve({ dependencies: {}, hasDevDependencies: false }),
-      );
     jest
       .spyOn(parsers, 'getDependenciesFromPackageReference')
       .mockImplementation(() =>
