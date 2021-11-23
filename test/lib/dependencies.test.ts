@@ -16,11 +16,6 @@ test('.Net Visual Basic project tree generated as expected', async (t) => {
     false,
   );
   const expectedTree = load('dotnet-vb-simple-project/expected-tree.json');
-  t.deepEqual(
-    tree.dependenciesWithUnknownVersions!.length,
-    16,
-    'skipped empty versions',
-  );
   t.deepEqual(tree, expectedTree, 'trees are equal');
 });
 
@@ -455,39 +450,5 @@ test('.Net oldstyle project with variable is parsed and unknown skipped', async 
   const depTree = await buildDepTreeFromProjectFile(manifestFileContents);
 
   t.ok(depTree);
-  t.equal(
-    depTree.dependenciesWithUnknownVersions!.length,
-    7,
-    '7 deps with no versions specified',
-  );
-  t.deepEqual(
-    depTree.dependencies,
-    {
-      'Newtonsoft.Json': {
-        depType: 'prod',
-        dependencies: {},
-        name: 'Newtonsoft.Json',
-        version: '10.0.0.0',
-      },
-      Orleans: {
-        depType: 'prod',
-        dependencies: {},
-        name: 'Orleans',
-        version: '1.4.0.0',
-      },
-      'System.Console': {
-        depType: 'prod',
-        dependencies: {},
-        name: 'System.Console',
-        version: '4.0.0.0',
-      },
-      'nunit.framework': {
-        depType: 'prod',
-        dependencies: {},
-        name: 'nunit.framework',
-        version: '3.8.1.0',
-      },
-    },
-    'deps resolved',
-  );
+  t.deepEqual(depTree.dependencies, {}, 'deps resolved');
 });

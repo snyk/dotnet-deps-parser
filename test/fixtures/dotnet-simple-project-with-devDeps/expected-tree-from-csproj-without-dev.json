@@ -5,24 +5,8 @@
       "dependencies": {},
       "name": "NLog",
       "version": "4.3.10"
-    },
-    "nunit.framework": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "nunit.framework",
-      "version": "3.8.1.0"
-    },
-    "Orleans": {
-      "depType": "prod",
-      "dependencies": {},
-      "name": "Orleans",
-      "version": "1.4.0.0"
     }
   },
-  "dependenciesWithUnknownVersions": [
-    "System.Web.Entity",
-    "System.Web.ApplicationServices"
-  ],
   "hasDevDependencies": true,
   "name": "simple-project-with-dev",
   "version": ""
