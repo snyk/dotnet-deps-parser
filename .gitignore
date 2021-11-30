@@ -8,3 +8,6 @@ dist
 package-lock.json
 .nyc_output/
 .idea
+
+.fake
+.ionide
