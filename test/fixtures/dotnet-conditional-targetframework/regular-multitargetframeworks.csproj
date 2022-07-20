@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup Label="Globals">
+	  <ProjectName>FooBar</ProjectName>
+	</PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="MSTest.TestAdapter" Version="1.*" />
+	</ItemGroup>
+</Project>

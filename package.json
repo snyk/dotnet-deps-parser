@@ -5,7 +5,7 @@
   "scripts": {
     "test": "npm run lint && npm run test:tap && npm run test:jest",
     "test:tap": "npm run build && tap test/lib/**/*.test.ts -Rspec --timeout=300",
-    "test:jest": "jest",
+    "test:jest": "jest --maxWorkers=1",
     "lint": "npm run format:check && tslint -p tsconfig.json",
     "build": "tsc",
     "build-watch": "tsc -w",

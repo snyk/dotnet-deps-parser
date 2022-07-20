@@ -139,7 +139,6 @@ function extractTargetFrameworksFromFiles(
   }
 
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
-
   if (!fs.existsSync(manifestFileFullPath)) {
     throw new Error(
       'No project file found at ' + `location: ${manifestFileFullPath}`,
