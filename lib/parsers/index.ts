@@ -383,6 +383,23 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   }
   // TargetFrameworks is expected to be a string
   if (propertyList.TargetFramework) {
+    // sanity check
+    if (Array.isArray(propertyList.TargetFramework)) {
+      // mutate the array to effectively "ignore" conditions
+      propertyList.TargetFramework = propertyList.TargetFramework.map(
+        (framework) => {
+          if (
+            framework &&
+            typeof framework === 'object' &&
+            Object.hasOwnProperty.call(framework, '_')
+          ) {
+            return framework._;
+          }
+          return framework;
+        },
+      );
+    }
+
     targetFrameworksResult = [
       ...targetFrameworksResult,
       ...propertyList.TargetFramework,
