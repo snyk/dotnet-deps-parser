@@ -30,7 +30,6 @@
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
     "lodash.isempty": "^4.4.0",
-    "lodash.set": "^4.3.2",
     "lodash.uniq": "^4.5.0",
     "source-map-support": "^0.5.7",
     "tslib": "^1.10.0",

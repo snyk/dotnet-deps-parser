@@ -1,6 +1,5 @@
 import * as parseXML from 'xml2js';
 import * as _isEmpty from 'lodash.isempty';
-import * as _set from 'lodash.set';
 import * as _uniq from 'lodash.uniq';
 import { InvalidUserInputError } from '../errors';
 
@@ -339,7 +338,9 @@ export function getPropertiesMap(propsContents: any): PropsLookup {
 
   for (const group of projectPropertyGroup) {
     for (const key of Object.keys(group)) {
-      _set(props, key, group[key][0]);
+      if (group[key] && group[key][0]) {
+        group[key][0] = props;
+      }
     }
   }
   return props;
