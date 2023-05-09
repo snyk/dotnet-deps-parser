@@ -29,12 +29,10 @@
   ],
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
-    "lodash.isempty": "^4.4.0",
-    "lodash.set": "^4.3.2",
-    "lodash.uniq": "^4.5.0",
+    "lodash": "^4.17.21",
     "source-map-support": "^0.5.7",
     "tslib": "^1.10.0",
-    "xml2js": "0.4.23"
+    "xml2js": "0.5.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",
