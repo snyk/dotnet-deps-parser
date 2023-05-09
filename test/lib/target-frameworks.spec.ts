@@ -190,7 +190,7 @@ describe('Target framework tests', () => {
 
   it.concurrent(
     '.Net project.assets.json dotnet-empty-project-assets target framework extracted',
-    async (t) => {
+    async () => {
       const targetFrameworks = await extractTargetFrameworksFromFiles(
         `${__dirname}/../fixtures/dotnet-empty-project-assets`,
         'project.assets.json',
@@ -207,7 +207,7 @@ describe('Target framework tests', () => {
       );
 
       fail('Should throw an error for failing to extract the target framework');
-    } catch (err) {
+    } catch (err: any) {
       expect(err.message).toBe(
         'Extracting target framework failed with error Unexpected string in JSON at position 62934',
       );

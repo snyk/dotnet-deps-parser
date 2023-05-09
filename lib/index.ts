@@ -170,7 +170,7 @@ async function extractTargetFrameworksFromProjectFile(
   try {
     const manifestFile: object = await parseXmlFile(manifestFileContents);
     return getTargetFrameworksFromProjectFile(manifestFile);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error(
       `Extracting target framework failed with error ${err.message}`,
     );
@@ -183,7 +183,7 @@ async function extractTargetFrameworksFromProjectConfig(
   try {
     const manifestFile: object = await parseXmlFile(manifestFileContents);
     return getTargetFrameworksFromProjectConfig(manifestFile);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error(
       `Extracting target framework failed with error ${err.message}`,
     );
@@ -209,7 +209,7 @@ async function extractTargetFrameworksFromProjectJson(
     // trimming required to address files with UTF-8 with BOM encoding
     const manifestFile = JSON.parse(manifestFileContents.trim());
     return getTargetFrameworksFromProjectJson(manifestFile);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error(
       `Extracting target framework failed with error ${err.message}`,
     );
@@ -223,7 +223,7 @@ async function extractTargetFrameworksFromProjectAssetsJson(
     // trimming required to address files with UTF-8 with BOM encoding
     const manifestFile = JSON.parse(manifestFileContents.trim());
     return getTargetFrameworksFromProjectAssetsJson(manifestFile);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error(
       `Extracting target framework failed with error ${err.message}`,
     );
@@ -238,7 +238,7 @@ async function extractProps(propsFileContents: string): Promise<PropsLookup> {
       throw new InvalidUserInputError('xml file parsing failed');
     }
     return getPropertiesMap(propsFile);
-  } catch (err) {
+  } catch (err: any) {
     if (err.name === 'InvalidUserInputError') {
       throw err;
     }
