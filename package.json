@@ -3,9 +3,8 @@
   "description": "Generate a dep tree given a collection of manifests",
   "main": "dist/index.js",
   "scripts": {
-    "test": "npm run lint && npm run test:tap && npm run test:jest",
-    "test:tap": "npm run build && tap test/lib/**/*.test.ts -Rspec --timeout=300",
-    "test:jest": "jest --maxWorkers=1",
+    "test": "npm run lint && npm run test:jest",
+    "test:jest": "jest",
     "lint": "npm run format:check && tslint -p tsconfig.json",
     "build": "tsc",
     "build-watch": "tsc -w",
@@ -40,7 +39,6 @@
     "@types/xml2js": "0.4.11",
     "jest": "29.5.0",
     "prettier": "^2.8.8",
-    "tap": "^16.3.4",
     "ts-jest": "^29.1.0",
     "tslint": "5.20.1",
     "typescript": "5.0.4"

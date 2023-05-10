@@ -1,9 +1,8 @@
-import { test } from 'tap';
 import * as fs from 'fs';
 import { extractProps } from '../../lib';
 import { InvalidUserInputError } from '../../lib/errors';
 
-test('.props file is parsed', async (t) => {
+test('.props file is parsed', async () => {
   const propsFileContents = fs.readFileSync(
     `${__dirname}/../fixtures/dotnet-with-props/Packages.props`,
     'utf-8',
@@ -15,34 +14,26 @@ test('.props file is parsed', async (t) => {
     TestSdkVersion: '3.3.*',
     XunitStudioVersion: '1.1.1-beta*',
   };
-  t.same(result, expected, 'should return map of packages with versions');
+  expect(result).toEqual(expected);
 });
 
-test('.props file is not parsed due to invalid xml', async (t) => {
+test('.props file is not parsed due to invalid xml', async () => {
   const invalidUserInputError = new InvalidUserInputError(
     'xml file parsing failed',
   );
-  t.rejects(
-    extractProps('</>'),
-    invalidUserInputError,
-    'rejects with invalid xml error',
-  );
+  expect(extractProps('</>')).rejects.toStrictEqual(invalidUserInputError);
 });
 
-test('empty .props file is parsed', async (t) => {
+test('empty .props file is parsed', async () => {
   const props = await extractProps(
     '<?xml version="1.0" encoding="utf-8"?><Project></Project></xml>',
   );
-  t.same(props, {}, 'no props found in empty file');
+  expect(props).toEqual({});
 });
 
-test('empty .props file is not parsed due to invalid xml', async (t) => {
+test('empty .props file is not parsed due to invalid xml', async () => {
   const invalidUserInputError = new InvalidUserInputError(
     'xml file parsing failed',
   );
-  t.rejects(
-    extractProps('</>'),
-    invalidUserInputError,
-    'rejects with invalid xml error',
-  );
+  expect(extractProps('</>')).rejects.toStrictEqual(invalidUserInputError);
 });
