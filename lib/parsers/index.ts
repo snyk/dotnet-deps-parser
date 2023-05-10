@@ -1,7 +1,5 @@
 import * as parseXML from 'xml2js';
-import * as _isEmpty from 'lodash.isempty';
-import * as _set from 'lodash.set';
-import * as _uniq from 'lodash.uniq';
+import { isEmpty, set, uniq } from 'lodash';
 import { InvalidUserInputError } from '../errors';
 
 export interface PkgTree {
@@ -264,7 +262,7 @@ function buildSubTreeFromPackageReference(
   propsMap: PropsLookup,
 ): PkgTree | DependencyWithoutVersion {
   const version = extractDependencyVersion(dep, manifestFile, propsMap) || '';
-  if (!_isEmpty(version)) {
+  if (!isEmpty(version)) {
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
       dependencies: {},
@@ -339,7 +337,7 @@ export function getPropertiesMap(propsContents: any): PropsLookup {
 
   for (const group of projectPropertyGroup) {
     for (const key of Object.keys(group)) {
-      _set(props, key, group[key][0]);
+      set(props, key, group[key][0]);
     }
   }
   return props;
@@ -361,7 +359,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
       );
     }) || {};
 
-  if (_isEmpty(propertyList)) {
+  if (isEmpty(propertyList)) {
     return targetFrameworksResult;
   }
   // TargetFrameworks is expected to be a list ; separated
@@ -406,14 +404,14 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
     ];
   }
 
-  return _uniq(targetFrameworksResult);
+  return uniq(targetFrameworksResult);
 }
 
 function getTargetFrameworks(item: string | any) {
-  if (typeof item === 'object' && item.hasOwnProperty('_')) {
+  if (typeof item === 'object' && Object.hasOwnProperty.call(item, '_')) {
     item = item._;
   }
-  return item.split(';').filter((x) => !_isEmpty(x));
+  return item.split(';').filter((x) => !isEmpty(x));
 }
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {

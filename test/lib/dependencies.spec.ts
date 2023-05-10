@@ -1,6 +1,3 @@
-// tslint:disable:max-line-length
-// tslint:disable:object-literal-key-quotes
-import { test } from 'tap';
 import * as fs from 'fs';
 import { buildDepTreeFromFiles, buildDepTreeFromProjectFile } from '../../lib';
 import { getDependencyTreeFromProjectAssetsJson } from '../../lib/parsers/project-assets-json-parser';
@@ -9,40 +6,38 @@ import { InvalidUserInputError } from '../../lib/errors';
 const load = (filename) =>
   JSON.parse(fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'));
 
-test('.Net Visual Basic project tree generated as expected', async (t) => {
+test('.Net Visual Basic project tree generated as expected', async () => {
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-vb-simple-project`,
     'manifest.vbproj',
     false,
   );
   const expectedTree = load('dotnet-vb-simple-project/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net Visual Basic project tree generated as expected', async (t) => {
+test('.Net Visual Basic project tree generated as expected', async () => {
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/old-and-new-package-format-proj`,
     'project.csproj',
     false,
   );
-  t.equal(
-    tree.dependencies['Microsoft.Azure.WebJobs.ServiceBus'].version,
+  expect(tree.dependencies['Microsoft.Azure.WebJobs.ServiceBus'].version).toBe(
     '2.2.0',
-    'fist package picked',
   );
 });
 
-test('.Net F# project tree generated as expected', async (t) => {
+test('.Net F# project tree generated as expected', async () => {
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-fs-simple-project`,
     'manifest.fsproj',
     false,
   );
   const expectedTree = load('dotnet-fs-simple-project/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net F# project dependencies with PackageReference Update is skipped', async (t) => {
+test('.Net F# project dependencies with PackageReference Update is skipped', async () => {
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-fs-package-reference-update`,
     'example.fsproj',
@@ -51,10 +46,10 @@ test('.Net F# project dependencies with PackageReference Update is skipped', asy
   const expectedTree = load(
     'dotnet-fs-package-reference-update/expected-tree.json',
   );
-  t.deepEqual(expectedTree, tree, 'trees are equal');
+  expect(expectedTree).toEqual(tree);
 });
 
-test('.Net simple project tree generated as expected', async (t) => {
+test('.Net simple project tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-simple-project`,
@@ -62,10 +57,10 @@ test('.Net simple project tree generated as expected', async (t) => {
     includeDev,
   );
   const expectedTree = load('dotnet-simple-project/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net movie-hunter-api tree generated as expected', async (t) => {
+test('.Net movie-hunter-api tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-movie-hunter-api`,
@@ -73,10 +68,10 @@ test('.Net movie-hunter-api tree generated as expected', async (t) => {
     includeDev,
   );
   const expectedTree = load('dotnet-movie-hunter-api/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net dotnet-no-packages empty tree generated as expected', async (t) => {
+test('.Net dotnet-no-packages empty tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-no-packages`,
@@ -84,10 +79,10 @@ test('.Net dotnet-no-packages empty tree generated as expected', async (t) => {
     includeDev,
   );
   const expectedTree = load('dotnet-no-packages/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net dotnet-empty-manifest returns empty tree', async (t) => {
+test('.Net dotnet-empty-manifest returns empty tree', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-empty-manifest`,
@@ -95,27 +90,25 @@ test('.Net dotnet-empty-manifest returns empty tree', async (t) => {
     includeDev,
   );
   const expectedTree = load('dotnet-empty-manifest/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net dotnet-invalid-manifest throws', async (t) => {
+test('.Net dotnet-invalid-manifest throws', async () => {
   const invalidUserInputError = new InvalidUserInputError(
     'xml file parsing failed',
   );
 
   const includeDev = false;
-  t.rejects(
+  expect(
     buildDepTreeFromFiles(
       `${__dirname}/../fixtures/dotnet-invalid-manifest`,
       'packages.config',
       includeDev,
     ),
-    invalidUserInputError,
-    'Wrong error obtained',
-  );
+  ).rejects.toStrictEqual(invalidUserInputError);
 });
 
-test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
@@ -125,10 +118,10 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
   const expectedTree = load(
     'dotnet-simple-project-with-devDeps/expected-tree-without-dev.json',
   );
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async () => {
   const includeDev = true;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
@@ -138,10 +131,10 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
   const expectedTree = load(
     'dotnet-simple-project-with-devDeps/expected-tree.json',
   );
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net packages.config with multiple target frameworks tree generated as expected', async (t) => {
+test('.Net packages.config with multiple target frameworks tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-multiple-target-frameworks`,
@@ -151,14 +144,14 @@ test('.Net packages.config with multiple target frameworks tree generated as exp
   const expectedTree = load(
     'dotnet-multiple-target-frameworks/expected-tree-net46.json',
   );
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
 /*
  ****** csproj ******
  */
 
-test('.Net .csproj simple project tree generated as expected', async (t) => {
+test('.Net .csproj simple project tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-core-simple-project`,
@@ -166,10 +159,10 @@ test('.Net .csproj simple project tree generated as expected', async (t) => {
     includeDev,
   );
   const expectedTree = load('dotnet-core-simple-project/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net .csproj simple project tree generated as expected for variable package versions', async (t) => {
+test('.Net .csproj simple project tree generated as expected for variable package versions', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-core-variable-version`,
@@ -177,10 +170,10 @@ test('.Net .csproj simple project tree generated as expected for variable packag
     includeDev,
   );
   const expectedTree = load('dotnet-core-variable-version/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net .csproj dotnet-no-packages empty tree generated as expected', async (t) => {
+test('.Net .csproj dotnet-no-packages empty tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-no-packages`,
@@ -188,10 +181,10 @@ test('.Net .csproj dotnet-no-packages empty tree generated as expected', async (
     includeDev,
   );
   const expectedTree = load('dotnet-no-packages/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net .csproj dotnet-empty-manifest returns empty tree', async (t) => {
+test('.Net .csproj dotnet-empty-manifest returns empty tree', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-empty-manifest`,
@@ -199,27 +192,25 @@ test('.Net .csproj dotnet-empty-manifest returns empty tree', async (t) => {
     includeDev,
   );
   const expectedTree = load('dotnet-empty-manifest/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net .csproj core dotnet-invalid-manifest throws', async (t) => {
+test('.Net .csproj core dotnet-invalid-manifest throws', async () => {
   const invalidUserInputError = new InvalidUserInputError(
     'xml file parsing failed',
   );
 
   const includeDev = false;
-  t.rejects(
+  expect(
     buildDepTreeFromFiles(
       `${__dirname}/../fixtures/dotnet-invalid-manifest`,
       'invalid.csproj',
       includeDev,
     ),
-    invalidUserInputError,
-    'Wrong error obtained',
-  );
+  ).rejects.toStrictEqual(invalidUserInputError);
 });
 
-test('.Net dotnet-simple-project-with-devDeps with includeDev=false tree generated as expected', async (t) => {
+test('.Net dotnet-simple-project-with-devDeps with includeDev=false tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
@@ -229,10 +220,10 @@ test('.Net dotnet-simple-project-with-devDeps with includeDev=false tree generat
   const expectedTree = load(
     'dotnet-simple-project-with-devDeps/expected-tree-from-csproj-without-dev.json',
   );
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async (t) => {
+test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async () => {
   const includeDev = true;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-simple-project-with-devDeps`,
@@ -242,10 +233,10 @@ test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async
   const expectedTree = load(
     'dotnet-simple-project-with-devDeps/expected-tree-from-csproj.json',
   );
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net .csproj with conditional framework dependencies project tree generated as expected', async (t) => {
+test('.Net .csproj with conditional framework dependencies project tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-conditional-frameworks`,
@@ -253,14 +244,14 @@ test('.Net .csproj with conditional framework dependencies project tree generate
     includeDev,
   );
   const expectedTree = load('dotnet-conditional-frameworks/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
 /*
  ****** project.json ******
  */
 
-test('.Net project.json standard project tree generated as expected', async (t) => {
+test('.Net project.json standard project tree generated as expected', async () => {
   const includeDev = true;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-project-json`,
@@ -268,10 +259,10 @@ test('.Net project.json standard project tree generated as expected', async (t) 
     includeDev,
   );
   const expectedTree = load('dotnet-project-json/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net project.json utf-8 with BOM project tree generated as expected', async (t) => {
+test('.Net project.json utf-8 with BOM project tree generated as expected', async () => {
   const includeDev = true;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-project-json`,
@@ -279,10 +270,10 @@ test('.Net project.json utf-8 with BOM project tree generated as expected', asyn
     includeDev,
   );
   const expectedTree = load('dotnet-project-json/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net project.json with no packages empty tree generated as expected', async (t) => {
+test('.Net project.json with no packages empty tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-no-packages`,
@@ -290,14 +281,14 @@ test('.Net project.json with no packages empty tree generated as expected', asyn
     includeDev,
   );
   const expectedTree = load('dotnet-no-packages/expected-tree.json');
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
 /*
  ****** project.assets.json ******
  */
 
-test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework with one dependency', async (t) => {
+test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework with one dependency', async () => {
   const projectAssetsJson = {
     project: {
       restore: {
@@ -328,10 +319,10 @@ test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single targe
     name: 'sample2',
     version: '1.0.0',
   };
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework with multiple dependencies', async (t) => {
+test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework with multiple dependencies', async () => {
   const projectAssetsJson = {
     project: {
       restore: {
@@ -370,10 +361,10 @@ test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single targe
     name: 'sample2',
     version: '1.0.0',
   };
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework for one dependency with transitive dependencies', async (t) => {
+test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single target framework for one dependency with transitive dependencies', async () => {
   const projectAssetsJson = {
     project: {
       restore: {
@@ -425,10 +416,10 @@ test('getDependencyTreeFromProjectAssetsJson yields one pkgtree for single targe
     name: 'sample2',
     version: '1.0.0',
   };
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net project.assets.json single target framework tree generated as expected', async (t) => {
+test('.Net project.assets.json single target framework tree generated as expected', async () => {
   const includeDev = false;
   const tree = await buildDepTreeFromFiles(
     `${__dirname}/../fixtures/dotnet-project-assets-for-deps`,
@@ -439,16 +430,16 @@ test('.Net project.assets.json single target framework tree generated as expecte
   const expectedTree = load(
     'dotnet-project-assets-for-deps/expected-tree.json',
   );
-  t.deepEqual(tree, expectedTree, 'trees are equal');
+  expect(tree).toEqual(expectedTree);
 });
 
-test('.Net oldstyle project with variable is parsed and unknown skipped', async (t) => {
+test('.Net oldstyle project with variable is parsed and unknown skipped', async () => {
   const manifestFileContents = fs.readFileSync(
     `${__dirname}/../fixtures/dotnet-no-packagereference/project.csproj`,
     'utf-8',
   );
   const depTree = await buildDepTreeFromProjectFile(manifestFileContents);
 
-  t.ok(depTree);
-  t.deepEqual(depTree.dependencies, {}, 'deps resolved');
+  expect(depTree).toBeTruthy();
+  expect(depTree.dependencies).toEqual({});
 });
