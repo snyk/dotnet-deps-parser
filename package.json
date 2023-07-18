@@ -28,6 +28,7 @@
   ],
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
+    "@snyk/error-catalog-nodejs": "^3.10.0",
     "lodash": "^4.17.21",
     "source-map-support": "^0.5.21",
     "tslib": "^2.5.0",

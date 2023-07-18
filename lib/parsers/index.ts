@@ -1,6 +1,6 @@
 import * as parseXML from 'xml2js';
 import { isEmpty, set, uniq } from 'lodash';
-import { InvalidUserInputError } from '../errors';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs';
 
 export interface PkgTree {
   name: string;
@@ -316,7 +316,9 @@ export async function parseXmlFile(
   return new Promise((resolve, reject) => {
     parseXML.parseString(manifestFileContents, (err, result) => {
       if (err) {
-        const e = new InvalidUserInputError('xml file parsing failed');
+        const e = new OpenSourceEcosystems.UnparseableManifestError(
+          'Manifest xml file parsing failed',
+        );
         return reject(e);
       }
       return resolve(result);

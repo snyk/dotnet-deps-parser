@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { extractProps } from '../../lib';
-import { InvalidUserInputError } from '../../lib/errors';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs';
 
 test('.props file is parsed', async () => {
   const propsFileContents = fs.readFileSync(
@@ -18,10 +18,10 @@ test('.props file is parsed', async () => {
 });
 
 test('.props file is not parsed due to invalid xml', async () => {
-  const invalidUserInputError = new InvalidUserInputError(
-    'xml file parsing failed',
+  const error = new OpenSourceEcosystems.UnparseableManifestError(
+    'Manifest xml file parsing failed',
   );
-  expect(extractProps('</>')).rejects.toStrictEqual(invalidUserInputError);
+  expect(extractProps('</>')).rejects.toStrictEqual(error);
 });
 
 test('empty .props file is parsed', async () => {
@@ -29,11 +29,4 @@ test('empty .props file is parsed', async () => {
     '<?xml version="1.0" encoding="utf-8"?><Project></Project></xml>',
   );
   expect(props).toEqual({});
-});
-
-test('empty .props file is not parsed due to invalid xml', async () => {
-  const invalidUserInputError = new InvalidUserInputError(
-    'xml file parsing failed',
-  );
-  expect(extractProps('</>')).rejects.toStrictEqual(invalidUserInputError);
 });
