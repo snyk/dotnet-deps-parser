@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { extractProps } from '../../lib';
-import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
 
 test('.props file is parsed', async () => {
   const propsFileContents = fs.readFileSync(

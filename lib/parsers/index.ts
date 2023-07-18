@@ -1,6 +1,6 @@
 import * as parseXML from 'xml2js';
 import { isEmpty, set, uniq } from 'lodash';
-import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
 
 export interface PkgTree {
   name: string;

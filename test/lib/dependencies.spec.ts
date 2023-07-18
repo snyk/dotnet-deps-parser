@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { buildDepTreeFromFiles, buildDepTreeFromProjectFile } from '../../lib';
 import { getDependencyTreeFromProjectAssetsJson } from '../../lib/parsers/project-assets-json-parser';
-import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
 
 const load = (filename) =>
   JSON.parse(fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'));

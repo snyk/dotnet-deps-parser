@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
-import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
 
 import {
   PkgTree,
@@ -104,8 +104,10 @@ function buildDepTreeFromFiles(
 
   if (!fs.existsSync(manifestFileFullPath)) {
     throw new OpenSourceEcosystems.CannotGetFileFromSourceError(
-      'No packages.config, project.json or project file found at ' +
-        `location: ${manifestFileFullPath}`,
+      'No packages.config, project.json or project file found',
+      {
+        location: manifestFileFullPath,
+      },
     );
   }
 
@@ -125,8 +127,11 @@ function buildDepTreeFromFiles(
     );
   } else {
     throw new OpenSourceEcosystems.UnsupportedManifestFileError(
-      `Unsupported file ${manifestFilePath}, Please provide ` +
+      'Unsupported file, please provide ' +
         'either packages.config or project file.',
+      {
+        location: manifestFilePath,
+      },
     );
   }
 }
@@ -145,7 +150,10 @@ function extractTargetFrameworksFromFiles(
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
   if (!fs.existsSync(manifestFileFullPath)) {
     throw new OpenSourceEcosystems.CannotGetFileFromSourceError(
-      'No project file found at ' + `location: ${manifestFileFullPath}`,
+      'No project file found',
+      {
+        location: manifestFileFullPath,
+      },
     );
   }
 
@@ -162,8 +170,11 @@ function extractTargetFrameworksFromFiles(
     return extractTargetFrameworksFromProjectAssetsJson(manifestFileContents);
   } else {
     throw new OpenSourceEcosystems.UnsupportedManifestFileError(
-      `Unsupported file ${manifestFilePath}, Please provide ` +
+      'Unsupported file, please provide ' +
         'a project *.csproj, *.vbproj, *.fsproj or packages.config file.',
+      {
+        location: manifestFilePath,
+      },
     );
   }
 }
