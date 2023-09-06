@@ -1,6 +1,5 @@
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
-import * as fs from 'fs';
 import { extractTargetFrameworksFromFiles } from '../../lib';
 
 describe('Target framework tests', () => {
