@@ -198,7 +198,7 @@ describe('Target framework tests', () => {
     },
   );
 
-  it.concurrent('.Net project.assest.json is not valid json', async () => {
+  it.concurrent('.Net project.assets.json is not valid json', async () => {
     try {
       const targetFrameworks = await extractTargetFrameworksFromFiles(
         `${__dirname}/../fixtures/dotnet-invalid-project-assets`,

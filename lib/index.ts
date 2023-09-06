@@ -3,18 +3,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {
-  PkgTree,
   DepType,
-  parseXmlFile,
   getDependencyTreeFromPackagesConfig,
-  getDependencyTreeFromProjectJson,
   getDependencyTreeFromProjectFile,
-  ProjectJsonManifest,
-  getTargetFrameworksFromProjectFile,
-  getTargetFrameworksFromProjectConfig,
-  getTargetFrameworksFromProjectJson,
-  getTargetFrameworksFromProjectAssetsJson,
+  getDependencyTreeFromProjectJson,
   getPropertiesMap,
+  getTargetFrameworksFromProjectAssetsJson,
+  getTargetFrameworksFromProjectConfig,
+  getTargetFrameworksFromProjectFile,
+  getTargetFrameworksFromProjectJson,
+  parseXmlFile,
+  PkgTree,
+  ProjectJsonManifest,
   PropsLookup,
 } from './parsers';
 
@@ -38,6 +38,7 @@ export {
   containsPackageReference,
   extractTargetFrameworksFromProjectJson,
   extractTargetFrameworksFromProjectAssetsJson,
+  extractTargetSdkFromGlobalJson,
   extractProps,
   PkgTree,
   DepType,
@@ -223,6 +224,19 @@ async function extractTargetFrameworksFromProjectAssetsJson(
     // trimming required to address files with UTF-8 with BOM encoding
     const manifestFile = JSON.parse(manifestFileContents.trim());
     return getTargetFrameworksFromProjectAssetsJson(manifestFile);
+  } catch (err: any) {
+    throw new Error(
+      `Extracting target framework failed with error ${err.message}`,
+    );
+  }
+}
+
+function extractTargetSdkFromGlobalJson(
+  manifestFileContents: string,
+): string | undefined {
+  try {
+    const globalJsonAsObj = JSON.parse(manifestFileContents);
+    return globalJsonAsObj?.sdk?.version;
   } catch (err: any) {
     throw new Error(
       `Extracting target framework failed with error ${err.message}`,
