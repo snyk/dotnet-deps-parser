@@ -7,9 +7,18 @@ describe('for global.json target SDKs', () => {
     {
       fixturePath: path.resolve(
         `${__dirname}/../fixtures/dotnet-core-global-json`,
-        'global.json',
+        'global_normal.json',
       ),
       expected: '6.0.203',
+    },
+    {
+      // Making programmers lives hard:
+      // https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#comments-in-globaljson
+      fixturePath: path.resolve(
+        `${__dirname}/../fixtures/dotnet-core-global-json`,
+        'global_with_comments.json',
+      ),
+      expected: '7.0.100',
     },
   ])(
     'should correctly parse TargetFramework with condition',

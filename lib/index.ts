@@ -235,7 +235,13 @@ function extractTargetSdkFromGlobalJson(
   manifestFileContents: string,
 ): string | undefined {
   try {
-    const globalJsonAsObj = JSON.parse(manifestFileContents);
+    // Remove /* */ comments from the JSON string (if any)
+    // It's allowed: https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#comments-in-globaljson
+    const jsonWithoutComments = manifestFileContents.replace(
+      /\/\*[\s\S]*?\*\/|\/\/.*$/gm,
+      '',
+    );
+    const globalJsonAsObj = JSON.parse(jsonWithoutComments);
     return globalJsonAsObj?.sdk?.version;
   } catch (err: any) {
     throw new Error(
