@@ -1,6 +1,5 @@
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
-import * as fs from 'fs';
 import { extractTargetFrameworksFromFiles } from '../../lib';
 
 describe('Target framework tests', () => {
@@ -199,7 +198,7 @@ describe('Target framework tests', () => {
     },
   );
 
-  it.concurrent('.Net project.assest.json is not valid json', async () => {
+  it.concurrent('.Net project.assets.json is not valid json', async () => {
     try {
       const targetFrameworks = await extractTargetFrameworksFromFiles(
         `${__dirname}/../fixtures/dotnet-invalid-project-assets`,
