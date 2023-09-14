@@ -68,10 +68,10 @@ jobs:
       - lint
 
 workflows:
-  test:
+  test_and_release:
     jobs:
       - prodsec/secrets-scan:
-          name: Scan repository for secrets
+          name: scan-repo
           context:
             - snyk-bot-slack
           channel: os-team-managed-alerts
@@ -81,23 +81,23 @@ workflows:
             branches:
               ignore:
                 - master
+
       - test:
-          requires:
-            - lint
           matrix:
+            alias: test
             parameters:
               version:
                 - 14.13.0
                 - 16.13.0
                 - 18.16.0
-          filters:
-            branches:
-              ignore:
-                - master
-  release:
-    jobs:
+          requires:
+            - lint
+
       - release:
           context: nodejs-lib-release
+          requires:
+            - scan-repo
+            - test
           filters:
             branches:
               only:
