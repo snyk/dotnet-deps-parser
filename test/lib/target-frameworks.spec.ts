@@ -207,9 +207,7 @@ describe('Target framework tests', () => {
 
       fail('Should throw an error for failing to extract the target framework');
     } catch (err: any) {
-      expect(err.message).toBe(
-        'Extracting target framework failed with error Unexpected string in JSON at position 62934',
-      );
+      expect(err.message).toBe('Unable to parse manifest file');
     }
   });
 });

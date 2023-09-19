@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { buildDepTreeFromFiles, buildDepTreeFromProjectFile } from '../../lib';
 import { getDependencyTreeFromProjectAssetsJson } from '../../lib/parsers/project-assets-json-parser';
-import { InvalidUserInputError } from '../../lib/errors';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
 
 const load = (filename) =>
   JSON.parse(fs.readFileSync(`${__dirname}/../fixtures/${filename}`, 'utf8'));
@@ -94,9 +94,10 @@ test('.Net dotnet-empty-manifest returns empty tree', async () => {
 });
 
 test('.Net dotnet-invalid-manifest throws', async () => {
-  const invalidUserInputError = new InvalidUserInputError(
-    'xml file parsing failed',
-  );
+  const unparsableManifestError =
+    new OpenSourceEcosystems.UnparseableManifestError(
+      'Manifest xml file parsing failed',
+    );
 
   const includeDev = false;
   expect(
@@ -105,7 +106,7 @@ test('.Net dotnet-invalid-manifest throws', async () => {
       'packages.config',
       includeDev,
     ),
-  ).rejects.toStrictEqual(invalidUserInputError);
+  ).rejects.toStrictEqual(unparsableManifestError);
 });
 
 test('.Net dotnet-simple-project-with-devDeps tree generated as expected', async () => {
@@ -196,9 +197,10 @@ test('.Net .csproj dotnet-empty-manifest returns empty tree', async () => {
 });
 
 test('.Net .csproj core dotnet-invalid-manifest throws', async () => {
-  const invalidUserInputError = new InvalidUserInputError(
-    'xml file parsing failed',
-  );
+  const unparsableManifestError =
+    new OpenSourceEcosystems.UnparseableManifestError(
+      'Manifest xml file parsing failed',
+    );
 
   const includeDev = false;
   expect(
@@ -207,7 +209,7 @@ test('.Net .csproj core dotnet-invalid-manifest throws', async () => {
       'invalid.csproj',
       includeDev,
     ),
-  ).rejects.toStrictEqual(invalidUserInputError);
+  ).rejects.toStrictEqual(unparsableManifestError);
 });
 
 test('.Net dotnet-simple-project-with-devDeps with includeDev=false tree generated as expected', async () => {

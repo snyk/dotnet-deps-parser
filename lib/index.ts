@@ -1,6 +1,7 @@
 import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
+import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
 
 import {
   DepType,
@@ -22,7 +23,6 @@ import {
   getDependencyTreeFromProjectAssetsJson,
   ProjectAssetsJsonManifest,
 } from './parsers/project-assets-json-parser';
-import { InvalidUserInputError } from './errors';
 
 const PROJ_FILE_EXTENSIONS = ['.csproj', '.vbproj', '.fsproj'];
 
@@ -61,7 +61,9 @@ function buildDepTreeFromProjectAssetsJson(
   targetFramework?: string,
 ): PkgTree {
   if (!targetFramework) {
-    throw new Error('Missing targetFramework for project.assets.json');
+    throw new OpenSourceEcosystems.MissingPayloadError(
+      'Missing targetFramework for project.assets.json',
+    );
   }
   // trimming required to address files with UTF-8 with BOM encoding
   const manifestFile: ProjectAssetsJsonManifest = JSON.parse(
@@ -94,15 +96,19 @@ function buildDepTreeFromFiles(
   targetFramework?: string,
 ) {
   if (!root || !manifestFilePath) {
-    throw new Error('Missing required parameters for buildDepTreeFromFiles()');
+    throw new OpenSourceEcosystems.MissingPayloadError(
+      'Missing required parameters for building dependency tree from files',
+    );
   }
 
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
 
   if (!fs.existsSync(manifestFileFullPath)) {
-    throw new Error(
-      'No packages.config, project.json or project file found at ' +
-        `location: ${manifestFileFullPath}`,
+    throw new OpenSourceEcosystems.CannotGetFileFromSourceError(
+      'No packages.config, project.json or project file found',
+      {
+        location: manifestFileFullPath,
+      },
     );
   }
 
@@ -121,9 +127,12 @@ function buildDepTreeFromFiles(
       targetFramework,
     );
   } else {
-    throw new Error(
-      `Unsupported file ${manifestFilePath}, Please provide ` +
+    throw new OpenSourceEcosystems.UnsupportedManifestFileError(
+      'Unsupported file, please provide ' +
         'either packages.config or project file.',
+      {
+        location: manifestFilePath,
+      },
     );
   }
 }
@@ -134,15 +143,18 @@ function extractTargetFrameworksFromFiles(
   includeDev = false,
 ) {
   if (!root || !manifestFilePath) {
-    throw new Error(
+    throw new OpenSourceEcosystems.MissingPayloadError(
       'Missing required parameters for extractTargetFrameworksFromFiles()',
     );
   }
 
   const manifestFileFullPath = path.resolve(root, manifestFilePath);
   if (!fs.existsSync(manifestFileFullPath)) {
-    throw new Error(
-      'No project file found at ' + `location: ${manifestFileFullPath}`,
+    throw new OpenSourceEcosystems.CannotGetFileFromSourceError(
+      'No project file found',
+      {
+        location: manifestFileFullPath,
+      },
     );
   }
 
@@ -158,9 +170,12 @@ function extractTargetFrameworksFromFiles(
   } else if (manifestFilePath.endsWith('project.assets.json')) {
     return extractTargetFrameworksFromProjectAssetsJson(manifestFileContents);
   } else {
-    throw new Error(
-      `Unsupported file ${manifestFilePath}, Please provide ` +
+    throw new OpenSourceEcosystems.UnsupportedManifestFileError(
+      'Unsupported file, please provide ' +
         'a project *.csproj, *.vbproj, *.fsproj or packages.config file.',
+      {
+        location: manifestFilePath,
+      },
     );
   }
 }
@@ -168,27 +183,15 @@ function extractTargetFrameworksFromFiles(
 async function extractTargetFrameworksFromProjectFile(
   manifestFileContents: string,
 ): Promise<string[]> {
-  try {
-    const manifestFile: object = await parseXmlFile(manifestFileContents);
-    return getTargetFrameworksFromProjectFile(manifestFile);
-  } catch (err: any) {
-    throw new Error(
-      `Extracting target framework failed with error ${err.message}`,
-    );
-  }
+  const manifestFile: object = await parseXmlFile(manifestFileContents);
+  return getTargetFrameworksFromProjectFile(manifestFile);
 }
 
 async function extractTargetFrameworksFromProjectConfig(
   manifestFileContents: string,
 ): Promise<string[]> {
-  try {
-    const manifestFile: object = await parseXmlFile(manifestFileContents);
-    return getTargetFrameworksFromProjectConfig(manifestFile);
-  } catch (err: any) {
-    throw new Error(
-      `Extracting target framework failed with error ${err.message}`,
-    );
-  }
+  const manifestFile: object = await parseXmlFile(manifestFileContents);
+  return getTargetFrameworksFromProjectConfig(manifestFile);
 }
 
 async function containsPackageReference(manifestFileContents: string) {
@@ -206,29 +209,31 @@ async function containsPackageReference(manifestFileContents: string) {
 async function extractTargetFrameworksFromProjectJson(
   manifestFileContents: string,
 ): Promise<string[]> {
+  let manifestFile;
   try {
     // trimming required to address files with UTF-8 with BOM encoding
-    const manifestFile = JSON.parse(manifestFileContents.trim());
-    return getTargetFrameworksFromProjectJson(manifestFile);
+    manifestFile = JSON.parse(manifestFileContents.trim());
   } catch (err: any) {
-    throw new Error(
-      `Extracting target framework failed with error ${err.message}`,
+    throw new OpenSourceEcosystems.UnparseableManifestError(
+      'Failed to parse manifest file',
     );
   }
+  return getTargetFrameworksFromProjectJson(manifestFile);
 }
 
 async function extractTargetFrameworksFromProjectAssetsJson(
   manifestFileContents: string,
 ): Promise<string[]> {
+  let manifestFile;
   try {
     // trimming required to address files with UTF-8 with BOM encoding
-    const manifestFile = JSON.parse(manifestFileContents.trim());
-    return getTargetFrameworksFromProjectAssetsJson(manifestFile);
+    manifestFile = JSON.parse(manifestFileContents.trim());
   } catch (err: any) {
-    throw new Error(
-      `Extracting target framework failed with error ${err.message}`,
+    throw new OpenSourceEcosystems.UnparseableManifestError(
+      'Failed to parse manifest file',
     );
   }
+  return getTargetFrameworksFromProjectAssetsJson(manifestFile);
 }
 
 function extractTargetSdkFromGlobalJson(
@@ -251,17 +256,10 @@ function extractTargetSdkFromGlobalJson(
 }
 
 async function extractProps(propsFileContents: string): Promise<PropsLookup> {
-  try {
-    const propsFile: object = await parseXmlFile(propsFileContents);
+  const propsFile: object = await parseXmlFile(propsFileContents);
 
-    if (!propsFile) {
-      throw new InvalidUserInputError('xml file parsing failed');
-    }
-    return getPropertiesMap(propsFile);
-  } catch (err: any) {
-    if (err.name === 'InvalidUserInputError') {
-      throw err;
-    }
-    throw new Error(`Extracting props failed with error ${err.message}`);
+  if (!propsFile) {
+    throw new OpenSourceEcosystems.MissingPayloadError('Empty xml file');
   }
+  return getPropertiesMap(propsFile);
 }
