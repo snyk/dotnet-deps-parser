@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: dotnet-deps-parser
+  annotations:
+    github.com/project-slug: snyk/dotnet-deps-parser
+    github.com/team-slug: snyk/os-managed
+spec:
+  type: external-library
+  lifecycle: "-"
+  owner: os-managed
