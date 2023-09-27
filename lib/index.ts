@@ -32,14 +32,15 @@ export {
   buildDepTreeFromProjectJson,
   buildDepTreeFromProjectAssetsJson,
   buildDepTreeFromFiles,
+  containsPackageReference,
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
   extractTargetFrameworksFromProjectConfig,
-  containsPackageReference,
   extractTargetFrameworksFromProjectJson,
   extractTargetFrameworksFromProjectAssetsJson,
   extractTargetSdkFromGlobalJson,
   extractProps,
+  isSupportedByV2GraphGeneration,
   PkgTree,
   DepType,
 };
@@ -135,6 +136,34 @@ function buildDepTreeFromFiles(
       },
     );
   }
+}
+
+// The V2 project aimed at removing virtually all of this reinvention of the wheel logic in favor of utilization of
+// the `dotnet` cli itself, publicly referred to as just 'V2', is done iteratively. Since this package is shared with
+// both internal and external packages that all make up parts of the V2 project, we add the shared logic here.
+// Further, at least to keep project development iterative, don't support needle and haystack'ing dependency JSON
+// for target frameworks other than .NET 5+ and .NET Core, as other frameworks generates vastly other types of
+// .json graphs, requiring a whole other parsing strategy to extract tne runtime dependencies.
+// For a list of version naming currently available, see
+// https://learn.microsoft.com/en-us/dotnet/standard/frameworks#supported-target-frameworks
+function isSupportedByV2GraphGeneration(targetFramework: string): boolean {
+  // Everything that does not start with 'net' is already game over. E.g. Windows Phone (wp) or silverlight (sl) etc.
+  if (!targetFramework.startsWith('net')) {
+    return false;
+  }
+
+  // What's left is:
+  // - .NET Core: netcoreappN.N,
+  // - .NET 5+ netN.N,
+  // - .NET Standard: netstandardN.N and
+  // - .NET Framework: netNNN, all of which we support except the latter.
+  // So if there's a dot, we're good.
+  if (targetFramework.includes('.')) {
+    return true;
+  }
+
+  // Otherwise it's something before .NET 5 and we're out
+  return false;
 }
 
 function extractTargetFrameworksFromFiles(
