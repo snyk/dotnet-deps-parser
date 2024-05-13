@@ -152,11 +152,15 @@ function isSupportedByV2GraphGeneration(targetFramework: string): boolean {
     return false;
   }
 
+  // - .NET Core: netcoreappN.N, - EOL from Microsoft
+  if (targetFramework.startsWith('netcoreapp')) {
+    return false;
+  }
+
   // What's left is:
-  // - .NET Core: netcoreappN.N,
-  // - .NET 5+ netN.N,
-  // - .NET Standard: netstandardN.N and
-  // - .NET Framework: netNNN, all of which we support except the latter.
+  // - .NET 5+ netN.N, (supported)
+  // - .NET Standard: netstandardN.N (supported) and
+  // - .NET Framework: netNNN (unsupported)
   // So if there's a dot, we're good.
   if (targetFramework.includes('.')) {
     return true;

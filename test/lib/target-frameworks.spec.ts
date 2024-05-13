@@ -236,7 +236,7 @@ describe('Target framework tests', () => {
     // .NET Core
     {
       targetFramework: 'netcoreapp3.1',
-      expected: true,
+      expected: false,
     },
     // .NET >= 5
     {
