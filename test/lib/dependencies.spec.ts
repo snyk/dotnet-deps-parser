@@ -93,6 +93,17 @@ test('.Net dotnet-empty-manifest returns empty tree', async () => {
   expect(tree).toEqual(expectedTree);
 });
 
+test('.Net dotnet-empty-property-group returns empty tree', async () => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-property-group`,
+    'packages.config',
+    includeDev,
+  );
+  const expectedTree = load('dotnet-empty-property-group/expected-tree.json');
+  expect(tree).toEqual(expectedTree);
+});
+
 test('.Net dotnet-invalid-manifest throws', async () => {
   const unparsableManifestError =
     new OpenSourceEcosystems.UnparseableManifestError(
@@ -193,6 +204,17 @@ test('.Net .csproj dotnet-empty-manifest returns empty tree', async () => {
     includeDev,
   );
   const expectedTree = load('dotnet-empty-manifest/expected-tree.json');
+  expect(tree).toEqual(expectedTree);
+});
+
+test('.Net .csproj dotnet-empty-property-group returns empty tree', async () => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-property-group`,
+    'empty-property-group.csproj',
+    includeDev,
+  );
+  const expectedTree = load('dotnet-empty-property-group/expected-tree.json');
   expect(tree).toEqual(expectedTree);
 });
 
