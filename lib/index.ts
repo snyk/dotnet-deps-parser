@@ -173,7 +173,6 @@ function isSupportedByV2GraphGeneration(targetFramework: string): boolean {
 function extractTargetFrameworksFromFiles(
   root: string,
   manifestFilePath: string,
-  includeDev = false,
 ) {
   if (!root || !manifestFilePath) {
     throw new OpenSourceEcosystems.MissingPayloadError(

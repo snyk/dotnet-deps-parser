@@ -1,0 +1,20 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2021,
+  },
+  "env": {
+    "node": true,
+    "es2020": true,
+    "jest": true,
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "plugin:@typescript-eslint/recommended",
+  ],
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "no-prototype-builtins": "off",
+  },
+}
