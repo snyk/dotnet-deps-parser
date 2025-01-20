@@ -352,14 +352,19 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   if (!projectPropertyGroup) {
     return targetFrameworksResult;
   }
-  const propertyList =
-    projectPropertyGroup.find((propertyGroup) => {
-      return (
-        'TargetFramework' in propertyGroup ||
-        'TargetFrameworks' in propertyGroup ||
-        'TargetFrameworkVersion' in propertyGroup
-      );
-    }) || {};
+  let propertyList: any = {};
+  try {
+    propertyList =
+      projectPropertyGroup.find((propertyGroup) => {
+        return (
+          'TargetFramework' in propertyGroup ||
+          'TargetFrameworks' in propertyGroup ||
+          'TargetFrameworkVersion' in propertyGroup
+        );
+      }) || {};
+  } catch (err) {
+    propertyList = {};
+  }
 
   if (isEmpty(propertyList)) {
     return targetFrameworksResult;

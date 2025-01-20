@@ -65,6 +65,17 @@ describe('Target framework tests', () => {
   );
 
   it.concurrent(
+    '.Net .csproj dotnet-empty-property-group target framework extracted',
+    async () => {
+      const targetFrameworks = await extractTargetFrameworksFromFiles(
+        `${__dirname}/../fixtures/dotnet-empty-property-group`,
+        'empty-property-group.csproj',
+      );
+      expect(targetFrameworks).toEqual([]);
+    },
+  );
+
+  it.concurrent(
     '.Net .csproj multiple target frameworks extracted as expected',
     async () => {
       const targetFrameworks = await extractTargetFrameworksFromFiles(
@@ -125,6 +136,17 @@ describe('Target framework tests', () => {
     async () => {
       const targetFrameworks = await extractTargetFrameworksFromFiles(
         `${__dirname}/../fixtures/dotnet-empty-manifest`,
+        'packages.config',
+      );
+      expect(targetFrameworks).toEqual([]);
+    },
+  );
+
+  it.concurrent(
+    '.Net packages.config dotnet-empty-property-group target framework extracted',
+    async () => {
+      const targetFrameworks = await extractTargetFrameworksFromFiles(
+        `${__dirname}/../fixtures/dotnet-empty-property-group`,
         'packages.config',
       );
       expect(targetFrameworks).toEqual([]);
