@@ -114,7 +114,6 @@ workflows:
           matrix:
             parameters:
               version:
-                - 14.13.0
                 - 16.13.0
                 - 18.16.0
           filters:

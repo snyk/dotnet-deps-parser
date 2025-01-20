@@ -219,7 +219,7 @@ function processItemGroupForPackageReference(
   propsMap: PropsLookup,
 ) {
   const targetFrameworks: string[] =
-    packageList?.$?.Condition ?? false
+    (packageList?.$?.Condition ?? false)
       ? getConditionalFrameworks(packageList.$.Condition)
       : [];
 
