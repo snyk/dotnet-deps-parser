@@ -13,6 +13,7 @@ import {
   getTargetFrameworksFromProjectConfig,
   getTargetFrameworksFromProjectFile,
   getTargetFrameworksFromProjectJson,
+  determineSdkProjectTypeFromProjectFile,
   parseXmlFile,
   PkgTree,
   ProjectJsonManifest,
@@ -40,7 +41,9 @@ export {
   extractTargetFrameworksFromProjectAssetsJson,
   extractTargetSdkFromGlobalJson,
   extractProps,
+  isSupportedSdkProjectTypeFromProjectFile,
   isSupportedByV2GraphGeneration,
+  isSupportedByV3GraphGeneration,
   PkgTree,
   DepType,
 };
@@ -170,6 +173,32 @@ function isSupportedByV2GraphGeneration(targetFramework: string): boolean {
   return false;
 }
 
+// The V3 uses PackageOverrides files from the dotnet SDK to resolve the version
+// of packages shipped with the dotnet SDK rather than downloaded from Nuget.
+// The logic works for any project using a supported project SDK:
+// https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
+async function isSupportedByV3GraphGeneration(
+  targetFramework: string,
+  manifestFile: any,
+): Promise<boolean> {
+  // Everything that does not start with 'net' is already game over. E.g. Windows Phone (wp) or silverlight (sl) etc.
+  if (!targetFramework.startsWith('net')) {
+    return false;
+  }
+
+  // - .NET Core: netcoreappN.N, - EOL from Microsoft
+  if (targetFramework.startsWith('netcoreapp')) {
+    return false;
+  }
+
+  // What's left is:
+  // - .NET 5+ netN.N, (supported)
+  // - .NET Standard: netstandardN.N (supported) and
+  // - .NET Framework: netNN or netNNN (supported)
+  // As long as they use a supported Sdk style, they are supported.
+  return await isSupportedSdkProjectTypeFromProjectFile(manifestFile);
+}
+
 function extractTargetFrameworksFromFiles(
   root: string,
   manifestFilePath: string,
@@ -210,6 +239,13 @@ function extractTargetFrameworksFromFiles(
       },
     );
   }
+}
+
+async function isSupportedSdkProjectTypeFromProjectFile(
+  manifestFileContents: string,
+): Promise<boolean> {
+  const manifestFile: object = await parseXmlFile(manifestFileContents);
+  return determineSdkProjectTypeFromProjectFile(manifestFile);
 }
 
 async function extractTargetFrameworksFromProjectFile(
