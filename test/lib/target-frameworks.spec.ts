@@ -1,6 +1,8 @@
 import {
   extractTargetFrameworksFromFiles,
+  isSupportedSdkProjectTypeFromProjectFile,
   isSupportedByV2GraphGeneration,
+  isSupportedByV3GraphGeneration,
 } from '../../lib';
 
 describe('Target framework tests', () => {
@@ -277,6 +279,178 @@ describe('Target framework tests', () => {
     'accepts or rejects specific target frameworks for runtime assembly parsing when targetFramework is: $targetFramework.original',
     ({ targetFramework, expected }) => {
       expect(isSupportedByV2GraphGeneration(targetFramework)).toEqual(expected);
+    },
+  );
+});
+
+describe('SDK project type tests', () => {
+  it.each([
+    {
+      description: 'Project Sdk attribute - Web',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk.Web">
+      </Project>
+      `,
+      isSupportedSdk: true,
+    },
+    {
+      description: 'Project Sdk attribute - MSBuild',
+      manifest: `
+      <Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+      </Project>
+      `,
+      isSupportedSdk: true,
+    },
+    {
+      description: 'Top level Sdk element - MSTest',
+      manifest: `
+      <Project>
+        <Sdk Name="MSTest.Sdk/3.8.3" />
+      </Project>
+      `,
+      isSupportedSdk: true,
+    },
+    {
+      description:
+        'Additive Sdk elements (project attribute takes precedence) - Aspire',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+        <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+        <ItemGroup>
+          <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0"/>
+        </ItemGroup>
+      </Project>
+      `,
+      isSupportedSdk: true,
+    },
+    {
+      description: 'Custom csproj not using and SDK',
+      manifest: `
+      <?xml version="1.0" encoding="utf-8"?>
+      <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        <Import Project="$(MSBuildExtensionsPath)\\$(MSBuildToolsVersion)\\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\\$(MSBuildToolsVersion)\\Microsoft.Common.props')" />
+        <PropertyGroup>
+          <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+          <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+          <ProjectGuid>{A1B2C3D4-E5F6-7890-1234-567890ABCDEF}</ProjectGuid>
+          <OutputType>Exe</OutputType>
+          <AppDesignerFolder>Properties</AppDesignerFolder>
+          <RootNamespace>MyLegacyNetFxApp</RootNamespace>
+          <AssemblyName>MyLegacyNetFxApp</AssemblyName>
+          <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+          <FileAlignment>512</FileAlignment>
+          <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+          <Deterministic>true</Deterministic>
+        </PropertyGroup>
+        <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+          <PlatformTarget>AnyCPU</PlatformTarget>
+          <DebugSymbols>true</DebugSymbols>
+          <DebugType>full</DebugType>
+          <Optimize>false</Optimize>
+          <OutputPath>bin\\Debug\\</OutputPath>
+          <DefineConstants>DEBUG;TRACE</DefineConstants>
+          <ErrorReport>prompt</ErrorReport>
+          <WarningLevel>4</WarningLevel>
+        </PropertyGroup>
+        <Import Project="$(MSBuildToolsPath)\\Microsoft.CSharp.targets" />
+      </Project>
+      `,
+      isSupportedSdk: false,
+    },
+    {
+      description: 'Unsupported SDK - Godot',
+      manifest: `
+      <Project Sdk="Godot.NET.Sdk/4.3.0">
+      </Project>
+      `,
+      isSupportedSdk: false,
+    },
+    {
+      description: 'Unsupported SDK - Uno',
+      manifest: `
+      <Project Sdk="Uno.Sdk/6.0.96">
+      </Project>
+      `,
+      isSupportedSdk: false,
+    },
+  ])(
+    '.Net .csproj is SDK-style project: $description',
+    async ({ manifest, isSupportedSdk }) => {
+      const isSdkProjectFile =
+        await isSupportedSdkProjectTypeFromProjectFile(manifest);
+      expect(isSdkProjectFile).toEqual(isSupportedSdk);
+    },
+  );
+
+  it.each([
+    {
+      targetFramework: '',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+      </Project>
+      `,
+      expected: false,
+    },
+    // .NET Core
+    {
+      targetFramework: 'netcoreapp3.1',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+      </Project>
+      `,
+      expected: false,
+    },
+    // .NET Standard
+    {
+      targetFramework: 'netstandard1.5',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+      </Project>
+      `,
+      expected: true,
+    },
+    // .NET >= 5
+    {
+      targetFramework: 'net7.0',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+      </Project>
+      `,
+      expected: true,
+    },
+    // .NET Framework < 5
+    {
+      targetFramework: 'net35',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+      </Project>
+      `,
+      expected: true,
+    },
+    // .NET Framework < 5
+    {
+      targetFramework: 'net481',
+      manifest: `
+      <Project Sdk="Microsoft.NET.Sdk">
+      </Project>
+      `,
+      expected: true,
+    },
+    // Unsupported net framework
+    {
+      targetFramework: 'net9.0',
+      manifest: `
+      <Project Sdk="Godot.NET.Sdk/4.3.0">
+      </Project>
+      `,
+      expected: false,
+    },
+  ])(
+    'accepts or rejects specific target frameworks for runtime assembly parsing when targetFramework is: $targetFramework.original',
+    async ({ targetFramework, manifest, expected }) => {
+      expect(
+        await isSupportedByV3GraphGeneration(targetFramework, manifest),
+      ).toEqual(expected);
     },
   );
 });
