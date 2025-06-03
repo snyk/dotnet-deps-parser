@@ -34,7 +34,7 @@ export {
   buildDepTreeFromProjectAssetsJson,
   buildDepTreeFromFiles,
   containsPackageReference,
-  extractSdkFromProjectFile,
+  extractProjectSdkFromProjectFile,
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
   extractTargetFrameworksFromProjectConfig,
@@ -246,7 +246,7 @@ function extractTargetFrameworksFromFiles(
   }
 }
 
-async function extractSdkFromProjectFile(
+async function extractProjectSdkFromProjectFile(
   manifestFileContents: string,
 ): Promise<string | undefined> {
   const manifestFile: object = await parseXmlFile(manifestFileContents);

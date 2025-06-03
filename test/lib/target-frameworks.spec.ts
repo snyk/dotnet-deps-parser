@@ -1,6 +1,6 @@
 import {
   extractTargetFrameworksFromFiles,
-  extractSdkFromProjectFile,
+  extractProjectSdkFromProjectFile,
   isSupportedByV2GraphGeneration,
   isSupportedByV3GraphGeneration,
 } from '../../lib';
@@ -376,7 +376,7 @@ describe('SDK project type tests', () => {
   ])(
     '.Net .csproj is SDK-style project: $description',
     async ({ manifest, expectedProjectSdk }) => {
-      const projectSdk = await extractSdkFromProjectFile(manifest);
+      const projectSdk = await extractProjectSdkFromProjectFile(manifest);
       expect(projectSdk).toEqual(expectedProjectSdk);
     },
   );
