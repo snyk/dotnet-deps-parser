@@ -13,7 +13,7 @@ import {
   getTargetFrameworksFromProjectConfig,
   getTargetFrameworksFromProjectFile,
   getTargetFrameworksFromProjectJson,
-  determineSdkProjectTypeFromProjectFile,
+  getSdkFromProjectFile,
   parseXmlFile,
   PkgTree,
   ProjectJsonManifest,
@@ -34,6 +34,7 @@ export {
   buildDepTreeFromProjectAssetsJson,
   buildDepTreeFromFiles,
   containsPackageReference,
+  extractSdkFromProjectFile,
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
   extractTargetFrameworksFromProjectConfig,
@@ -41,7 +42,6 @@ export {
   extractTargetFrameworksFromProjectAssetsJson,
   extractTargetSdkFromGlobalJson,
   extractProps,
-  isSupportedSdkProjectTypeFromProjectFile,
   isSupportedByV2GraphGeneration,
   isSupportedByV3GraphGeneration,
   PkgTree,
@@ -175,28 +175,33 @@ function isSupportedByV2GraphGeneration(targetFramework: string): boolean {
 
 // The V3 uses PackageOverrides files from the dotnet SDK to resolve the version
 // of packages shipped with the dotnet SDK rather than downloaded from Nuget.
-// The logic works for any project using a supported project SDK:
+// The logic works for any project using a supported project SDK, see
 // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
-async function isSupportedByV3GraphGeneration(
+function isSupportedByV3GraphGeneration(
   targetFramework: string,
-  manifestFile: any,
-): Promise<boolean> {
-  // Everything that does not start with 'net' is already game over. E.g. Windows Phone (wp) or silverlight (sl) etc.
-  if (!targetFramework.startsWith('net')) {
+  projectSdk: string | undefined,
+): boolean {
+  // TargetFramework is required for valid projects.
+  if (!targetFramework) {
     return false;
   }
 
-  // - .NET Core: netcoreappN.N, - EOL from Microsoft
-  if (targetFramework.startsWith('netcoreapp')) {
-    return false;
-  }
+  // What's been tested:
+  // - EOL targets: Windows Phone (wp), Silverlight (sl), .NET Core: netcoreappN.N
+  // - .NET 5+ netN.N
+  // - .NET Standard: netstandardN.N
+  // - .NET Framework: netNN or netNNN
 
-  // What's left is:
-  // - .NET 5+ netN.N, (supported)
-  // - .NET Standard: netstandardN.N (supported) and
-  // - .NET Framework: netNN or netNNN (supported)
-  // As long as they use a supported Sdk style, they are supported.
-  return await isSupportedSdkProjectTypeFromProjectFile(manifestFile);
+  // As long as they use a supported SDK style, they can be scanned.
+  // These are the SDKs that produce the necessary obj/project.assets.json file
+  // with the project name and target framework dependencies.
+  // Uno imports the Microsoft.NET.Sdk behind the scene, so is also supported.
+  return [
+    'Microsoft.NET.Sdk',
+    'MSBuild.Sdk.Extras',
+    'MSTest.Sdk',
+    'Uno.Sdk',
+  ].some((sdk) => (projectSdk || '').startsWith(sdk));
 }
 
 function extractTargetFrameworksFromFiles(
@@ -241,11 +246,11 @@ function extractTargetFrameworksFromFiles(
   }
 }
 
-async function isSupportedSdkProjectTypeFromProjectFile(
+async function extractSdkFromProjectFile(
   manifestFileContents: string,
-): Promise<boolean> {
+): Promise<string | undefined> {
   const manifestFile: object = await parseXmlFile(manifestFileContents);
-  return determineSdkProjectTypeFromProjectFile(manifestFile);
+  return getSdkFromProjectFile(manifestFile);
 }
 
 async function extractTargetFrameworksFromProjectFile(

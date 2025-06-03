@@ -1,6 +1,6 @@
 import {
   extractTargetFrameworksFromFiles,
-  isSupportedSdkProjectTypeFromProjectFile,
+  extractSdkFromProjectFile,
   isSupportedByV2GraphGeneration,
   isSupportedByV3GraphGeneration,
 } from '../../lib';
@@ -291,7 +291,7 @@ describe('SDK project type tests', () => {
       <Project Sdk="Microsoft.NET.Sdk.Web">
       </Project>
       `,
-      isSupportedSdk: true,
+      expectedProjectSdk: 'Microsoft.NET.Sdk.Web',
     },
     {
       description: 'Project Sdk attribute - MSBuild',
@@ -299,7 +299,7 @@ describe('SDK project type tests', () => {
       <Project Sdk="MSBuild.Sdk.Extras/2.0.54">
       </Project>
       `,
-      isSupportedSdk: true,
+      expectedProjectSdk: 'MSBuild.Sdk.Extras/2.0.54',
     },
     {
       description: 'Top level Sdk element - MSTest',
@@ -308,7 +308,7 @@ describe('SDK project type tests', () => {
         <Sdk Name="MSTest.Sdk/3.8.3" />
       </Project>
       `,
-      isSupportedSdk: true,
+      expectedProjectSdk: 'MSTest.Sdk/3.8.3',
     },
     {
       description:
@@ -321,7 +321,7 @@ describe('SDK project type tests', () => {
         </ItemGroup>
       </Project>
       `,
-      isSupportedSdk: true,
+      expectedProjectSdk: 'Microsoft.NET.Sdk',
     },
     {
       description: 'Custom csproj not using and SDK',
@@ -355,7 +355,7 @@ describe('SDK project type tests', () => {
         <Import Project="$(MSBuildToolsPath)\\Microsoft.CSharp.targets" />
       </Project>
       `,
-      isSupportedSdk: false,
+      expectedProjectSdk: undefined,
     },
     {
       description: 'Unsupported SDK - Godot',
@@ -363,7 +363,7 @@ describe('SDK project type tests', () => {
       <Project Sdk="Godot.NET.Sdk/4.3.0">
       </Project>
       `,
-      isSupportedSdk: false,
+      expectedProjectSdk: 'Godot.NET.Sdk/4.3.0',
     },
     {
       description: 'Unsupported SDK - Uno',
@@ -371,85 +371,76 @@ describe('SDK project type tests', () => {
       <Project Sdk="Uno.Sdk/6.0.96">
       </Project>
       `,
-      isSupportedSdk: false,
+      expectedProjectSdk: 'Uno.Sdk/6.0.96',
     },
   ])(
     '.Net .csproj is SDK-style project: $description',
-    async ({ manifest, isSupportedSdk }) => {
-      const isSdkProjectFile =
-        await isSupportedSdkProjectTypeFromProjectFile(manifest);
-      expect(isSdkProjectFile).toEqual(isSupportedSdk);
+    async ({ manifest, expectedProjectSdk }) => {
+      const projectSdk = await extractSdkFromProjectFile(manifest);
+      expect(projectSdk).toEqual(expectedProjectSdk);
     },
   );
 
   it.each([
+    // No target framework, no way to restore the project.
     {
       targetFramework: '',
-      manifest: `
-      <Project Sdk="Microsoft.NET.Sdk">
-      </Project>
-      `,
+      projectSdk: 'Microsoft.NET.Sdk',
       expected: false,
     },
-    // .NET Core
+    // .NET Core with NET SDK.
     {
       targetFramework: 'netcoreapp3.1',
-      manifest: `
-      <Project Sdk="Microsoft.NET.Sdk">
-      </Project>
-      `,
-      expected: false,
+      projectSdk: 'Microsoft.NET.Sdk',
+      expected: true,
     },
-    // .NET Standard
+    // .NET Standard.
     {
       targetFramework: 'netstandard1.5',
-      manifest: `
-      <Project Sdk="Microsoft.NET.Sdk">
-      </Project>
-      `,
+      projectSdk: 'Microsoft.NET.Sdk',
       expected: true,
     },
     // .NET >= 5
     {
       targetFramework: 'net7.0',
-      manifest: `
-      <Project Sdk="Microsoft.NET.Sdk">
-      </Project>
-      `,
+      projectSdk: 'Microsoft.NET.Sdk',
       expected: true,
     },
-    // .NET Framework < 5
+    // .NET Framework 3.5
     {
       targetFramework: 'net35',
-      manifest: `
-      <Project Sdk="Microsoft.NET.Sdk">
-      </Project>
-      `,
+      projectSdk: 'Microsoft.NET.Sdk',
       expected: true,
     },
-    // .NET Framework < 5
+    // .NET Framework 4
     {
       targetFramework: 'net481',
-      manifest: `
-      <Project Sdk="Microsoft.NET.Sdk">
-      </Project>
-      `,
+      projectSdk: 'Microsoft.NET.Sdk',
       expected: true,
     },
-    // Unsupported net framework
+    // Uno SDK with any supported .NET framework.
     {
       targetFramework: 'net9.0',
-      manifest: `
-      <Project Sdk="Godot.NET.Sdk/4.3.0">
-      </Project>
-      `,
+      projectSdk: 'Uno.Sdk/6.0.96',
+      expected: true,
+    },
+    // Unsupported Godot SDK, as it generated project.assets.json in a subfolder of .godot and requires mono.
+    {
+      targetFramework: 'net9.0',
+      projectSdk: 'Godot.NET.Sdk/4.3.0',
+      expected: false,
+    },
+    // Missing SDK is unsupported, as it defines how and where msbuild generates project.assets.json.
+    {
+      targetFramework: 'net9.0',
+      projectSdk: undefined,
       expected: false,
     },
   ])(
-    'accepts or rejects specific target frameworks for runtime assembly parsing when targetFramework is: $targetFramework.original',
-    async ({ targetFramework, manifest, expected }) => {
+    'is v3 graph generation supported for: $targetFramework + $projectSdk',
+    async ({ targetFramework, projectSdk, expected }) => {
       expect(
-        await isSupportedByV3GraphGeneration(targetFramework, manifest),
+        isSupportedByV3GraphGeneration(targetFramework, projectSdk),
       ).toEqual(expected);
     },
   );

@@ -414,22 +414,14 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   return uniq(targetFrameworksResult);
 }
 
-// Determines whether a project uses the SDK style, based on documentation at
+// Extracts the SDK name for SDK-style projects, based on documentation at
 // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
-export function determineSdkProjectTypeFromProjectFile(
-  manifestFile: any,
-): boolean {
-  const projectSdkAttribute = manifestFile?.Project?.$?.Sdk;
-  const topLevelSdkElement = manifestFile?.Project?.Sdk?.[0]?.$?.Name;
+export function getSdkFromProjectFile(manifestFile: any): string | undefined {
+  const projectSdkAttribute: string | undefined = manifestFile?.Project?.$?.Sdk;
+  const topLevelSdkElement: string | undefined =
+    manifestFile?.Project?.Sdk?.[0]?.$?.Name;
 
-  const sdkPrefixes = ['Microsoft.NET.Sdk', 'MSBuild.Sdk.Extras', 'MSTest.Sdk'];
-
-  return (
-    (!!projectSdkAttribute &&
-      sdkPrefixes.some((prefix) => projectSdkAttribute.startsWith(prefix))) ||
-    (!!topLevelSdkElement &&
-      sdkPrefixes.some((prefix) => topLevelSdkElement.startsWith(prefix)))
-  );
+  return projectSdkAttribute || topLevelSdkElement;
 }
 
 function getTargetFrameworks(item: string | any) {
