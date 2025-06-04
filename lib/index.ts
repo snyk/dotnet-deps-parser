@@ -166,6 +166,16 @@ function isSupportedByV2GraphGeneration(targetFramework: string): boolean {
   // - .NET Framework: netNNN (unsupported)
   // So if there's a dot, we're good.
   if (targetFramework.includes('.')) {
+    // Ensure that if it's "netN.N", we don't accept anything below 4.0.
+    // It's not valid to supply something below 5 with dots (i.e. net4.8, should be net48 per the documentation
+    // links above), but it's an easy mistake to make, and it's still accepted by the dotnet CLI.
+    const regex = /net(?<major>\d)\.(?<minor>\d)/gm;
+    const match = regex.exec(targetFramework);
+    if (match) {
+      const major = parseInt(match.groups?.major || '0', 10);
+      return major >= 5;
+    }
+
     return true;
   }
 

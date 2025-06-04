@@ -275,6 +275,11 @@ describe('Target framework tests', () => {
       targetFramework: 'net48',
       expected: false,
     },
+    // .NET Framework < 5 with dot
+    {
+      targetFramework: 'net4.8',
+      expected: false,
+    },
   ])(
     'accepts or rejects specific target frameworks for runtime assembly parsing when targetFramework is: $targetFramework.original',
     ({ targetFramework, expected }) => {
