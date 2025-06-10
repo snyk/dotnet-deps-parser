@@ -2,6 +2,7 @@ import 'source-map-support/register';
 import * as fs from 'fs';
 import * as path from 'path';
 import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
+import * as jsonc from 'jsonc-parser';
 
 import {
   DepType,
@@ -323,13 +324,9 @@ function extractTargetSdkFromGlobalJson(
   manifestFileContents: string,
 ): string | undefined {
   try {
-    // Remove /* */ comments from the JSON string (if any)
-    // It's allowed: https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#comments-in-globaljson
-    const jsonWithoutComments = manifestFileContents.replace(
-      /\/\*[\s\S]*?\*\/|\/\/.*$/gm,
-      '',
-    );
-    const globalJsonAsObj = JSON.parse(jsonWithoutComments);
+    // Use a JSONC parser as that's the format of global.json, which accepts comments,
+    // see https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#comments-in-globaljson
+    const globalJsonAsObj = jsonc.parse(manifestFileContents);
     return globalJsonAsObj?.sdk?.version;
   } catch (err: any) {
     throw new Error(
