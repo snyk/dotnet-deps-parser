@@ -1,31 +1,46 @@
-import { extractTargetSdkFromGlobalJson } from '../../lib';
+import { extractSdkAndRollForwardPolicyFromGlobalJson } from '../../lib';
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe('for global.json target SDKs', () => {
+describe('global.json parsing', () => {
   it.each([
     {
       fixturePath: path.resolve(
         `${__dirname}/../fixtures/dotnet-core-global-json`,
         'global_normal.json',
       ),
-      expected: '6.0.203',
+      expected: {
+        sdk: '6.0.203',
+        rollForward: 'latestFeature',
+      },
     },
     {
-      // Making programmers lives hard:
-      // https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#comments-in-globaljson
       fixturePath: path.resolve(
         `${__dirname}/../fixtures/dotnet-core-global-json`,
         'global_with_comments.json',
       ),
-      expected: '7.0.100',
+      expected: {
+        sdk: '7.0.100',
+        rollForward: undefined,
+      },
+    },
+    {
+      fixturePath: path.resolve(
+        `${__dirname}/../fixtures/dotnet-core-global-json`,
+        'global_no_version.json',
+      ),
+      expected: {
+        sdk: undefined,
+        rollForward: 'latestMajor',
+      },
     },
   ])(
-    'should correctly parse TargetFramework with condition',
+    'should correctly parse SDK and rollForward',
     async ({ fixturePath, expected }) => {
       const globalJson = fs.readFileSync(fixturePath, 'utf-8');
 
-      const targetSdk = extractTargetSdkFromGlobalJson(globalJson);
+      const targetSdk =
+        extractSdkAndRollForwardPolicyFromGlobalJson(globalJson);
 
       expect(globalJson).toBeTruthy();
       expect(targetSdk).toEqual(expected);

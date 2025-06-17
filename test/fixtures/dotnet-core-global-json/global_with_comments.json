@@ -1,7 +1,7 @@
 {
   // This is a comment.
   "sdk": {
-    "comment": "This is a comment with a URL https://google.com",
+    "comment": "This is a JSON string with a URL https://google.com",
     "version": "7.0.100" /* This is comment 2*/
     /* This is a
     multiline comment.*/
