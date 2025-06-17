@@ -36,12 +36,12 @@ export {
   buildDepTreeFromFiles,
   containsPackageReference,
   extractProjectSdkFromProjectFile,
+  extractSdkAndRollForwardPolicyFromGlobalJson,
   extractTargetFrameworksFromFiles,
   extractTargetFrameworksFromProjectFile,
   extractTargetFrameworksFromProjectConfig,
   extractTargetFrameworksFromProjectJson,
   extractTargetFrameworksFromProjectAssetsJson,
-  extractTargetSdkFromGlobalJson,
   extractProps,
   isSupportedByV2GraphGeneration,
   isSupportedByV3GraphGeneration,
@@ -320,14 +320,20 @@ async function extractTargetFrameworksFromProjectAssetsJson(
   return getTargetFrameworksFromProjectAssetsJson(manifestFile);
 }
 
-function extractTargetSdkFromGlobalJson(
+function extractSdkAndRollForwardPolicyFromGlobalJson(
   manifestFileContents: string,
-): string | undefined {
+): {
+  sdk?: string;
+  rollForward?: string;
+} {
   try {
     // Use a JSONC parser as that's the format of global.json, which accepts comments,
     // see https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#comments-in-globaljson
     const globalJsonAsObj = jsonc.parse(manifestFileContents);
-    return globalJsonAsObj?.sdk?.version;
+    return {
+      sdk: globalJsonAsObj?.sdk?.version,
+      rollForward: globalJsonAsObj?.sdk?.rollForward,
+    };
   } catch (err: any) {
     throw new Error(
       `Extracting target framework failed with error ${err.message}`,
