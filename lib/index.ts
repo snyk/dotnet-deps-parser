@@ -207,11 +207,13 @@ function isSupportedByV3GraphGeneration(
   // These are the SDKs that produce the necessary obj/project.assets.json file
   // with the project name and target framework dependencies.
   // Uno imports the Microsoft.NET.Sdk behind the scene, so is also supported.
+  // Godot.NET.Sdk is the official SDK for Godot game engine projects.
   return [
     'Microsoft.NET.Sdk',
     'MSBuild.Sdk.Extras',
     'MSTest.Sdk',
     'Uno.Sdk',
+    'Godot.NET.Sdk',
   ].some((sdk) => (projectSdk || '').startsWith(sdk));
 }
 

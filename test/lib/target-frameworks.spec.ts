@@ -363,7 +363,7 @@ describe('SDK project type tests', () => {
       expectedProjectSdk: undefined,
     },
     {
-      description: 'Unsupported SDK - Godot',
+      description: 'Godot SDK',
       manifest: `
       <Project Sdk="Godot.NET.Sdk/4.3.0">
       </Project>
@@ -429,11 +429,11 @@ describe('SDK project type tests', () => {
       projectSdk: 'Uno.Sdk/6.0.96',
       expected: true,
     },
-    // Unsupported Godot SDK, as it generated project.assets.json in a subfolder of .godot and requires mono.
+    // Godot SDK is now supported.
     {
       targetFramework: 'net9.0',
       projectSdk: 'Godot.NET.Sdk/4.3.0',
-      expected: false,
+      expected: true,
     },
     // Missing SDK is unsupported, as it defines how and where msbuild generates project.assets.json.
     {
