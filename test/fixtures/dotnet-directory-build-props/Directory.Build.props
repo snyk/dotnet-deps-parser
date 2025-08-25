@@ -1,0 +1,21 @@
+<Project>
+    <PropertyGroup>
+        <ProjectArtifacts>$(MSBuildThisFileDirectory)artifacts\$(MSBuildProjectName)\</ProjectArtifacts>
+    </PropertyGroup>
+
+    <Choose>
+
+        <When Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
+            <PropertyGroup>
+                <BaseIntermediateOutputPath>$(ProjectArtifacts)obj\</BaseIntermediateOutputPath>
+            </PropertyGroup>
+        </When>
+
+        <When Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+            <PropertyGroup>
+                <TargetFramework>net9.0</TargetFramework>
+            </PropertyGroup>
+        </When>
+
+    </Choose>
+</Project>

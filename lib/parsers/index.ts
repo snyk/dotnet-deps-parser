@@ -347,23 +347,53 @@ export function getPropertiesMap(propsContents: any): PropsLookup {
 
 export function getTargetFrameworksFromProjectFile(manifestFile) {
   let targetFrameworksResult: string[] = [];
-  const projectPropertyGroup = manifestFile?.Project?.PropertyGroup ?? [];
 
-  if (!projectPropertyGroup) {
-    return targetFrameworksResult;
-  }
+  // First, look in direct PropertyGroup elements
+  const projectPropertyGroup = manifestFile?.Project?.PropertyGroup ?? [];
   let propertyList: any = {};
-  try {
-    propertyList =
-      projectPropertyGroup.find((propertyGroup) => {
-        return (
-          'TargetFramework' in propertyGroup ||
-          'TargetFrameworks' in propertyGroup ||
-          'TargetFrameworkVersion' in propertyGroup
-        );
-      }) || {};
-  } catch (err) {
-    propertyList = {};
+
+  if (projectPropertyGroup) {
+    try {
+      propertyList =
+        projectPropertyGroup.find((propertyGroup) => {
+          return (
+            'TargetFramework' in propertyGroup ||
+            'TargetFrameworks' in propertyGroup ||
+            'TargetFrameworkVersion' in propertyGroup
+          );
+        }) || {};
+    } catch (err) {
+      propertyList = {};
+    }
+  }
+
+  // If no target framework found in direct PropertyGroups, look inside Choose/When blocks
+  if (isEmpty(propertyList)) {
+    const chooseElements = manifestFile?.Project?.Choose ?? [];
+    for (const choose of chooseElements) {
+      const whenElements = choose.When ?? [];
+      for (const when of whenElements) {
+        const whenPropertyGroups = when.PropertyGroup ?? [];
+        try {
+          const foundProperty = whenPropertyGroups.find((propertyGroup) => {
+            return (
+              'TargetFramework' in propertyGroup ||
+              'TargetFrameworks' in propertyGroup ||
+              'TargetFrameworkVersion' in propertyGroup
+            );
+          });
+          if (foundProperty && !isEmpty(foundProperty)) {
+            propertyList = foundProperty;
+            break;
+          }
+        } catch (err) {
+          // Continue searching other When blocks
+        }
+      }
+      if (!isEmpty(propertyList)) {
+        break;
+      }
+    }
   }
 
   if (isEmpty(propertyList)) {

@@ -48,4 +48,22 @@ describe('for manifest files with conditional target frameworks', () => {
       expect(regularTargetFrameworks).toEqual(conditionalTargetFrameworks);
     },
   );
+
+  it('should correctly parse TargetFramework from Directory.build.props with Choose/When conditions', async () => {
+    const directoryBuildPropsPath = path.resolve(
+      `${__dirname}/../fixtures/dotnet-directory-build-props`,
+      'Directory.Build.props',
+    );
+
+    const manifestFileContents = fs.readFileSync(
+      directoryBuildPropsPath,
+      'utf-8',
+    );
+
+    const targetFrameworks =
+      await extractTargetFrameworksFromProjectFile(manifestFileContents);
+
+    expect(targetFrameworks).toBeTruthy();
+    expect(targetFrameworks).toEqual(['net9.0']);
+  });
 });
