@@ -338,6 +338,10 @@ export function getPropertiesMap(propsContents: any): PropsLookup {
   }
 
   for (const group of projectPropertyGroup) {
+    // Skip empty property groups that are parsed as strings
+    if (typeof group === 'string') {
+      continue;
+    }
     for (const key of Object.keys(group)) {
       set(props, key, group[key][0]);
     }
@@ -355,13 +359,15 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   if (projectPropertyGroup) {
     try {
       propertyList =
-        projectPropertyGroup.find((propertyGroup) => {
-          return (
-            'TargetFramework' in propertyGroup ||
-            'TargetFrameworks' in propertyGroup ||
-            'TargetFrameworkVersion' in propertyGroup
-          );
-        }) || {};
+        projectPropertyGroup
+          .filter((propertyGroup) => typeof propertyGroup === 'object')
+          .find((propertyGroup) => {
+            return (
+              'TargetFramework' in propertyGroup ||
+              'TargetFrameworks' in propertyGroup ||
+              'TargetFrameworkVersion' in propertyGroup
+            );
+          }) || {};
     } catch (err) {
       propertyList = {};
     }
@@ -375,13 +381,15 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
       for (const when of whenElements) {
         const whenPropertyGroups = when.PropertyGroup ?? [];
         try {
-          const foundProperty = whenPropertyGroups.find((propertyGroup) => {
-            return (
-              'TargetFramework' in propertyGroup ||
-              'TargetFrameworks' in propertyGroup ||
-              'TargetFrameworkVersion' in propertyGroup
-            );
-          });
+          const foundProperty = whenPropertyGroups
+            .filter((propertyGroup) => typeof propertyGroup === 'object')
+            .find((propertyGroup) => {
+              return (
+                'TargetFramework' in propertyGroup ||
+                'TargetFrameworks' in propertyGroup ||
+                'TargetFrameworkVersion' in propertyGroup
+              );
+            });
           if (foundProperty && !isEmpty(foundProperty)) {
             propertyList = foundProperty;
             break;

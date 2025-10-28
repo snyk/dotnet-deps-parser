@@ -78,6 +78,17 @@ describe('Target framework tests', () => {
   );
 
   it.concurrent(
+    '.Net .csproj dotnet-empty-self-closing-property-group target framework extracted',
+    async () => {
+      const targetFrameworks = await extractTargetFrameworksFromFiles(
+        `${__dirname}/../fixtures/dotnet-empty-self-closing-property-group`,
+        'empty-self-closing.csproj',
+      );
+      expect(targetFrameworks).toEqual(['net6.0']);
+    },
+  );
+
+  it.concurrent(
     '.Net .csproj multiple target frameworks extracted as expected',
     async () => {
       const targetFrameworks = await extractTargetFrameworksFromFiles(

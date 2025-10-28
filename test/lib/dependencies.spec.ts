@@ -218,6 +218,19 @@ test('.Net .csproj dotnet-empty-property-group returns empty tree', async () => 
   expect(tree).toEqual(expectedTree);
 });
 
+test('.Net .csproj dotnet-empty-self-closing-property-group returns empty tree', async () => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-empty-self-closing-property-group`,
+    'empty-self-closing.csproj',
+    includeDev,
+  );
+  const expectedTree = load(
+    'dotnet-empty-self-closing-property-group/expected-tree.json',
+  );
+  expect(tree).toEqual(expectedTree);
+});
+
 test('.Net .csproj core dotnet-invalid-manifest throws', async () => {
   const unparsableManifestError =
     new OpenSourceEcosystems.UnparseableManifestError(
