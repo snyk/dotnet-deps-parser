@@ -1,6 +1,7 @@
 import {
   extractTargetFrameworksFromFiles,
   extractProjectSdkFromProjectFile,
+  extractTargetFrameworksFromProjectFile,
   isSupportedByV2GraphGeneration,
   isSupportedByV3GraphGeneration,
 } from '../../lib';
@@ -97,6 +98,191 @@ describe('Target framework tests', () => {
       );
 
       expect(targetFrameworks).toEqual(['netstandard2.0', 'net462']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj trims leading whitespace from target frameworks',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks>netstandard2.0; net48</TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual(['netstandard2.0', 'net48']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj trims trailing whitespace from target frameworks',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks>netstandard2.0 ;net48 </TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual(['netstandard2.0', 'net48']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj trims both leading and trailing whitespace from target frameworks',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks> netstandard2.0 ; net48 ; netcoreapp3.1 </TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual([
+        'netstandard2.0',
+        'net48',
+        'netcoreapp3.1',
+      ]);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj handles single target framework with whitespace',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFramework> net48 </TargetFramework>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual(['net48']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj handles single target framework without whitespace (baseline)',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFramework>net48</TargetFramework>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual(['net48']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj handles single target framework with extreme whitespace',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFramework>   net48   </TargetFramework>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual(['net48']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj handles single target framework with tabs and newlines',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFramework>	
+          net48	
+          </TargetFramework>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual(['net48']);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj preserves frameworks without whitespace (baseline)',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks>netstandard2.0;net48;netcoreapp3.1</TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual([
+        'netstandard2.0',
+        'net48',
+        'netcoreapp3.1',
+      ]);
+    },
+  );
+
+  it.concurrent('.Net .csproj handles extreme whitespace cases', async () => {
+    const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks>   netstandard2.0   ;   net48   ;   netcoreapp3.1   </TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+    const targetFrameworks =
+      await extractTargetFrameworksFromProjectFile(manifest);
+    expect(targetFrameworks).toEqual([
+      'netstandard2.0',
+      'net48',
+      'netcoreapp3.1',
+    ]);
+  });
+
+  it.concurrent(
+    '.Net .csproj handles tabs and newlines in target frameworks',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks>	netstandard2.0	;
+          net48	;	netcoreapp3.1	</TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual([
+        'netstandard2.0',
+        'net48',
+        'netcoreapp3.1',
+      ]);
+    },
+  );
+
+  it.concurrent(
+    '.Net .csproj handles empty segments from extra semicolons',
+    async () => {
+      const manifest = `<Project Sdk="Microsoft.NET.Sdk">
+        <PropertyGroup>
+          <TargetFrameworks>;;netstandard2.0;; net48 ;;netcoreapp3.1;;</TargetFrameworks>
+        </PropertyGroup>
+      </Project>`;
+
+      const targetFrameworks =
+        await extractTargetFrameworksFromProjectFile(manifest);
+      expect(targetFrameworks).toEqual([
+        'netstandard2.0',
+        'net48',
+        'netcoreapp3.1',
+      ]);
     },
   );
 

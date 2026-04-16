@@ -429,18 +429,19 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
     // sanity check
     if (Array.isArray(propertyList.TargetFramework)) {
       // mutate the array to effectively "ignore" conditions
-      propertyList.TargetFramework = propertyList.TargetFramework.map(
-        (framework) => {
-          if (
-            framework &&
-            typeof framework === 'object' &&
-            Object.hasOwnProperty.call(framework, '_')
-          ) {
-            return framework._;
-          }
-          return framework;
-        },
-      );
+      const frameworks = propertyList.TargetFramework.map((framework) => {
+        if (
+          framework &&
+          typeof framework === 'object' &&
+          Object.hasOwnProperty.call(framework, '_')
+        ) {
+          return framework._;
+        }
+        return framework;
+      });
+      propertyList.TargetFramework = frameworks
+        .map((x) => x.trim())
+        .filter((x) => !isEmpty(x));
     }
 
     targetFrameworksResult = [
@@ -466,7 +467,10 @@ function getTargetFrameworks(item: string | any) {
   if (typeof item === 'object' && Object.hasOwnProperty.call(item, '_')) {
     item = item._;
   }
-  return item.split(';').filter((x) => !isEmpty(x));
+  return item
+    .split(';')
+    .map((x) => x.trim())
+    .filter((x) => !isEmpty(x));
 }
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
