@@ -28,7 +28,7 @@
   ],
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
   "dependencies": {
-    "@snyk/error-catalog-nodejs-public": "^4.0.1",
+    "@snyk/error-catalog-nodejs-public": "^5.34.2",
     "jsonc-parser": "^3.3.1",
     "lodash": "^4.18.1",
     "source-map-support": "^0.5.21",
