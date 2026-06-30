@@ -23,10 +23,15 @@
     "node": ">=16"
   },
   "files": [
-    "bin",
     "dist"
   ],
   "homepage": "https://github.com/snyk/dotnet-deps-parser#readme",
+  "bugs": {
+    "url": "https://github.com/snyk/dotnet-deps-parser/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@snyk/error-catalog-nodejs-public": "^4.0.1",
     "jsonc-parser": "^3.3.1",
