@@ -89,6 +89,7 @@ workflows:
           name: Scan repository for secrets
           context:
             - snyk-bot-slack
+            - prodsec-orb-runtime
           channel: snyk-vuln-alerts-sca
           filters:
             branches:
@@ -97,7 +98,9 @@ workflows:
 
       - security-scans:
           name: Security Scans
-          context: open_source-managed
+          context:
+            - open_source-managed
+            - prodsec-orb-runtime
           filters:
             branches:
               ignore:
@@ -129,7 +132,9 @@ workflows:
     jobs:
       - security-scans:
           name: Security Scans
-          context: open_source-managed
+          context:
+            - open_source-managed
+            - prodsec-orb-runtime
           filters:
             branches:
               only:
