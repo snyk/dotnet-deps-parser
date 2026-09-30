@@ -1,6 +1,12 @@
 import * as parseXML from 'xml2js';
 import { isEmpty, set, uniq } from 'lodash';
 import { OpenSourceEcosystems } from '@snyk/error-catalog-nodejs-public';
+import {
+  getAll,
+  getAttr,
+  getCaseInsensitive,
+  hasKey,
+} from './case-insensitive';
 
 export interface PkgTree {
   name: string;
@@ -111,11 +117,14 @@ export async function getDependencyTreeFromPackagesConfig(
     version: '',
   };
 
-  const packageList = manifestFile?.packages?.package ?? [];
+  const packageList = getAll(
+    getCaseInsensitive(manifestFile, 'packages'),
+    'package',
+  );
 
   for (const dep of packageList) {
-    const depName = dep.$.id;
-    const isDev = !!dep.$.developmentDependency;
+    const depName = getAttr(dep, 'id');
+    const isDev = !!getAttr(dep, 'developmentDependency');
     depTree.hasDevDependencies = depTree.hasDevDependencies || isDev;
     if (isDev && !includeDev) {
       continue;
@@ -130,12 +139,13 @@ function buildSubTreeFromPackagesConfig(dep, isDev: boolean): PkgTree {
   const depSubTree: PkgTree = {
     depType: isDev ? DepType.dev : DepType.prod,
     dependencies: {},
-    name: dep.$.id,
-    version: dep.$.version,
+    name: getAttr(dep, 'id'),
+    version: getAttr(dep, 'version'),
   };
 
-  if (dep.$.targetFramework) {
-    depSubTree.targetFrameworks = [dep.$.targetFramework];
+  const targetFramework = getAttr(dep, 'targetFramework');
+  if (targetFramework) {
+    depSubTree.targetFrameworks = [targetFramework];
   }
 
   return depSubTree;
@@ -147,14 +157,19 @@ export async function getDependencyTreeFromProjectFile(
   propsMap: PropsLookup = {},
 ): Promise<PkgTree> {
   const nameProperty =
-    (manifestFile?.Project?.PropertyGroup ?? [])
+    getProjectChildren(manifestFile, 'PropertyGroup')
       .filter((propertyGroup) => typeof propertyGroup !== 'string')
       .find((propertyGroup) => {
-        return 'PackageId' in propertyGroup || 'AssemblyName' in propertyGroup;
+        return (
+          hasKey(propertyGroup, 'PackageId') ||
+          hasKey(propertyGroup, 'AssemblyName')
+        );
       }) || {};
 
   const name =
-    nameProperty.PackageId?.[0] || nameProperty.AssemblyName?.[0] || '';
+    getCaseInsensitive(nameProperty, 'PackageId')?.[0] ||
+    getCaseInsensitive(nameProperty, 'AssemblyName')?.[0] ||
+    '';
 
   const packageReferenceDeps = await getDependenciesFromPackageReference(
     manifestFile,
@@ -189,9 +204,9 @@ export async function getDependenciesFromPackageReference(
     dependencies: {},
     hasDevDependencies: false,
   };
-  const packageGroups = (manifestFile?.Project?.ItemGroup ?? []).filter(
+  const packageGroups = getProjectChildren(manifestFile, 'ItemGroup').filter(
     (itemGroup) =>
-      typeof itemGroup === 'object' && 'PackageReference' in itemGroup,
+      typeof itemGroup === 'object' && hasKey(itemGroup, 'PackageReference'),
   );
 
   if (!packageGroups.length) {
@@ -219,17 +234,17 @@ function processItemGroupForPackageReference(
   propsMap: PropsLookup,
 ) {
   const targetFrameworks: string[] =
-    (packageList?.$?.Condition ?? false)
-      ? getConditionalFrameworks(packageList.$.Condition)
+    (getAttr(packageList, 'Condition') ?? false)
+      ? getConditionalFrameworks(getAttr(packageList, 'Condition'))
       : [];
 
-  for (const dep of packageList.PackageReference) {
-    const depName = dep.$.Include;
+  for (const dep of getAll(packageList, 'PackageReference')) {
+    const depName = getAttr(dep, 'Include');
     if (!depName) {
       // PackageReference Update is not yet supported
       continue;
     }
-    const isDev = !!dep.$.developmentDependency;
+    const isDev = !!getAttr(dep, 'developmentDependency');
     dependenciesResult.hasDevDependencies =
       dependenciesResult.hasDevDependencies || isDev;
     if (isDev && !includeDev) {
@@ -266,7 +281,7 @@ function buildSubTreeFromPackageReference(
     const depSubTree: PkgTree = {
       depType: isDev ? DepType.dev : DepType.prod,
       dependencies: {},
-      name: dep.$.Include,
+      name: getAttr(dep, 'Include'),
       // Version could be in attributes or as child node.
       version,
     };
@@ -277,13 +292,13 @@ function buildSubTreeFromPackageReference(
 
     return depSubTree;
   } else {
-    return { name: dep.$.Include, withoutVersion: true };
+    return { name: getAttr(dep, 'Include'), withoutVersion: true };
   }
 }
 
 function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   const VARS_MATCHER = /^\$\((.*?)\)/;
-  let version = dep?.$?.Version || dep?.Version;
+  let version = getAttr(dep, 'Version') || getCaseInsensitive(dep, 'Version');
   if (Array.isArray(version)) {
     version = version[0];
   }
@@ -294,11 +309,11 @@ function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   // version is a variable, extract it from manifest or props lookup
   const propertyName = variableVersion[1];
   const propertyMap = { ...propsMap, ...getPropertiesMap(manifestFile) };
-  return propertyMap?.[propertyName] ?? null;
+  return getCaseInsensitive(propertyMap, propertyName) ?? null;
 }
 
 function getConditionalFrameworks(condition: string) {
-  const regexp = /\(TargetFramework\)'\s?==\s? '((\w|\d|\.)*)'/g;
+  const regexp = /\(TargetFramework\)'\s?==\s? '((\w|\d|\.)*)'/gi;
   const frameworks: string[] = [];
   let match = regexp.exec(condition);
 
@@ -331,7 +346,10 @@ export interface PropsLookup {
 }
 
 export function getPropertiesMap(propsContents: any): PropsLookup {
-  const projectPropertyGroup = propsContents?.Project?.PropertyGroup ?? [];
+  const projectPropertyGroup = getProjectChildren(
+    propsContents,
+    'PropertyGroup',
+  );
   const props: PropsLookup = {};
   if (!projectPropertyGroup.length) {
     return props;
@@ -353,7 +371,10 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   let targetFrameworksResult: string[] = [];
 
   // First, look in direct PropertyGroup elements
-  const projectPropertyGroup = manifestFile?.Project?.PropertyGroup ?? [];
+  const projectPropertyGroup = getProjectChildren(
+    manifestFile,
+    'PropertyGroup',
+  );
   let propertyList: any = {};
 
   if (projectPropertyGroup) {
@@ -362,11 +383,7 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
         projectPropertyGroup
           .filter((propertyGroup) => typeof propertyGroup === 'object')
           .find((propertyGroup) => {
-            return (
-              'TargetFramework' in propertyGroup ||
-              'TargetFrameworks' in propertyGroup ||
-              'TargetFrameworkVersion' in propertyGroup
-            );
+            return hasTargetFrameworkProperty(propertyGroup);
           }) || {};
     } catch (err) {
       propertyList = {};
@@ -375,20 +392,16 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
 
   // If no target framework found in direct PropertyGroups, look inside Choose/When blocks
   if (isEmpty(propertyList)) {
-    const chooseElements = manifestFile?.Project?.Choose ?? [];
+    const chooseElements = getProjectChildren(manifestFile, 'Choose');
     for (const choose of chooseElements) {
-      const whenElements = choose.When ?? [];
+      const whenElements = getAll(choose, 'When');
       for (const when of whenElements) {
-        const whenPropertyGroups = when.PropertyGroup ?? [];
+        const whenPropertyGroups = getAll(when, 'PropertyGroup');
         try {
           const foundProperty = whenPropertyGroups
             .filter((propertyGroup) => typeof propertyGroup === 'object')
             .find((propertyGroup) => {
-              return (
-                'TargetFramework' in propertyGroup ||
-                'TargetFrameworks' in propertyGroup ||
-                'TargetFrameworkVersion' in propertyGroup
-              );
+              return hasTargetFrameworkProperty(propertyGroup);
             });
           if (foundProperty && !isEmpty(foundProperty)) {
             propertyList = foundProperty;
@@ -407,9 +420,18 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   if (isEmpty(propertyList)) {
     return targetFrameworksResult;
   }
+  const targetFrameworksProp = getCaseInsensitive(
+    propertyList,
+    'TargetFrameworks',
+  );
+  const targetFrameworkVersionProp = getCaseInsensitive(
+    propertyList,
+    'TargetFrameworkVersion',
+  );
+  let targetFrameworkProp = getCaseInsensitive(propertyList, 'TargetFramework');
   // TargetFrameworks is expected to be a list ; separated
-  if (propertyList.TargetFrameworks) {
-    for (const item of propertyList.TargetFrameworks) {
+  if (targetFrameworksProp) {
+    for (const item of targetFrameworksProp) {
       targetFrameworksResult = [
         ...targetFrameworksResult,
         ...getTargetFrameworks(item),
@@ -419,17 +441,17 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
   // TargetFrameworkVersion is expected to be a string containing only one item
   // TargetFrameworkVersion also implies .NETFramework, for convenience
   // return longer version
-  if (propertyList.TargetFrameworkVersion) {
+  if (targetFrameworkVersionProp) {
     targetFrameworksResult.push(
-      `.NETFramework,Version=${propertyList.TargetFrameworkVersion[0]}`,
+      `.NETFramework,Version=${targetFrameworkVersionProp[0]}`,
     );
   }
   // TargetFrameworks is expected to be a string
-  if (propertyList.TargetFramework) {
+  if (targetFrameworkProp) {
     // sanity check
-    if (Array.isArray(propertyList.TargetFramework)) {
+    if (Array.isArray(targetFrameworkProp)) {
       // mutate the array to effectively "ignore" conditions
-      const frameworks = propertyList.TargetFramework.map((framework) => {
+      const frameworks = targetFrameworkProp.map((framework) => {
         if (
           framework &&
           typeof framework === 'object' &&
@@ -439,14 +461,14 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
         }
         return framework;
       });
-      propertyList.TargetFramework = frameworks
+      targetFrameworkProp = frameworks
         .map((x) => x.trim())
         .filter((x) => !isEmpty(x));
     }
 
     targetFrameworksResult = [
       ...targetFrameworksResult,
-      ...propertyList.TargetFramework,
+      ...targetFrameworkProp,
     ];
   }
 
@@ -456,9 +478,12 @@ export function getTargetFrameworksFromProjectFile(manifestFile) {
 // Extracts the SDK name for SDK-style projects, based on documentation at
 // https://learn.microsoft.com/en-us/dotnet/core/project-sdk/overview.
 export function getSdkFromProjectFile(manifestFile: any): string | undefined {
-  const projectSdkAttribute: string | undefined = manifestFile?.Project?.$?.Sdk;
-  const topLevelSdkElement: string | undefined =
-    manifestFile?.Project?.Sdk?.[0]?.$?.Name;
+  const project = getCaseInsensitive(manifestFile, 'Project');
+  const projectSdkAttribute: string | undefined = getAttr(project, 'Sdk');
+  const topLevelSdkElement: string | undefined = getAttr(
+    getAll(project, 'Sdk')[0],
+    'Name',
+  );
 
   return projectSdkAttribute || topLevelSdkElement;
 }
@@ -475,10 +500,13 @@ function getTargetFrameworks(item: string | any) {
 
 export function getTargetFrameworksFromProjectConfig(manifestFile) {
   const targetFrameworksResult: string[] = [];
-  const packages = manifestFile?.packages?.package ?? [];
+  const packages = getAll(
+    getCaseInsensitive(manifestFile, 'packages'),
+    'package',
+  );
 
   for (const item of packages) {
-    const targetFramework = item.$.targetFramework;
+    const targetFramework = getAttr(item, 'targetFramework');
     if (!targetFramework) {
       continue;
     }
@@ -497,4 +525,18 @@ export function getTargetFrameworksFromProjectJson(manifestFile) {
 
 export function getTargetFrameworksFromProjectAssetsJson(manifestFile) {
   return Object.keys(manifestFile?.targets ?? {});
+}
+
+// Children of the root <Project> element with the given name, e.g. ItemGroup.
+// Exported for use by lib/index.ts.
+export function getProjectChildren(manifestFile: any, name: string): any[] {
+  return getAll(getCaseInsensitive(manifestFile, 'Project'), name);
+}
+
+function hasTargetFrameworkProperty(propertyGroup: any): boolean {
+  return (
+    hasKey(propertyGroup, 'TargetFramework') ||
+    hasKey(propertyGroup, 'TargetFrameworks') ||
+    hasKey(propertyGroup, 'TargetFrameworkVersion')
+  );
 }

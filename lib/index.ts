@@ -10,6 +10,7 @@ import {
   getDependencyTreeFromProjectFile,
   getDependencyTreeFromProjectJson,
   getPropertiesMap,
+  getProjectChildren,
   getTargetFrameworksFromProjectAssetsJson,
   getTargetFrameworksFromProjectConfig,
   getTargetFrameworksFromProjectFile,
@@ -20,6 +21,7 @@ import {
   ProjectJsonManifest,
   PropsLookup,
 } from './parsers';
+import { hasKey } from './parsers/case-insensitive';
 
 import {
   getDependencyTreeFromProjectAssetsJson,
@@ -283,10 +285,10 @@ async function extractTargetFrameworksFromProjectConfig(
 async function containsPackageReference(manifestFileContents: string) {
   const manifestFile: any = await parseXmlFile(manifestFileContents);
 
-  const projectItems: any[] = manifestFile?.Project?.ItemGroup ?? [];
+  const projectItems: any[] = getProjectChildren(manifestFile, 'ItemGroup');
   const referenceIndex = projectItems.findIndex(
     (itemGroup) =>
-      typeof itemGroup === 'object' && 'PackageReference' in itemGroup,
+      typeof itemGroup === 'object' && hasKey(itemGroup, 'PackageReference'),
   );
 
   return referenceIndex !== -1;
