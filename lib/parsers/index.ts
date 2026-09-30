@@ -281,9 +281,25 @@ function buildSubTreeFromPackageReference(
   }
 }
 
+// MSBuild item metadata names are case-insensitive, but xml2js preserves the
+// case of attribute and element names, so match them ourselves.
+function getCaseInsensitive(obj, key: string) {
+  if (!obj) {
+    return undefined;
+  }
+  if (obj[key] !== undefined) {
+    return obj[key]; // exact match wins if both spellings exist
+  }
+  const match = Object.keys(obj).find(
+    (k) => k.toLowerCase() === key.toLowerCase(),
+  );
+  return match === undefined ? undefined : obj[match];
+}
+
 function extractDependencyVersion(dep, manifestFile, propsMap): string | null {
   const VARS_MATCHER = /^\$\((.*?)\)/;
-  let version = dep?.$?.Version || dep?.Version;
+  let version =
+    getCaseInsensitive(dep?.$, 'Version') || getCaseInsensitive(dep, 'Version');
   if (Array.isArray(version)) {
     version = version[0];
   }

@@ -480,3 +480,15 @@ test('.Net oldstyle project with variable is parsed and unknown skipped', async 
   expect(depTree).toBeTruthy();
   expect(depTree.dependencies).toEqual({});
 });
+
+test('.Net .csproj version metadata is resolved regardless of casing', async () => {
+  const includeDev = false;
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-lowercase-version`,
+    'manifest.csproj',
+    includeDev,
+  );
+  expect(tree.dependencies['Swashbuckle'].version).toBe('5.6.0');
+  expect(tree.dependencies['Newtonsoft.Json'].version).toBe('13.0.1');
+  expect(tree.dependencies['Serilog'].version).toBe('3.0.0');
+});
