@@ -492,3 +492,32 @@ test('.Net .csproj version metadata is resolved regardless of casing', async () 
   expect(tree.dependencies['Newtonsoft.Json'].version).toBe('13.0.1');
   expect(tree.dependencies['Serilog'].version).toBe('3.0.0');
 });
+
+test('.Net project file element and attribute names are matched regardless of casing', async () => {
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-mixed-case`,
+    'manifest.csproj',
+    true,
+  );
+  expect(tree.name).toBe('MixedCase.App');
+  expect(tree.hasDevDependencies).toBe(true);
+  expect(tree.dependencies['Newtonsoft.Json'].version).toBe('13.0.1');
+  expect(tree.dependencies['Newtonsoft.Json'].targetFrameworks).toEqual([
+    'net8.0',
+  ]);
+  expect(tree.dependencies['Serilog'].version).toBe('3.0.0');
+  expect(tree.dependencies['Moq'].depType).toBe('dev');
+});
+
+test('.Net packages.config names are matched regardless of casing', async () => {
+  const tree = await buildDepTreeFromFiles(
+    `${__dirname}/../fixtures/dotnet-mixed-case`,
+    'packages.config',
+    false,
+  );
+  expect(tree.hasDevDependencies).toBe(true);
+  expect(Object.keys(tree.dependencies)).toEqual(['Newtonsoft.Json']);
+  expect(tree.dependencies['Newtonsoft.Json'].targetFrameworks).toEqual([
+    'net472',
+  ]);
+});

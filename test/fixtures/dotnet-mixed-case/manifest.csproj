@@ -1,0 +1,12 @@
+<project sdk="Microsoft.NET.Sdk">
+  <propertygroup>
+    <assemblyname>MixedCase.App</assemblyname>
+    <targetframework>net8.0</targetframework>
+    <serilogversion>3.0.0</serilogversion>
+  </propertygroup>
+  <itemgroup condition="'$(targetframework)' == 'net8.0'">
+    <packagereference include="Newtonsoft.Json" VERSION="13.0.1" />
+    <packagereference include="Serilog" version="$(SerilogVersion)" />
+    <packagereference include="Moq" version="4.18.0" developmentdependency="true" />
+  </itemgroup>
+</project>
