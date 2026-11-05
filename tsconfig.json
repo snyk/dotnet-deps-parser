@@ -2,7 +2,7 @@
     "compilerOptions": {
         "outDir": "./dist",
         "pretty": true,
-        "target": "es2017",
+        "target": "es2018",
         "lib": ["es2017"],
         "module": "commonjs",
         "sourceMap": true,
