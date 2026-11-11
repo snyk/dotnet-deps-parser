@@ -20,7 +20,7 @@
   "author": "snyk.io",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=16"
+    "node": ">=22"
   },
   "files": [
     "dist"
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",
-    "@types/node": "^20.5.9",
+    "@types/node": "^22",
     "@types/xml2js": "0.4.14",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
